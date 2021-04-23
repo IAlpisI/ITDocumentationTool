@@ -1,0 +1,188 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-sizing: border-box;
+    font-family: Roboto, Lato, Helvetica, Arial, sans-serif;
+}
+
+html,
+body,
+#root,
+.app {
+    min-height: 100vh;
+    width: 100%;
+    background-color: #f8f9fd;
+    scroll-behavior: smooth;
+    scroll-padding-top: 300px;
+}
+
+body::-webkit-scrollbar {
+    display: none; 
+}
+body {
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.areset {
+    text-decoration: none;
+    color: #39afd1;
+    
+}
+
+.ql-editor {
+    min-height: 70px;
+    max-height: 200px;
+    max-width: 100%;
+    background-color: #f1f3fa;
+    caret-color: #3600b5;
+
+}
+
+.is-current{
+    height: 23px;
+    border-left: 2px solid #632ce4;
+    color: #0073dc;
+}
+
+.is-current a{
+    color: #632ce4;;
+}
+
+.ql-editor:hover {
+    box-shadow: inset 0 0 0 1.5px #ccc;
+}
+
+.ql-editor:focus {
+    outline: 0;
+    box-shadow: inset 0 0 0 1.5px #632ce4;
+}
+
+.app {
+    display: flex;
+    overflow: hidden;
+}
+
+aside {
+    width: 250px;
+}
+
+/* .palette {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+} */
+
+.shape {
+    margin: 10px;
+    height: 30px;
+    width: 150px;
+    border: solid 2px black;
+}
+
+.circle {
+    width: 100px;
+    border-radius: 50%;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    z-index: 10;
+}
+
+.properties {
+    margin-top: 10px;
+}
+
+.key {
+    color: lightslategray;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: center;
+    height: 25px;
+}
+
+.value {
+    color: darkslategray;
+    font-weight: bolder;
+}
+
+.no-data {
+    color: darkslategray;
+}
+
+.canvas {
+    overflow: auto;
+    /* width: calc(100% - 500px);
+     border: solid 1px lightgray; 
+    border-top: none;
+    border-bottom: none;
+    position: relative; */
+}
+
+.buttons {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.buttons button {
+    margin: 4px;
+    height: 30px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: lightgray;
+    transition: all 0.25s ease-in;
+    z-index: 10;
+    padding: 0 8px;
+    border-radius: 4px;
+}
+
+.buttons button:hover {
+    background: darkgray;
+}
+
+/* Tree-Nodes */
+
+/* .node circle {
+	fill: rgb(247, 106, 214);
+	stroke: rgb(184, 37, 81);
+	stroke-width: 1.5px;
+}
+
+.node text {
+	font-size: 11px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background-color: black;
+	fill: black;
+}
+
+.node {
+	cursor: pointer;
+}
+
+path.link {
+	fill: none;
+	stroke: #2593B8;
+	stroke-width: 1.5px;
+}
+
+body {
+	background-color: white;
+	overflow: hidden;
+}
+
+span {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #F4F4F4;
+	text-shadow: 0 1px 4px black;
+	float: right;
+} */
