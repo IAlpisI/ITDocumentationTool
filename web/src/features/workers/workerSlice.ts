@@ -1,7 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { useHistory } from "react-router-dom"
 import * as api from "./workerApi"
+import * as apiextended from '../../common/api'
+import {exportWorker} from "../../common/constants"
 
+
+export const ExportWorkers = createAsyncThunk(
+    'worker/exportall',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await apiextended.getAll(exportWorker)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
 
 export const fetchWorkers = createAsyncThunk(
     'worker/fetchall',
@@ -38,7 +50,7 @@ export const deleteWorker = createAsyncThunk(
 
 export const createWorker = createAsyncThunk(
     'worker/create',
-    async (data:any, { rejectWithValue }) => {
+    async (data: any, { rejectWithValue }) => {
         try {
             return await api.createWorker(data)
         } catch (err) {
@@ -49,7 +61,7 @@ export const createWorker = createAsyncThunk(
 
 export const updateWorker = createAsyncThunk(
     'worker/update',
-    async (data:any, { rejectWithValue }) => {
+    async (data: any, { rejectWithValue }) => {
         try {
             return await api.updateWorker(data)
         } catch (err) {
@@ -57,12 +69,6 @@ export const updateWorker = createAsyncThunk(
         }
     }
 )
-
-interface WorkerState {
-    data: [],
-    status: 'idle' | 'pending' | 'failed' | 'completed',
-    error: string
-}
 
 const initialState = {
     workerList: {
@@ -74,13 +80,22 @@ const initialState = {
         data: [],
         status: {},
         error: {}
+    },
+    exportList: {
+        data: [],
+        status: {},
+        error: {}
     }
 }
 
 const workerSlice = createSlice({
     name: 'worker',
     initialState,
-    reducers: {},
+    reducers: {
+        clearState(state, id) {
+            state.workerList.data.filter((x:any) => x.id !== id)
+        }
+    },
     extraReducers: builder => {
         builder.addCase(fetchWorkers.fulfilled, (state, action) => {
             state.workerList = {
@@ -156,6 +171,11 @@ const workerSlice = createSlice({
                 data: action.payload,
                 error: {}
             }
+            state.workerList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
         })
         builder.addCase(createWorker.pending, (state, _) => {
             state.singleWorker = {
@@ -192,8 +212,29 @@ const workerSlice = createSlice({
                 error: error,
             }
         })
+        builder.addCase(ExportWorkers.fulfilled, (state, action) => {
+            state.exportList = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(ExportWorkers.pending, (state, _) => {
+            state.exportList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(ExportWorkers.rejected, (state, { error }) => {
+            state.exportList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
     }
 })
 
-
+export const {clearState} = workerSlice.actions
 export default workerSlice.reducer

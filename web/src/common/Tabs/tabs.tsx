@@ -18,6 +18,7 @@ const TabLi = styled.div<{active:boolean}>`
     margin-right: 10px;
     padding: 10px;
     cursor: pointer;
+    color: ${(props) => !props.active ? props.theme.colors.black : props.theme.colors.white};
     background: ${(props) => !props.active ? props.theme.colors.white : props.theme.colors.cyan};
     border: 2px solid ${(props) => props.theme.colors.grey1};
 `

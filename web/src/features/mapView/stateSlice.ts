@@ -1,9 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createSlice } from '@reduxjs/toolkit'
 import { nanoid } from "nanoid"
 import clamp from "clamp";
-import { SHAPE_TYPES, DEFAULTS, LIMITS } from "./constants";
-import { keys } from '@material-ui/core/styles/createBreakpoints';
+import { SHAPE_TYPES, DEFAULTS, LIMITS, TOTAL_TYPES,  FLOORPLANS } from "./constants";
+
 
 
 type cords = {
@@ -18,114 +17,152 @@ type cords = {
     y: number
 }
 
-export const values = ( x:number, y:number, type:string ) => ({
+const defaultWidth = (format:string) => {
+    switch(format) {
+        case TOTAL_TYPES.SVG:
+            return DEFAULTS.SVG.WIDTH;
+        case TOTAL_TYPES.TABLE:
+            return DEFAULTS.TABLE.WIDTH;
+        case TOTAL_TYPES.WALL:
+            return DEFAULTS.WALL.WIDTH
+    }
+}
+
+const defaultHeight = (format:string) => {
+    switch(format) {
+        case TOTAL_TYPES.SVG:
+            return DEFAULTS.SVG.HEIGHT;
+        case TOTAL_TYPES.TABLE:
+            return DEFAULTS.TABLE.HEIGHT;
+        case TOTAL_TYPES.WALL:
+            return DEFAULTS.WALL.HEIGHT
+    }
+}
+
+export const values = (x: number, y: number, type: string, format: string) => ({
     id: nanoid(),
-    type: type, // rect
-    width: DEFAULTS.RECT.WIDTH, // 150
-    height: DEFAULTS.RECT.HEIGHT, // 100
-    fill: DEFAULTS.RECT.FILL, // #ffffff
-    stroke: DEFAULTS.RECT.STROKE, // #000000,
-    rotation: DEFAULTS.RECT.ROTATION, // 0
+    type: type,
+    width: defaultWidth(format), 
+    height: defaultHeight(format), 
+    fill: DEFAULTS.WALL.FILL, 
+    stroke: DEFAULTS.WALL.STROKE, 
+    rotation: DEFAULTS.WALL.ROTATION, 
+    format,
     x,
     y,
 })
 
-const svgValues = () => {
-    
-}
-
 const usersInitialState = {
-    shape: [values(0, 0, SHAPE_TYPES.RECT)],
+    shape: [values(0, 0, SHAPE_TYPES.WALL, TOTAL_TYPES.WALL)],
     svgs: [],
-    selected: {}
+    selected: '',
+    selectedShape: {}
 };
-
-interface updateAttributes {
-    attr: String, 
-    value: any
-}
 
 const stateSlice = createSlice({
     name: 'State',
     initialState: usersInitialState,
     reducers: {
-        createRectangle(state, action: any) {
-            const {x, y, type} = action.payload
-            console.log(x);
-            state.shape.push(values(x, y, type))
+        setValue(state, action:any) {
+            state.shape = action.payload;
+        },
+        createShape(state, action: any) {
+            const { x, y, type, format } = action.payload
+            state.shape.push(values(x, y, type, format))
         },
         selectShape(state, action: any) {
             state.selected = action.payload
+            const shape = state.shape.find(x => x.id === action.payload)
+            state.selectedShape = shape as any;
         },
-        removeShape(state){
+        removeShape(state) {
             const reducedList = state.shape.filter(x => x.id !== state.selected)
             state.shape = reducedList;
         },
         clearSelection(state) {
-            state.selected = {}
+            state.selected = ''
+            state.selectedShape = {}
         },
         moveShape(state, actions: any) {
-            console.log(actions.payload)
-            const {id, event} = actions.payload
+            const { id, event } = actions.payload
             const shape = state.shape.find(x => x.id === id)
-            
+
             if (shape) {
                 shape.x = event.target.attrs.x;
                 shape.y = event.target.attrs.y;
+
+                if(shape.x < 0) shape.x = 0
+                if(shape.y < 0) shape.y =0
+
+                console.log(shape)
+
+                state.selectedShape = shape
             }
         },
-        updateAttribute(state, action: any){
-            const {attr, value} :{attr: string, value: string}  = action.payload
-            const shape = state.shape.find(x => x.id ===  state.selected)
-            
-            if(shape){
+        updateAttribute(state, action: any) {
+            const { attr, value }: { attr: string, value: string } = action.payload
+            const shape = state.shape.find(x => x.id === state.selected)
+
+            if(isNaN(parseInt(value))) return
+
+            if (shape) {
                 const test = attr as keyof cords;
                 (shape[test] as string) = value;
+                state.selectedShape = shape
             }
 
         },
-        transformRectangle(state, actions: any) {
-            const [node, id, event] = actions
+        transform(state, actions: any) {
+            const {node, id, event} = actions.payload
 
-            const scaleX = node.scaleX();
-            const scaleY = node.scaleY();
+            const scaleX = node.attrs.scaleX;
+            const scaleY = node.attrs.scaleY;
 
-            // we will reset the scale back
             node.scaleX(1);
             node.scaleY(1);
 
-            const shape = state.shape[id];
+            const shape = state.shape.find(x => x.id === id);
 
             if (shape) {
-                shape.x = node.x();
-                shape.y = node.y();
+                shape.x = node.attrs.x;
+                shape.y = node.attrs.y;
 
                 shape.rotation = node.rotation();
 
-                shape.width = clamp(
-                    // increase the width in order of the scale
-                    node.width() * scaleX,
-                    // should not be less than the minimum width
-                    LIMITS.RECT.MIN,
-                    // should not be more than the maximum width
-                    LIMITS.RECT.MAX
-                );
-                shape.height = clamp(
-                    node.height() * scaleY,
-                    LIMITS.RECT.MIN,
-                    LIMITS.RECT.MAX
-                );
+                // shape.width = clamp(
+                //     node.width() * scaleX,
+                //     LIMITS.WALL.MIN,
+                //     LIMITS.WALL.MAX
+                // );
+                // shape.height = clamp(
+                //     node.height() * scaleY,
+                //     LIMITS.WALL.MIN,
+                //     LIMITS.WALL.MAX
+                // );
 
-                state.shape[id] = shape
+                shape.width = node.attrs.width * scaleX;
+                shape.height = node.attrs.height * scaleY;
+                state.selectedShape = shape;
+            }
+        },
+        saveDiagram(state, action:any) {
+            const {title, sizeX, sizeY, stageRef} = action.payload.props
+            const uri = stageRef.current.toDataURL();
+            const map = localStorage.getItem(FLOORPLANS);
+            if(map === null) {
+                localStorage.setItem(FLOORPLANS, JSON.stringify([{title, shape:state.shape, img:uri, sizeX, sizeY}]))
+            }else {
+                const maps = JSON.parse(map);
+                console.log(maps)
+                const filtered = maps.filter((x:any) => x.title !== title);
+                filtered.push({title, shape:state.shape, img:uri, sizeX, sizeY})
+                localStorage.setItem(FLOORPLANS, JSON.stringify(filtered))
             }
         }
     },
 })
 
-function prop<T, K extends keyof T>(obj: T, key: K) {
-    return obj[key];
-  }
 
-export const { createRectangle, removeShape, selectShape, clearSelection, moveShape, transformRectangle, updateAttribute } = stateSlice.actions
+export const { createShape, saveDiagram, removeShape, selectShape, clearSelection, moveShape, transform, updateAttribute, setValue } = stateSlice.actions
 export default stateSlice.reducer
 

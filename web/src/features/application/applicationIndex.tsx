@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchApplications } from './applicationSlice';
 import { Header, Links } from './applicationData';
 import TableContainer from '../../common/TableContainer';
+import {Convert} from '../../common/helpers/filterKeys'
 
 function ApplicationIndex() {
     const dispatch = useDispatch();
@@ -12,9 +13,14 @@ function ApplicationIndex() {
         dispatch(fetchApplications());
     }, [dispatch]);
 
+    function filterKeys([key, _]:any) {
+        return key !== 'serverDeviceId';
+    }
+
     return (
         <TableContainer
-            tableList={applicationList.data}
+            fetchData={fetchApplications}
+            tableList={ Convert(applicationList.data, filterKeys)}
             tableHeader={Header}
             tableLinks={Links}
             tableName={'Applications'}

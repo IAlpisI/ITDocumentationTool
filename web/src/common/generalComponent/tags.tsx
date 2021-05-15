@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import * as Module from './tags.style';
-import styled from 'styled-components'
 
 const Tags = (props: any) => {
     const [tags, setTags] = useState<Array<string>>([]);
@@ -24,14 +23,17 @@ const Tags = (props: any) => {
         }
     };
 
-    useEffect(() => {
-        setTags(props.tag ? props.tag : []);
-    }, [props])
-
     const removeTags = (index: number) => {
         setTags([...tags.filter((tag) => tags.indexOf(tag) !== index)]);
     };
 
+    const init = () => {
+        props.tag && props.tag.forEach((x:any) => {
+            !tags.includes(x) && setTags([...tags, x]);
+        })
+    }
+
+    init();
 
     return (
         <Module.TagInput>

@@ -12,35 +12,44 @@ export const ConnectForm = ({ children }: any) => {
 };
 
 type Props = {
-    id: any;
     general?: GeneralProps;
 };
 
 export const General = (props: Props) => {
-    const { id, general } = props;
+    const { general } = props;
 
     return (
         <ConnectForm>
-            {({ register, control, setValue }: any) => {
+            {({ register, control, setValue, formState: { errors } }: any) => {
                 return (
                     <Module.Container id={'General'}>
                         <Module.Column>
                             <Module.ComponentName>General</Module.ComponentName>
                             <Module.Label>Title</Module.Label>
                             <Module.Input
-                                {...register('generalTitle')}
+                                {...register('generalTitle', {
+                                    required: 'This is required',
+                                })
+                                    
+                                }
                                 defaultValue={general?.title}
                             />
+                            {errors.generalTitle && <Module.ErrorMessage role="alert">{errors.generalTitle.message}</Module.ErrorMessage>}
                             <Module.Label>Purpose</Module.Label>
                             <Module.Input
                                 {...register('purpose')}
                                 defaultValue={general?.purpose}
                             />
                             <Module.Label>Status</Module.Label>
-                            <Module.Input
-                                {...register('status')}
-                                defaultValue={general?.status}
-                            />
+                            <Module.Select {...register('status')}>
+                                <Module.FormOptions value="Pending">Pending</Module.FormOptions>
+                                <Module.FormOptions value="NonOperational">Non operational</Module.FormOptions>
+                                <Module.FormOptions value="Production">Production</Module.FormOptions>
+                                <Module.FormOptions value="Deploying">Deploying</Module.FormOptions>
+                                <Module.FormOptions value="Defect">Defect</Module.FormOptions>
+                                <Module.FormOptions value="Operational">Operational</Module.FormOptions>
+                                <Module.FormOptions value="Ordered">Ordered</Module.FormOptions>
+                            </Module.Select>
                             <Module.Label>Tags</Module.Label>
 
                             <Tags setValue={setValue} tag={general?.tag} />

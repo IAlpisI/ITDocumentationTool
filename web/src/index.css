@@ -119,7 +119,7 @@ aside {
 }
 
 .canvas {
-    overflow: auto;
+    overflow: hidden;
     /* width: calc(100% - 500px);
      border: solid 1px lightgray; 
     border-top: none;

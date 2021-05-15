@@ -8,14 +8,23 @@ import { fetchPrinter, createPrinter, updatePrinter } from './printerSlice';
 import React from 'react';
 import { scrolIds } from './printerData';
 import { useHistory, useParams } from 'react-router-dom';
+import { HostAddress } from '../../common/hostAddress/hostAddress';
 
 function PrinterForm() {
     const methods = useForm();
     const dispatch = useDispatch();
-    const printer: any = useSelector((state: any) => state.printer.singlePrinter);
+    const printer: any = useSelector(
+        (state: any) => state.printer.singlePrinter
+    );
     let { id } = useParams<{ id: string }>();
     let printerData: any = { general: {} };
     let history = useHistory();
+
+    const isEdit = window.location.href.includes('edit');
+
+    const mainPage = () => {
+        history.push('/printer');
+    };
 
     useEffect(() => {
         if (id) dispatch(fetchPrinter(id));
@@ -34,15 +43,24 @@ function PrinterForm() {
                 status: data.status,
                 tag: data.tags,
                 description: data.generalDescription
+            },
+            hostaddress: {
+                address: data.address,
+                networkId: data.network,
+                description: data.hostAddressDescription
             }
         };
-        if (window.location.href.includes('edit')) {
+        if (isEdit) {
             printerData['id'] = id;
+            printerData.general.id = printer.data.generalId;
+            printerData.hostaddress.id = printer.data.hostAddress.id;
+
             await dispatch(updatePrinter(printerData));
         } else {
+            console.log(printerData)
             await dispatch(createPrinter(printerData));
         }
-        history.push('/people');
+        mainPage();
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -53,7 +71,6 @@ function PrinterForm() {
         <FormStyle.FormContainer>
             <FormStyle.InfoRow>
                 <FormStyle.FormName>Create a new printer</FormStyle.FormName>
-                <FormStyle.LinkName>Test</FormStyle.LinkName>
             </FormStyle.InfoRow>
             <FormStyle.FormsContainer>
                 <FormProvider {...methods}>
@@ -61,19 +78,26 @@ function PrinterForm() {
                         onKeyDown={(e) => checkKeyDown(e)}
                         autoComplete='off'
                         onSubmit={methods.handleSubmit(onSubmit)}>
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             printer.data.general && (
-                                <General
-                                    id={'General'}
-                                    general={printer.data.general}
-                                />
+                                <General general={printer.data.general} />
                             )
                         ) : (
-                            <General id={'General'} />
+                            <General />
                         )}
 
-                        <FormStyle.Container id={'Person'}>
-                            {printer.data && printer.status === 'completed' && (
+                        {isEdit ? (
+                            printer.data.hostAddress && (
+                                <HostAddress props={printer.data.hostAddress} />
+                            )
+                        ) : (
+                            <HostAddress />
+                        )}
+
+                        <FormStyle.Container id={'Printer'}>
+                            {((printer.data &&
+                                printer.status === 'completed') ||
+                                !isEdit) && (
                                 <FormStyle.Column>
                                     <FormStyle.ComponentName>
                                         Printer
@@ -83,28 +107,24 @@ function PrinterForm() {
                                         {...methods.register('type')}
                                         defaultValue={printer.data.type}
                                     />
-                                    <FormStyle.Label>
-                                        Colored
-                                    </FormStyle.Label>
+                                    <FormStyle.Label>Colored</FormStyle.Label>
                                     <FormStyle.Input
                                         {...methods.register('colored')}
-                                        defaultValue={printer.data.colored}
+                                        defaultValue={
+                                            printer.data.colored || false
+                                        }
                                     />
-                                    <FormStyle.Label>
-                                        Duplex
-                                    </FormStyle.Label>
+                                    <FormStyle.Label>Duplex</FormStyle.Label>
                                     <FormStyle.Input
                                         {...methods.register('duplex')}
-                                        defaultValue={printer.data.duplex}
+                                        defaultValue={
+                                            printer.data.duplex || false
+                                        }
                                     />
-                                    <FormStyle.Label>
-                                        Emulation
-                                    </FormStyle.Label>
+                                    <FormStyle.Label>Emulation</FormStyle.Label>
                                     <FormStyle.Input
                                         {...methods.register('emulation')}
-                                        defaultValue={
-                                            printer.data.emulation
-                                        }
+                                        defaultValue={printer.data.emulation}
                                     />
                                     <FormStyle.Label>
                                         Paper format
@@ -121,6 +141,7 @@ function PrinterForm() {
                                 Submit
                             </FormStyle.TableConfirmationButton>
                             <FormStyle.TableConfirmationButton
+                                onClick={mainPage}
                                 primary={''}>
                                 Cancel
                             </FormStyle.TableConfirmationButton>
@@ -135,7 +156,7 @@ function PrinterForm() {
                         offset={-450}>
                         {scrolIds.map((item, index) => (
                             <FormStyle.SpyLi key={index}>
-                                <FormStyle.SpyA href={`'#'${item}'`}>
+                                <FormStyle.SpyA href={`#${item}`}>
                                     {item}
                                 </FormStyle.SpyA>
                             </FormStyle.SpyLi>

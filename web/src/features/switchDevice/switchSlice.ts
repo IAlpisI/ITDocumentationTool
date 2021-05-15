@@ -71,7 +71,7 @@ const initialState = {
     }
 }
 
-const routerSlice = createSlice({
+const switchSlice = createSlice({
     name: 'switch',
     initialState,
     reducers: {},
@@ -185,4 +185,4 @@ const routerSlice = createSlice({
 })
 
 
-export default routerSlice.reducer
+export default switchSlice.reducer

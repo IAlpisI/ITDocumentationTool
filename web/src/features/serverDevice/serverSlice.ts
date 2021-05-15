@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import * as api from "../../common/api"
-import {serverDevice, serverDeviceGetAll} from '../../common/constants'
+import {serverDevice, serverDeviceCPUUpdate, serverDeviceGetAll, serverDeviceMemoryUpdate, serverDeviceMemory, serverDeviceCPU} from '../../common/constants'
 
 
 export const fetchServers = createAsyncThunk(
@@ -52,6 +52,50 @@ export const updateServer = createAsyncThunk(
     async (data:any, { rejectWithValue }) => {
         try {
             return await api.updateData(data, serverDevice)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const createMemoryForServer = createAsyncThunk(
+    'server/addMemory',
+    async (data:any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, serverDeviceMemory)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const updateMemoryForServer = createAsyncThunk(
+    'server/updateMemory',
+    async (data:any, { rejectWithValue }) => {
+        try {
+            return await api.updateData(data, serverDeviceMemoryUpdate)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const createCPUForServer = createAsyncThunk(
+    'server/addCPU',
+    async (data:any, { rejectWithValue }) => {
+        try {
+            return await api.updateData(data, serverDeviceCPU)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const updateCPUForServer = createAsyncThunk(
+    'server/updateCpu',
+    async (data:any, { rejectWithValue }) => {
+        try {
+            return await api.updateData(data, serverDeviceCPUUpdate)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -175,6 +219,90 @@ const routerSlice = createSlice({
             }
         })
         builder.addCase(updateServer.rejected, (state, { error }) => {
+            state.singleServer = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(createCPUForServer.fulfilled, (state, action) => {
+            state.singleServer = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(createCPUForServer.pending, (state, _) => {
+            state.singleServer = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(createCPUForServer.rejected, (state, { error }) => {
+            state.singleServer = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(createMemoryForServer.fulfilled, (state, action) => {
+            state.singleServer = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(createMemoryForServer.pending, (state, _) => {
+            state.singleServer = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(createMemoryForServer.rejected, (state, { error }) => {
+            state.singleServer = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(updateMemoryForServer.fulfilled, (state, action) => {
+            state.singleServer = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(updateMemoryForServer.pending, (state, _) => {
+            state.singleServer = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(updateMemoryForServer.rejected, (state, { error }) => {
+            state.singleServer = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(updateCPUForServer.fulfilled, (state, action) => {
+            state.singleServer = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(updateCPUForServer.pending, (state, _) => {
+            state.singleServer = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(updateCPUForServer.rejected, (state, { error }) => {
             state.singleServer = {
                 status: 'failed',
                 data: [],

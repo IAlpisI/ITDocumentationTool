@@ -11,16 +11,23 @@ import 'react-quill/dist/quill.snow.css';
 import React from 'react';
 import { scrolIds } from './routerData';
 import { useHistory, useParams } from 'react-router-dom';
+import { HostAddress } from '../../common/hostAddress/hostAddress';
 
 function RouterForm() {
     const methods = useForm();
     const dispatch = useDispatch();
-    const routerList: any = useSelector(
-        (state: any) => state.router.singleWorker
+    const routerDevice: any = useSelector(
+        (state: any) => state.router.singleRouter
     );
     let { id } = useParams<{ id: string }>();
     let router: any = { general: {}, formfactor: {}, powerconsumer: {} };
     let history = useHistory();
+
+    const isEdit = window.location.href.includes('edit');
+
+    const mainPage = () => {
+        history.push('/router');
+    };
 
     useEffect(() => {
         if (id) dispatch(fetchRouter(id));
@@ -28,8 +35,9 @@ function RouterForm() {
 
     const onSubmit = async (data: any) => {
         router = {
-            routingprotocol: data.routingprotocol,
-            gatewayaddress: data.gatewayaddress,
+            routingprotocol: data.routingProtocol,
+            gatewayaddress: data.gatewayAddress,
+
             general: {
                 title: data.generalTitle,
                 purpose: data.purpose,
@@ -55,15 +63,28 @@ function RouterForm() {
                 watt: data.watt,
                 ampere: data.ampere,
                 description: data.powerConsumerDescription
+            },
+            hostaddress: {
+                address: data.address,
+                networkId: data.network,
+                description: data.hostAddressDescription
             }
         };
-        if (window.location.href.includes('edit')) {
+        if (isEdit) {
             router['id'] = id;
+            router.general.id = routerDevice.data.generalId;
+            router.formfactor.id = routerDevice.data.formFactorId;
+            router.powerconsumer.id = routerDevice.data.powerConsumerId;
+            router.hostaddress.id = routerDevice.data.hostAddress.id;
+
+            console.log(routerDevice)
+            console.log(router)
             await dispatch(updateRouter(router));
         } else {
             await dispatch(createRouter(router));
         }
-        history.push('/router');
+
+        mainPage();
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -73,8 +94,7 @@ function RouterForm() {
     return (
         <FormStyle.FormContainer>
             <FormStyle.InfoRow>
-                <FormStyle.FormName>Create a new person</FormStyle.FormName>
-                <FormStyle.LinkName>Test</FormStyle.LinkName>
+                <FormStyle.FormName>Create a new router</FormStyle.FormName>
             </FormStyle.InfoRow>
             <FormStyle.FormsContainer>
                 <FormProvider {...methods}>
@@ -82,64 +102,67 @@ function RouterForm() {
                         onKeyDown={(e) => checkKeyDown(e)}
                         autoComplete='off'
                         onSubmit={methods.handleSubmit(onSubmit)}>
-                        {window.location.href.includes('edit') ? (
-                            routerList.data.general && (
-                                <General
-                                    id={'General'}
-                                    general={routerList.data.general}
-                                />
+                        {isEdit ? (
+                            routerDevice.data.general && (
+                                <General general={routerDevice.data.general} />
                             )
                         ) : (
-                            <General id={'General'} />
+                            <General />
                         )}
 
-                        {window.location.href.includes('edit') ? (
-                            routerList.data.general && (
+                        {isEdit ? (
+                            routerDevice.data.general && (
                                 <PowerConsumerForm
-                                    id={'PowerConsumer'}
-                                    powerConsumer={routerList.data.general}
+                                    powerConsumer={routerDevice.data.general}
                                 />
                             )
                         ) : (
-                            <PowerConsumerForm id={'PowerConsumer'} />
+                            <PowerConsumerForm />
                         )}
 
-                        {window.location.href.includes('edit') ? (
-                            routerList.data.general && (
+                        {isEdit ? (
+                            routerDevice.data.general && (
                                 <FormFactor
-                                    id={'FormFactor'}
-                                    formFactor={routerList.data.general}
+                                    formFactor={routerDevice.data.general}
                                 />
                             )
                         ) : (
-                            <FormFactor id={'FormFactor'} />
+                            <FormFactor />
                         )}
 
-                        <FormStyle.Container id={'Person'}>
-                            {routerList.data &&
-                                routerList.status === 'completed' && (
+                        {isEdit ? (
+                            routerDevice.data.hostAddress && (
+                                <HostAddress
+                                    props={routerDevice.data.hostAddress}
+                                />
+                            )
+                        ) : (
+                            <HostAddress />
+                        )}
+
+                        <FormStyle.Container id={'Router'}>
+                            {((routerDevice.data && routerDevice.status === 'completed') ||
+                                !isEdit) && (
                                     <FormStyle.Column>
                                         <FormStyle.ComponentName>
-                                            Person
+                                            Router
                                         </FormStyle.ComponentName>
                                         <FormStyle.Label>
-                                            Full name
+                                            Routing protocol
                                         </FormStyle.Label>
                                         <FormStyle.Input
-                                            {...methods.register('fullName')}
+                                            {...methods.register('routingProtocol')}
                                             defaultValue={
-                                                routerList.data.fullName
+                                                routerDevice.data.routingProtocol
                                             }
                                         />
                                         <FormStyle.Label>
-                                            Email address
+                                            Gateway address
                                         </FormStyle.Label>
                                         <FormStyle.Input
-                                            {...methods.register(
-                                                'emailAddress'
-                                            )}
+                                            {...methods.register('gatewayAddress')}
                                             defaultValue={
-                                                routerList.data.emailAddress
+                                                routerDevice.data.gatewayAddress
                                             }
                                         />
                                     </FormStyle.Column>
@@ -153,7 +176,9 @@ function RouterForm() {
                                 type='submit'>
                                 Submit
                             </FormStyle.TableConfirmationButton>
-                            <FormStyle.TableConfirmationButton primary={''}>
+                            <FormStyle.TableConfirmationButton
+                                onClick={mainPage}
+                                primary={''}>
                                 Cancel
                             </FormStyle.TableConfirmationButton>
                         </FormStyle.FormSpacingButtons>
@@ -167,7 +192,7 @@ function RouterForm() {
                         offset={-450}>
                         {scrolIds.map((item, index) => (
                             <FormStyle.SpyLi key={index}>
-                                <FormStyle.SpyA href={`'#'${item}'`}>
+                                <FormStyle.SpyA href={`#${item}`}>
                                     {item}
                                 </FormStyle.SpyA>
                             </FormStyle.SpyLi>

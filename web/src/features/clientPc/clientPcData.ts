@@ -1,11 +1,11 @@
-export const workerHeader = [
-    {
-        entityColumn: 'status',
-        headerName: 'Status'
-    },
+export const Header = [
     {
         entityColumn: 'title',
         headerName: 'Title'
+    },
+    {
+        entityColumn: 'status',
+        headerName: 'Status'
     },
     {
         entityColumn: 'purpose',
@@ -17,10 +17,10 @@ export const workerHeader = [
     }
 ]
 
-export const workerLinks =
+export const Links =
 {
     editLink: 'client/edit/',
-    deleteLink: 'client/delete/',
+    deleteLink: 'clientPc',
     viewLink: 'client/detail/',
     formLink: 'client/form',
     index: 'client'

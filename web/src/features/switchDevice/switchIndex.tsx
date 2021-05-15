@@ -12,12 +12,15 @@ function SwitchIndex() {
         dispatch(fetchSwitches());
     }, [dispatch]);
 
+
     return (
         <TableContainer
+            fetchData={fetchSwitches}
             tableList={switchList.data}
             tableHeader={Header}
             tableLinks={Links}
-            tableName={'people'}
+            tableName={'Switches'}
+            buttonName={'switch'}
         />
     );
 }

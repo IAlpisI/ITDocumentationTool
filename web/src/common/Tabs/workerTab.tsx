@@ -21,8 +21,8 @@ const WorkerDetail = (props: PersonDetail) => {
                 <Module.ObjectData>{props.companyNumber}</Module.ObjectData>
                 <Module.ObjectName>Personla number:</Module.ObjectName>
                 <Module.ObjectData>{props.personalNumber}</Module.ObjectData>
-                {/* <Module.ObjectName>Description:</Module.ObjectName>
-                <Module.ObjectData>{props.description}</Module.ObjectData> */}
+                <Module.ObjectName>Description:</Module.ObjectName>
+                <Module.ObjectData>{props.description}</Module.ObjectData>
             </Module.DetailGrid>
         </Module.Container>
     );

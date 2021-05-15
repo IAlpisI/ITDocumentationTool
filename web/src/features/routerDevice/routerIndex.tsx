@@ -7,7 +7,7 @@ import TableContainer from '../../common/TableContainer';
 const RouterIndex = () => {
 
     const dispatch = useDispatch();
-    const workerList = useSelector((state: any) => state.worker.workerList);
+    const routerList = useSelector((state: any) => state.router.routerList);
 
     useEffect(() => {
         dispatch(fetchRouters());
@@ -15,10 +15,12 @@ const RouterIndex = () => {
 
     return (
         <TableContainer
-            tableList={workerList.data}
+            fetchData={fetchRouters}
+            tableList={routerList.data}
             tableHeader={routerHeader}
             tableLinks={routerLinks}
             tableName={'Routers'}
+            buttonName={'router'}
         />
     )
 }

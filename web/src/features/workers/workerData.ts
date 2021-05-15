@@ -28,10 +28,10 @@ export const Header = [
 export const Links =
 {
     editLink: 'people/edit/',
-    deleteLink: 'people/delete/',
+    deleteLink: 'person',
     viewLink: 'people/detail/',
     formLink: 'people/form',
-    index: 'people'
+    index: 'person'
 }
 
 export const scrolIds = ['General', 'Person', 'Save']

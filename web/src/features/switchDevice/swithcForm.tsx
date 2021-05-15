@@ -11,28 +11,34 @@ import 'react-quill/dist/quill.snow.css';
 import React from 'react';
 import { scrolIds } from './switchData';
 import { useHistory, useParams } from 'react-router-dom';
+import { HostAddress } from '../../common/hostAddress/hostAddress';
 
-function WorkerForm() {
+function SwitchForm() {
     const methods = useForm();
     const dispatch = useDispatch();
-    const switchDevice: any = useSelector(
-        (state: any) => state.switch.singleSwitch
-    );
+    const switchDevice = useSelector((state: any) => state.switch.singleSwitch);
     let { id } = useParams<{ id: string }>();
     let switchData: any = { general: {}, formfactor: {}, powerconsumer: {} };
     let history = useHistory();
+    const isEdit = window.location.href.includes('edit');
+
+    const mainPage = () => {
+        history.push('/switch');
+    };
 
     useEffect(() => {
-        if (id) dispatch(fetchSwitch(id));
+        let temp;
+        if (id) temp = dispatch(fetchSwitch(id));
+        console.log(temp);
     }, [dispatch, id]);
+
+    console.log(switchDevice);
 
     const onSubmit = async (data: any) => {
         switchData = {
-            fullName: data.fullName,
-            emailAddress: data.emailAddress,
-            companyNumber: data.companyNumber,
-            personalNumber: data.personalNumber,
-            description: data.description,
+            vlan: data.vlan,
+            role: data.role,
+            spanningtree: data.spanningtree,
             general: {
                 title: data.generalTitle,
                 purpose: data.purpose,
@@ -58,15 +64,26 @@ function WorkerForm() {
                 watt: data.watt,
                 ampere: data.ampere,
                 description: data.powerConsumerDescription
+            },
+            hostaddress: {
+                address: data.address,
+                networkId: data.network,
+                description: data.hostAddressDescription
             }
         };
-        if (window.location.href.includes('edit')) {
+        if (isEdit) {
             switchData['id'] = id;
+            switchData.general.id = switchDevice.data.generalId;
+            switchData.formfactor.id = switchDevice.data.formFactorId;
+            switchData.powerconsumer.id = switchDevice.data.powerConsumerId;
+            switchData.hostaddress.id = switchDevice.data.hostAddress.id
+
             await dispatch(updateSwitch(switchData));
         } else {
             await dispatch(createSwitch(switchData));
         }
-        history.push('/people');
+
+        mainPage();
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -76,8 +93,7 @@ function WorkerForm() {
     return (
         <FormStyle.FormContainer>
             <FormStyle.InfoRow>
-                <FormStyle.FormName>Create a new switchData</FormStyle.FormName>
-                <FormStyle.LinkName>Test</FormStyle.LinkName>
+                <FormStyle.FormName>Create a new switch</FormStyle.FormName>
             </FormStyle.InfoRow>
             <FormStyle.FormsContainer>
                 <FormProvider {...methods}>
@@ -85,75 +101,75 @@ function WorkerForm() {
                         onKeyDown={(e) => checkKeyDown(e)}
                         autoComplete='off'
                         onSubmit={methods.handleSubmit(onSubmit)}>
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             switchDevice.data.general && (
-                                <General
-                                    id={'General'}
-                                    general={switchDevice.data.general}
-                                />
+                                <General general={switchDevice.data?.general} />
                             )
                         ) : (
-                            <General id={'General'} />
+                            <General />
                         )}
 
-                        {window.location.href.includes('edit') ? (
-                            switchData.data.general && (
+                        {isEdit ? (
+                            switchDevice.data.powerConsumer && (
                                 <PowerConsumerForm
-                                    id={'PowerConsumer'}
-                                    powerConsumer={switchData.data.general}
+                                    powerConsumer={
+                                        switchDevice.data.powerConsumer
+                                    }
                                 />
                             )
                         ) : (
-                            <PowerConsumerForm id={'PowerConsumer'} />
+                            <PowerConsumerForm />
                         )}
 
-                        {window.location.href.includes('edit') ? (
-                            switchData.data.general && (
+                        {isEdit ? (
+                            switchDevice.data.formFactor && (
                                 <FormFactor
-                                    id={'FormFactor'}
-                                    formFactor={switchData.data.general}
+                                    formFactor={switchDevice.data.formFactor}
                                 />
                             )
                         ) : (
-                            <FormFactor id={'FormFactor'} />
+                            <FormFactor />
                         )}
 
-                        <FormStyle.Container id={'Person'}>
-                            {switchDevice.data &&
-                                switchDevice.status === 'completed' && (
-                                    <FormStyle.Column>
-                                        <FormStyle.ComponentName>
-                                            Vlan
-                                        </FormStyle.ComponentName>
-                                        <FormStyle.Label>
-                                            Full name
-                                        </FormStyle.Label>
-                                        <FormStyle.Input
-                                            {...methods.register('vlan')}
-                                            defaultValue={
-                                                switchDevice.data.vlan
-                                            }
-                                        />
-                                        <FormStyle.Label>Role</FormStyle.Label>
-                                        <FormStyle.Input
-                                            {...methods.register('role')}
-                                            defaultValue={
-                                                switchDevice.data.role
-                                            }
-                                        />
-                                        <FormStyle.Label>
-                                            Spanning tree
-                                        </FormStyle.Label>
-                                        <FormStyle.Input
-                                            {...methods.register(
-                                                'spanningTree'
-                                            )}
-                                            defaultValue={
-                                                switchDevice.data.spanningTree
-                                            }
-                                        />
-                                    </FormStyle.Column>
-                                )}
+                        {isEdit ? (
+                            switchDevice.data.hostAddress && (
+                                <HostAddress
+                                    props={switchDevice.data.hostAddress}
+                                />
+                            )
+                        ) : (
+                            <HostAddress />
+                        )}
+
+                        <FormStyle.Container id={'Switch'}>
+                            {((switchDevice.data &&
+                                switchDevice.status === 'completed') ||
+                                !window.location.href.includes('edit')) && (
+                                <FormStyle.Column>
+                                    <FormStyle.ComponentName>
+                                        Switch
+                                    </FormStyle.ComponentName>
+                                    <FormStyle.Label>Vlan</FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('vlan')}
+                                        defaultValue={switchDevice.data.vlan}
+                                    />
+                                    <FormStyle.Label>Role</FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('role')}
+                                        defaultValue={switchDevice.data.role}
+                                    />
+                                    <FormStyle.Label>
+                                        Spanning tree
+                                    </FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('spanningTree')}
+                                        defaultValue={
+                                            switchDevice.data.spanningTree
+                                        }
+                                    />
+                                </FormStyle.Column>
+                            )}
                         </FormStyle.Container>
 
                         <FormStyle.FormSpacingButtons>
@@ -163,7 +179,9 @@ function WorkerForm() {
                                 type='submit'>
                                 Submit
                             </FormStyle.TableConfirmationButton>
-                            <FormStyle.TableConfirmationButton primary={''}>
+                            <FormStyle.TableConfirmationButton
+                                onClick={mainPage}
+                                primary={''}>
                                 Cancel
                             </FormStyle.TableConfirmationButton>
                         </FormStyle.FormSpacingButtons>
@@ -177,7 +195,7 @@ function WorkerForm() {
                         offset={-450}>
                         {scrolIds.map((item, index) => (
                             <FormStyle.SpyLi key={index}>
-                                <FormStyle.SpyA href={`'#'${item}'`}>
+                                <FormStyle.SpyA href={`#${item}`}>
                                     {item}
                                 </FormStyle.SpyA>
                             </FormStyle.SpyLi>
@@ -189,4 +207,4 @@ function WorkerForm() {
     );
 }
 
-export default WorkerForm;
+export default SwitchForm;

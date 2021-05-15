@@ -14,10 +14,12 @@ function PrinterIndex() {
 
     return (
         <TableContainer
+            fetchData={fetchPrinters}
             tableList={printerList.data}
             tableHeader={Header}
             tableLinks={Links}
-            tableName={'people'}
+            tableName={'Printers'}
+            buttonName={'printer'}
         />
     );
 }

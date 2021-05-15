@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import { General } from '../../common/generalComponent/general';
 import { Memory } from '../../common/memoryComponent/memory';
-import { CPU } from '../../common/cpuComponent/cpu';
+import { CPUForm } from '../../common/cpuComponent/cpu';
 import { PowerConsumerForm } from '../../common/powerConsumerComponent/PowerConsumer';
 import * as FormStyle from '../../common/Styles/form.style';
 import Scrollspy from 'react-scrollspy';
@@ -12,6 +12,7 @@ import 'react-quill/dist/quill.snow.css';
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { scrollIds } from './clientPcData';
+import { HostAddress } from '../../common/hostAddress/hostAddress';
 
 const ClientForm = () => {
     const methods = useForm();
@@ -28,20 +29,21 @@ const ClientForm = () => {
         desktop: {},
         powerconsumer: {}
     };
+    const isEdit = window.location.href.includes('edit');
 
     useEffect(() => {
         if (id) dispatch(fetchClient(id));
-        console.log(clientPc);
     }, [dispatch, id]);
+
+    const mainPage = () => {
+        history.push('/client');
+    }
+
+    console.log(clientPc.data)
 
     const onSubmit = async (data: any) => {
         client = {
-            // generalid: clientPc.data.generalId,
-            // memoryid: clientPc.data.memoryId,
-            // cpuid: clientPc.data.cpuId,
-            // powerconsumerid: clientPc.data.powerConsumerId,
             general: {
-                id: clientPc.data.generalId,
                 title: data.generalTitle,
                 purpose: data.purpose,
                 status: data.status,
@@ -49,7 +51,6 @@ const ClientForm = () => {
                 description: data.generalDescription
             },
             memory: {
-                id: clientPc.data.memoryId,
                 title: data.memoryTitle,
                 manufacturer: data.memoryManufacturer,
                 type: data.memoryType,
@@ -58,7 +59,6 @@ const ClientForm = () => {
                 description: data.memoryDescription
             },
             cpu: {
-                id: clientPc.data.cpuId,
                 title: data.title,
                 manufacturer: data.cpuManufacturer,
                 cpucores: data.cpuCores,
@@ -68,25 +68,35 @@ const ClientForm = () => {
                 description: data.cpuDescription
             },
             powerconsumer: {
-                id: clientPc.data.powerConsumerId,
-                title: data.title,
+                title: data.powerConsumerTitle,
                 manufacturer: data.powerConsumerManufacturer,
                 powermodel: data.powermodel,
                 volt: data.volt,
                 watt: data.watt,
                 ampere: data.ampere,
                 description: data.powerConsumerDescription
+            },
+            hostaddress: {
+                address: data.address,
+                networkId: data.network,
+                description: data.hostAddressDescription
             }
         };
-        console.log(client)
-        if (window.location.href.includes('edit')) {
+        console.log(client);
+        // console.log(clientPc);
+        if (isEdit) {
             client['id'] = parseInt(id);
-            console.log(client);
+            client.general.id = clientPc.data.generalId;
+            client.memory.id = clientPc.data.memoryId;
+            client.cpu.id = clientPc.data.cpuId;
+            client.powerconsumer.id = clientPc.data.powerConsumerId;
+            client.hostaddress.id = clientPc.data.hostAddress.id;
+
             await dispatch(updateClient(client));
         } else {
             await dispatch(createClient(client));
         }
-        history.push('/client');
+        mainPage()
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -97,7 +107,6 @@ const ClientForm = () => {
         <FormStyle.FormContainer>
             <FormStyle.InfoRow>
                 <FormStyle.FormName>Create a new client</FormStyle.FormName>
-                <FormStyle.LinkName>Test</FormStyle.LinkName>
             </FormStyle.InfoRow>
             <FormStyle.FormsContainer>
                 <FormProvider {...methods}>
@@ -105,45 +114,48 @@ const ClientForm = () => {
                         onKeyDown={(e) => checkKeyDown(e)}
                         autoComplete='off'
                         onSubmit={methods.handleSubmit(onSubmit)}>
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             clientPc.data.general && (
-                                <General
-                                    id={'General'}
-                                    general={clientPc.data.general}
-                                />
+                                <General general={clientPc.data.general} />
                             )
                         ) : (
-                            <General id={'General'} />
+                            <General />
                         )}
 
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             clientPc.data.memory && (
-                                <Memory
-                                    id={'Memory'}
-                                    memory={clientPc.data.memory}
-                                />
+                                <Memory memory={clientPc.data.memory} />
                             )
                         ) : (
-                            <Memory id={'Memory'} />
+                            <Memory />
                         )}
 
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             clientPc.data.cpu && (
-                                <CPU id={'CPU'} CPU={clientPc.data.cpu} />
+                                <CPUForm CPU={clientPc.data.cpu} />
                             )
                         ) : (
-                            <CPU id={'CPU'} />
+                            <CPUForm />
                         )}
 
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             clientPc.data.powerConsumer && (
                                 <PowerConsumerForm
-                                    id={'PowerConsumer'}
                                     powerConsumer={clientPc.data.powerConsumer}
                                 />
                             )
                         ) : (
-                            <PowerConsumerForm id={'PowerConsumer'} />
+                            <PowerConsumerForm />
+                        )}
+
+                        {isEdit ? (
+                            clientPc.data.hostAddress && (
+                                <HostAddress
+                                    props={clientPc.data.hostAddress}
+                                />
+                            )
+                        ) : (
+                            <HostAddress />
                         )}
 
                         <FormStyle.FormSpacingButtons>
@@ -153,7 +165,11 @@ const ClientForm = () => {
                                 type='submit'>
                                 Submit
                             </FormStyle.TableConfirmationButton>
-                            <FormStyle.TableConfirmationButton type='button' primary={''}>
+                            <FormStyle.TableConfirmationButton
+                                type='button'
+                                primary={''}
+                                onClick={mainPage}
+                                >
                                 Cancel
                             </FormStyle.TableConfirmationButton>
                         </FormStyle.FormSpacingButtons>

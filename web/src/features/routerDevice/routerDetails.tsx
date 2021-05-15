@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 
 const RouterDetails = () => {
     const dispatch = useDispatch();
-    const worker = useSelector((state: any) => state.worker.workerList);
+    const router = useSelector((state: any) => state.router.singleRouter);
     const {id} = useParams<{id:string}>();
 
     useEffect(() => {
@@ -22,23 +22,28 @@ const RouterDetails = () => {
         <div className='container'>
             <Tabs>
                 <TabPane name='General' key='1'>
-                    {worker.status === 'completed' && (
-                        <GeneralTab {...worker.data.general} />
+                    {router.status === 'completed' && (
+                        <GeneralTab {...router.data.general} />
                     )}
                 </TabPane>
-                <TabPane name='Forma factor' key='2'>
-                    {worker.status === 'completed' && (
-                        <PowerConsumerTab {...worker.data.powerconsumer} />
+                <TabPane name='Router' key='2'>
+                    {router.status === 'completed' && (
+                        <RouterTab {...router.data} />
                     )}
                 </TabPane>
-                <TabPane name='Forma factor' key='2'>
-                    {worker.status === 'completed' && (
-                        <RouterTab {...worker.data} />
+                <TabPane name='Forma factor' key='3'>
+                    {router.status === 'completed' && (
+                        <PowerConsumerTab {...router.data.powerconsumer} />
                     )}
                 </TabPane>
-                <TabPane name='Power consumer' key='2'>
-                    {worker.status === 'completed' && (
-                        <FormFactorTab {...worker.data.formfactor} />
+                <TabPane name='Forma factor' key='4'>
+                    {router.status === 'completed' && (
+                        <RouterTab {...router.data} />
+                    )}
+                </TabPane>
+                <TabPane name='Power consumer' key='5'>
+                    {router.status === 'completed' && (
+                        <FormFactorTab {...router.data.formfactor} />
                     )}
                 </TabPane>
             </Tabs>

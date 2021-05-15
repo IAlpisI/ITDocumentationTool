@@ -20,7 +20,6 @@ export const Header = [
 export const Links =
 {
     editLink: 'server/edit/',
-    deleteLink: 'server/delete/',
     viewLink: 'server/detail/',
     formLink: 'server/form',
     index: 'server'

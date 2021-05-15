@@ -3,6 +3,8 @@ import * as Module from '../Styles/form.style';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { LicenseKeyProps } from '../Tabs/licenseTab';
+import ReactDatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 export const ConnectForm = ({ children }: any) => {
     const methods = useFormContext();
@@ -11,20 +13,21 @@ export const ConnectForm = ({ children }: any) => {
 };
 
 type Props = {
-    id?: any;
     LicenseKey?: LicenseKeyProps;
 };
 
 export const LicenseKey = (props: Props) => {
-    const { id, LicenseKey } = props;
+    const { LicenseKey } = props;
 
     return (
         <ConnectForm>
             {({ register, control }: any) => {
                 return (
-                    <Module.Container id={id}>
+                    <Module.Container id={'License'}>
                         <Module.Column>
-                            <Module.ComponentName>License key</Module.ComponentName>
+                            <Module.ComponentName>
+                                License key
+                            </Module.ComponentName>
                             <Module.Label>Amount</Module.Label>
                             <Module.Input
                                 {...register('amount')}
@@ -41,19 +44,32 @@ export const LicenseKey = (props: Props) => {
                                 defaultValue={LicenseKey?.serial}
                             />
                             <Module.Label>Expire date</Module.Label>
-                            <Module.Input
-                                {...register('expiredate')}
+                            {/* <Module.Input
+                                {...register('expireDate')}
                                 defaultValue={LicenseKey?.expireDate}
+                            /> */}
+                            <Controller
+                                control={control}
+                                defaultValue={new Date()}
+                                name='expireDate'
+                                render={({
+                                    field: { onChange, value }
+                                }: any) => (
+                                    <ReactDatePicker
+                                        onChange={(e) => onChange(e)}
+                                        selected={value}
+                                    />
+                                )}
                             />
                             <Module.Label>Price per unit</Module.Label>
                             <Module.Input
-                                {...register('priceperunit')}
+                                {...register('pricePerUnit')}
                                 defaultValue={LicenseKey?.pricePerUnit}
                             />
 
                             <Module.Label>Description</Module.Label>
                             <Controller
-                                name='licensekeydescription'
+                                name='licenseDescription'
                                 control={control}
                                 defaultValue={LicenseKey?.description}
                                 render={({

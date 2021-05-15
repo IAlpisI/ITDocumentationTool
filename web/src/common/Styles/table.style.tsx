@@ -52,13 +52,16 @@ export const TableName = styled.div`
     margin: 4px;
 `
 export const TableContainer = styled.div`
+    background: ${props => props.theme.colors.white};
+    padding: 30px;
     width: 100%;
+    box-shadow: 0 0 25px 0 rgba(154,161,171,0.15);
 `
 
-export const Container = styled.div`
+export const Container = styled.div<{padding?: string}>`
     background-color: #f8f9fd;
     width: 100%;
-    padding: 20px 50px;
+    padding:${props => props.padding ? props.padding : '20px 50px'} ;
     display: flex;
     flex-flow: row wrap;
 `

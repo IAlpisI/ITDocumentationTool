@@ -8,10 +8,6 @@ export const Header = [
         headerName: 'Type'
     },
     {
-        entityColumn: 'colored',
-        headerName: 'Colored'
-    },
-    {
         entityColumn: 'paperformat',
         headerName: 'Paper format'
     },
@@ -24,10 +20,10 @@ export const Header = [
 export const Links =
 {
     editLink: 'printer/edit/',
-    deleteLink: 'printer/delete/',
+    deleteLink: 'printer',
     viewLink: 'printer/detail/',
     formLink: 'printer/form',
     index: 'printer'
 }
 
-export const scrolIds = ['General', 'Save']
+export const scrolIds = ['General', 'HostAddress', 'Printer', 'Save']

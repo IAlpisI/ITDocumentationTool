@@ -11,18 +11,19 @@ export const ConnectForm = ({ children }: any) => {
 };
 
 type Props = {
-    id: any;
     memory?: MemoryProps;
 };
 
 export const Memory = (props: Props) => {
-    const { id, memory } = props;
+    const { memory } = props;
 
     return (
         <ConnectForm>
-            {({ register, control }: any) => {
+            {({ register, control, reset }: any) => {
+                // reset(memory)
+
                 return (
-                    <Module.Container id={id}>
+                    <Module.Container id={'Memory'}>
                         <Module.Column>
                             <Module.ComponentName>Memory</Module.ComponentName>
                             <Module.Label>Title</Module.Label>

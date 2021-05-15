@@ -11,18 +11,17 @@ export const ConnectForm = ({ children }: any) => {
 };
 
 type Props = {
-    id: any;
     desktop?: DesktopProps;
 };
 
 export const Desktop = (props: Props) => {
-    const { id, desktop } = props;
+    const { desktop } = props;
 
     return (
         <ConnectForm>
             {({ register, control }: any) => {
                 return (
-                    <Module.Container id={id}>
+                    <Module.Container id={'Desktop'}>
                         <Module.Column>
                             <Module.ComponentName>Desktop</Module.ComponentName>
                             <Module.Label>Type</Module.Label>

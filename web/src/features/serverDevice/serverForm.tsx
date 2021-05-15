@@ -10,6 +10,7 @@ import 'react-quill/dist/quill.snow.css';
 import React from 'react';
 import { scrolIds } from './serverData';
 import { useHistory, useParams } from 'react-router-dom';
+import { HostAddress } from '../../common/hostAddress/hostAddress';
 
 function ServerForm() {
     const methods = useForm();
@@ -21,17 +22,18 @@ function ServerForm() {
     let server: any = { general: {}, formfactor: {} };
     let history = useHistory();
 
+    const isEdit = window.location.href.includes('edit');
+
+    const mainPage = () => {
+        history.push('/server');
+    };
+
     useEffect(() => {
         if (id) dispatch(fetchServer(id));
     }, [dispatch, id]);
 
     const onSubmit = async (data: any) => {
         server = {
-            fullName: data.fullName,
-            emailAddress: data.emailAddress,
-            companyNumber: data.companyNumber,
-            personalNumber: data.personalNumber,
-            description: data.description,
             general: {
                 title: data.generalTitle,
                 purpose: data.purpose,
@@ -48,15 +50,23 @@ function ServerForm() {
                 weight: data.weight,
                 weightmeasure: data.weightMeasure,
                 description: data.fomrFactorDescription
+            },
+            hostaddress: {
+                address: data.address,
+                networkId: data.network,
+                description: data.hostAddressDescription
             }
         };
-        if (window.location.href.includes('edit')) {
+        if (isEdit) {
             server['id'] = id;
+            server.hostaddress = serverDevice.data.hostAddress.id;
             await dispatch(updateServer(server));
         } else {
+            console.log(server);
             await dispatch(createServer(server));
         }
-        history.push('/people');
+
+        mainPage();
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -66,8 +76,7 @@ function ServerForm() {
     return (
         <FormStyle.FormContainer>
             <FormStyle.InfoRow>
-                <FormStyle.FormName>Create a new person</FormStyle.FormName>
-                <FormStyle.LinkName>Test</FormStyle.LinkName>
+                <FormStyle.FormName>Create a new server</FormStyle.FormName>
             </FormStyle.InfoRow>
             <FormStyle.FormsContainer>
                 <FormProvider {...methods}>
@@ -75,26 +84,32 @@ function ServerForm() {
                         onKeyDown={(e) => checkKeyDown(e)}
                         autoComplete='off'
                         onSubmit={methods.handleSubmit(onSubmit)}>
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             serverDevice.data.general && (
-                                <General
-                                    id={'General'}
-                                    general={serverDevice.data.general}
-                                />
+                                <General general={serverDevice.data.general} />
                             )
                         ) : (
-                            <General id={'General'} />
+                            <General />
                         )}
 
-                        {window.location.href.includes('edit') ? (
+                        {isEdit ? (
                             serverDevice.data.formfactor && (
                                 <FormFactor
-                                    id={'FormFactor'}
                                     formFactor={serverDevice.data.formfactor}
                                 />
                             )
                         ) : (
-                            <FormFactor id={'FormFactor'} />
+                            <FormFactor />
+                        )}
+
+                        {isEdit ? (
+                            serverDevice.data.hostAddress && (
+                                <HostAddress
+                                    props={serverDevice.data.hostAddress}
+                                />
+                            )
+                        ) : (
+                            <HostAddress />
                         )}
 
                         <FormStyle.FormSpacingButtons>
@@ -104,7 +119,9 @@ function ServerForm() {
                                 type='submit'>
                                 Submit
                             </FormStyle.TableConfirmationButton>
-                            <FormStyle.TableConfirmationButton primary={''}>
+                            <FormStyle.TableConfirmationButton
+                                onClick={mainPage}
+                                primary={''}>
                                 Cancel
                             </FormStyle.TableConfirmationButton>
                         </FormStyle.FormSpacingButtons>
@@ -118,7 +135,7 @@ function ServerForm() {
                         offset={-450}>
                         {scrolIds.map((item, index) => (
                             <FormStyle.SpyLi key={index}>
-                                <FormStyle.SpyA href={`'#'${item}'`}>
+                                <FormStyle.SpyA href={`#${item}`}>
                                     {item}
                                 </FormStyle.SpyA>
                             </FormStyle.SpyLi>

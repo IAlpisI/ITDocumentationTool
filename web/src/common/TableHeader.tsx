@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     Checkbox,
     createStyles,
@@ -18,7 +17,8 @@ export default function TableHeader(props: any) {
         numSelected,
         rowCount,
         onSelectAllClick,
-        headerData
+        headerData,
+        showPagination=true,
     } = props;
 
     const createSortHandler = (property: any) => (event: any) => {
@@ -44,20 +44,21 @@ export default function TableHeader(props: any) {
         <TableHead>
             <TableRow>
                 <StyledTableCell padding='checkbox'>
-                    <Checkbox
+                    {showPagination && <Checkbox
                         indeterminate={
                             numSelected > 0 && numSelected < rowCount
                         }
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
                         inputProps={{ 'aria-label': 'select all desserts' }}
-                    />
+                    />}
                 </StyledTableCell>
                 {headerData.map((x: any) => {
                     const { entityColumn, headerName } = x;
 
                     return entityColumn === 'action' ? (
                         <StyledTableCell
+                            align='center'
                             key={entityColumn}
                             sortDirection={
                                 valueToOrderBy === entityColumn

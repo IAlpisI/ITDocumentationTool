@@ -1,8 +1,10 @@
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Nav = styled.div`
     background: ${(props) => props.theme.colors.white};
-    height: 55px;
+    min-height: 55px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -22,7 +24,7 @@ const SearchBar = styled.input`
     outline: none;
     width: 200px;
     padding: 10px;
-    background: #f1f3fa;   
+    background: #f1f3fa;
 `;
 
 const SearchButton = styled.button`
@@ -33,10 +35,10 @@ const SearchButton = styled.button`
     font-size: 15px;
     border: none;
     cursor: pointer;
-    
 `;
 
 const UserInfoWrapper = styled.div`
+    position: relative;
     display: flex;
     flex-direction: column;
     margin-right: 100px;
@@ -50,20 +52,77 @@ const UserRole = styled.div`
     font-size: 10px;
 `;
 
+const DropDown = styled.div`
+    position: absolute;
+    top: 40px;
+    right: -30px;
+    border: 1px solid ${(props) => props.theme.colors.grey1};
+    z-index: 999;
+`;
+
+const DropDownMenu = styled.div`
+    padding: 5px;
+    height: 110px;
+    width: 150px;
+    background: ${(props) => props.theme.colors.white};
+`;
+
+const DropDownItem = styled.div`
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    margin: 5px;
+    z-index: 1000;
+
+    &:hover {
+        background: ${(props) => props.theme.colors.violet2};
+        color: ${(props) => props.theme.colors.white};
+    }
+`;
+
 function Navbar() {
+    let history = useHistory();
+    const [hoverMenu, setHoverMenu] = useState<boolean>(false);
+
+    const logout = () => {
+        localStorage.removeItem('name');
+        localStorage.removeItem('role');
+
+        history.push('/login');
+    };
+
+    const toggleHoverMenu = (state: boolean) => {
+        setHoverMenu((hoverMenu) => state);
+    };
+
     return (
         <Nav>
             <Wrapper>
                 <SearchBar placeholder='Search...' />
-                <SearchButton>
-                    {/* <SearchIcon /> */}
-                    Search
-                </SearchButton>
+                <SearchButton>Search</SearchButton>
             </Wrapper>
             <UserInfoWrapper>
-                {/* <UserName>{localStorage.getItem('name') || 'nieko'}</UserName> */}
-                <UserName>Tomas</UserName>
-                <UserRole>{localStorage.getItem('role') || 'nieko'}</UserRole>
+                <UserName
+                    onMouseOver={() => {
+                        toggleHoverMenu(true);
+                    }}>
+                    {localStorage.getItem('name') || ''}
+                </UserName>
+                <UserRole>{localStorage.getItem('role') || ''}</UserRole>
+                <DropDown
+                    onMouseLeave={() => {
+                        toggleHoverMenu(false);
+                    }}>
+                    {hoverMenu && (
+                        <DropDownMenu>
+                            <DropDownItem>Create users</DropDownItem>
+                            <DropDownItem onClick={logout}>Logout</DropDownItem>
+                        </DropDownMenu>
+                    )}
+                </DropDown>
             </UserInfoWrapper>
         </Nav>
     );

@@ -47,7 +47,6 @@ const ApplicationForm = () => {
         console.log(application)
         if (isEdit) {
             application['id'] = parseInt(id);
-            console.log(application);
             await dispatch(updateApplication(application));
         } else {
             await dispatch(createApplication(application));
@@ -75,15 +74,14 @@ const ApplicationForm = () => {
                         {isEdit? (
                             software.data.general && (
                                 <General
-                                    id={'General'}
                                     general={software.data.general}
                                 />
                             ) 
                         ) : (
-                            <General id={'General'} />
+                            <General />
                         )}
 
-                        <FormStyle.Container id={'Person'}>
+                        <FormStyle.Container id={'Specification'}>
                             {((software.data && software.status === 'completed') ||
                                 !isEdit) && (
                                 <FormStyle.Column>

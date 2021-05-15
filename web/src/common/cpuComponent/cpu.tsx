@@ -11,18 +11,17 @@ export const ConnectForm = ({ children }: any) => {
 };
 
 type Props = {
-    id: any;
     CPU?: CpuProps;
 };
 
-export const CPU = (props: Props) => {
-    const { id, CPU } = props;
+export const CPUForm = (props: Props) => {
+    const { CPU } = props;
 
     return (
         <ConnectForm>
             {({ register, control }: any) => {
                 return (
-                    <Module.Container id={id}>
+                    <Module.Container id={'CPU'}>
                         <Module.Column>
                             <Module.ComponentName>CPU</Module.ComponentName>
                             <Module.Label>Title</Module.Label>
@@ -39,7 +38,7 @@ export const CPU = (props: Props) => {
                             <Module.Input
                                 type='number'
                                 {...register('cpuCores')}
-                                defaultValue={CPU?.cpuCores}
+                                defaultValue={CPU?.cpuCores || 0}
                             />
                             <Module.Label>Type</Module.Label>
                             <Module.Input
@@ -50,7 +49,7 @@ export const CPU = (props: Props) => {
                             <Module.Input
                                 type='number'
                                 {...register('cpuFrequency')}
-                                defaultValue={CPU?.cpuFrequency}
+                                defaultValue={CPU?.cpuFrequency || 0}
                             />
                             <Module.Label>CPU frequency type</Module.Label>
                             <Module.Input

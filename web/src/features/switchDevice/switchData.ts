@@ -5,7 +5,7 @@ export const Header = [
     },
     {
         entityColumn: 'vlan',
-        headerName: 'vlan'
+        headerName: 'Vlan'
     },
     {
         entityColumn: 'role',
@@ -23,11 +23,11 @@ export const Header = [
 
 export const Links =
 {
-    editLink: 'switchdevice/edit/',
-    deleteLink: 'switchdevice/delete/',
-    viewLink: 'switchdevice/detail/',
-    formLink: 'switchdevice/form',
-    index: 'switchdevice'
+    editLink: 'switch/edit/',
+    deleteLink: 'switchdevice',
+    viewLink: 'switch/detail/',
+    formLink: 'switch/form',
+    index: 'switch'
 }
 
-export const scrolIds = ['General', 'FormFactor', 'PowerConsumer', 'Save']
+export const scrolIds = ['General', 'PowerConsumer', 'FormFactor', 'HostAddress', 'Switch',  'Save']

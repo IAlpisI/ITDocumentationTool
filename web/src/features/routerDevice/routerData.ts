@@ -1,20 +1,18 @@
 export const routerHeader = [
     {
+        entityColumn: 'title',
+        headerName: 'Title'
+    },
+    {
+        entityColumn: 'gateawayAddress',
+        headerName: 'Gateaway address'
+    },
+    {
         entityColumn: 'routingProtocol',
         headerName: 'Routing protocol'
     },
-    {
-        entityColumn: 'status',
-        headerName: 'Status'
-    },
-    {
-        entityColumn: 'purpose',
-        headerName: 'Purpose'
-    },
-    {
-        entityColumn: 'spanningTree',
-        headerName: 'Spannign tree'
-    },
+
+
     {
         entityColumn: 'action',
         headerName: 'Action'
@@ -23,10 +21,10 @@ export const routerHeader = [
 
 export const routerLinks =
 {
-    editLink: 'routerdevice/edit/',
-    deleteLink: 'routerdevice/delete/',
-    viewLink: 'routerdevice/detail/',
-    formLink: 'routerdevice/form'
+    editLink: 'router/edit/',
+    deleteLink: 'routerdevice',
+    viewLink: 'router/detail/',
+    formLink: 'router/form'
 }
 
-export const scrolIds = ['General', 'FormFactor', 'PowerConsumer', 'Save']
+export const scrolIds = ['General', 'PowerConsumer', 'FormFactor', 'HostAddress', 'Router', 'Save']

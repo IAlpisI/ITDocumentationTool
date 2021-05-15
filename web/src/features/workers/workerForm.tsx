@@ -40,6 +40,7 @@ function WorkerForm() {
         };
         if (window.location.href.includes('edit')) {
             person['id'] = id;
+            person.general.id = worker.data.generalId;
             await dispatch(updateWorker(person));
         } else {
             await dispatch(createWorker(person));
@@ -55,7 +56,6 @@ function WorkerForm() {
         <FormStyle.FormContainer>
             <FormStyle.InfoRow>
                 <FormStyle.FormName>Create a new person</FormStyle.FormName>
-                <FormStyle.LinkName>Test</FormStyle.LinkName>
             </FormStyle.InfoRow>
             <FormStyle.FormsContainer>
                 <FormProvider {...methods}>
@@ -65,13 +65,10 @@ function WorkerForm() {
                         onSubmit={methods.handleSubmit(onSubmit)}>
                         {window.location.href.includes('edit') ? (
                             worker.data.general && (
-                                <General
-                                    id={'General'}
-                                    general={worker.data.general}
-                                />
+                                <General general={worker.data.general} />
                             )
                         ) : (
-                            <General id={'General'} />
+                            <General />
                         )}
 
                         <FormStyle.Container id={'Person'}>

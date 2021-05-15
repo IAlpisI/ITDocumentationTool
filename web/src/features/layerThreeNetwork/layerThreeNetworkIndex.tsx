@@ -17,8 +17,9 @@ function LayerThreeNetworkIndex() {
             tableList={layerThreeNetwork.data}
             tableHeader={Header}
             tableLinks={Links}
-            tableName={'networks'}
+            tableName={'Networks'}
             buttonName={'network'}
+            tableExportButtons={false}
         />
     );
 }

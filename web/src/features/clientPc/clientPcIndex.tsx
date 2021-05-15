@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchClients } from './clientPcSlice';
-import { workerHeader, workerLinks } from './clientPcData';
+import { Header, Links } from './clientPcData';
 import TableContainer from '../../common/TableContainer';
 
 function ClientIndex() {
@@ -14,9 +14,10 @@ function ClientIndex() {
 
     return (
         <TableContainer
+            fetchData={fetchClients}
             tableList={clientList.data}
-            tableHeader={workerHeader}
-            tableLinks={workerLinks}
+            tableHeader={Header}
+            tableLinks={Links}
             tableName={'Clients'}
             buttonName={'client'}
         />

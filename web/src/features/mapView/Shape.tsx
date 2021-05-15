@@ -1,43 +1,74 @@
-// Shape.js
-import { SortTwoTone } from '@material-ui/icons'
-import React, { useCallback, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import store, { useAppDispatch } from '../../app/store'
-import Computer from './Computer'
+import { useCallback } from 'react';
+import store from '../../app/store';
+import SelectSVG from './selectSVg';
 
-import { SHAPE_TYPES } from './constants'
-import Rectangle from './Rectangle'
+import { SHAPE_TYPES } from './constants';
+import Wall from './wall';
 
 export function Shape({ shape }: any, selector: any) {
-  // const isSelectedSelector = useCallback(() => {
-  //   const values = store.getState().canvas
-  //   values.selected === shape.id
-  // }, [shape])
+    let isSelected = false;
 
-  let isSelected = false //isSelectedSelector
+    const getSelector = useCallback(
+        () => store.getState().canvas.selected === shape.id,
+        []
+    );
 
-  // const testing = store.subscribe(isSelectedSelector)
+    isSelected = getSelector();
 
-  // console.log(testing)
+    switch (shape.type) {
+        case SHAPE_TYPES.COMPUTER:
+            return (
+                <SelectSVG
+                    {...shape}
+                    isSelected={isSelected}
+                    type={SHAPE_TYPES.COMPUTER}
+                />
+            );
+        case SHAPE_TYPES.PRINTER:
+            return (
+                <SelectSVG
+                    {...shape}
+                    isSelected={isSelected}
+                    type={SHAPE_TYPES.PRINTER}
+                />
+            );
+        case SHAPE_TYPES.SWITCH:
+            return (
+                <SelectSVG
+                    {...shape}
+                    isSelected={isSelected}
+                    type={SHAPE_TYPES.SWITCH}
+                />
+            );
+        case SHAPE_TYPES.ROUTER:
+            return (
+                <SelectSVG
+                    {...shape}
+                    isSelected={isSelected}
+                    type={SHAPE_TYPES.ROUTER}
+                />
+            );
+        case SHAPE_TYPES.DOORS:
+            return (
+                <SelectSVG
+                    {...shape}
+                    isSelected={isSelected}
+                    type={SHAPE_TYPES.DOORS}
+                />
+            );
+        case SHAPE_TYPES.WINDOW:
+            return (
+                <SelectSVG
+                    {...shape}
+                    isSelected={isSelected}
+                    type={SHAPE_TYPES.WINDOW}
+                />
+            );
+        case SHAPE_TYPES.WALL:
+            return <Wall {...shape} isSelected={isSelected} />;
+        case SHAPE_TYPES.TABLE:
+            return <Wall {...shape} isSelected={isSelected} />;
+    }
 
-  const getSelector = useCallback(() => 
-    store.getState().canvas.selected === shape.id
-  ,[])
-
-  isSelected = getSelector()
-
-  // useEffect(() => {
-  //   console.log("testing state change "+selector)
-  //   console.log(getSelector())
-  // }, [])
-
-  if (shape.type === SHAPE_TYPES.RECT) {
-    return <Rectangle {...shape} isSelected={isSelected} />
-  } 
-  else if(shape.type === SHAPE_TYPES.COMPUTER) {
-    console.log("test computer");
-    return <Computer {...shape} isSelected={isSelected} />
-  }
-
-  return null
+    return null;
 }

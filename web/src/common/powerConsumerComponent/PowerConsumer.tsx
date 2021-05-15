@@ -11,18 +11,17 @@ export const ConnectForm = ({ children }: any) => {
 };
 
 type Props = {
-    id: any;
     powerConsumer?: PowerConsumer;
 };
 
 export const PowerConsumerForm = (props: Props) => {
-    const { id, powerConsumer } = props;
+    const { powerConsumer } = props;
 
     return (
         <ConnectForm>
             {({ register, control }: any) => {
                 return (
-                    <Module.Container id={id}>
+                    <Module.Container id={'PowerConsumer'}>
                         <Module.Column>
                             <Module.ComponentName>Power consumer</Module.ComponentName>
                             <Module.Label>Title</Module.Label>
@@ -45,21 +44,21 @@ export const PowerConsumerForm = (props: Props) => {
                                 type='number'
                                 step={0.1}
                                 {...register('volt')}
-                                defaultValue={powerConsumer?.volt}
+                                defaultValue={powerConsumer?.volt || 0}
                             />
                             <Module.Label>Watt</Module.Label>
                             <Module.Input
                                 type='number'
                                 step={0.1}
                                 {...register('watt')}
-                                defaultValue={powerConsumer?.watt}
+                                defaultValue={powerConsumer?.watt || 0}
                             />
                             <Module.Label>Ampere</Module.Label>
                             <Module.Input
                                 type='number'
                                 step={0.1}
                                 {...register('ampere')}
-                                defaultValue={powerConsumer?.ampere}
+                                defaultValue={powerConsumer?.ampere || 0}
                             />
 
                             <Module.Label>Description</Module.Label>
