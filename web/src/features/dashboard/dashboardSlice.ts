@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import * as api from "../../common/api"
-import { searchRecent, searchDefected, hostAddressUpdate, hostAddressCreate, portCreate, portDelete, portGetOne, portUpdate, hostAddressGetAll } from "../../common/constants"
+import { searchRecent, searchByLicense, searchGetHostAddress, searchDefected, searchByTags, hostAddressUpdate, hostAddressCreate, portCreate, portDelete, portGetOne, portUpdate, hostAddressGetAll } from "../../common/constants"
 
 
 export const fetchSearchResult = createAsyncThunk(
@@ -30,6 +30,39 @@ export const fetchDefectedResult = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             return await api.getAll(searchDefected)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const fetchAllHostAddresses = createAsyncThunk(
+    'hostaddress/fetchall',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await api.getAll(searchGetHostAddress)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const fetchLicenseResult = createAsyncThunk(
+    'searchLicense/fetchall',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await api.getAll(searchByLicense)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const fetchSearchTagResult = createAsyncThunk(
+    'searchTag/fetchall',
+    async (data:any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, searchByTags)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -120,6 +153,16 @@ const initialState = {
         status: {},
         error: {}
     },
+    licenseList: {
+        data: [],
+        status: {},
+        error: {}
+    },
+    searchTag : {
+        data: [],
+        status: {},
+        error: {}
+    },
     defectedList: {
         data: [],
         status: {},
@@ -139,13 +182,23 @@ const initialState = {
         data: [],
         status: {},
         error: {}
-    }
+    },
+    allHostAddressList: {
+        data: [],
+        status: {},
+        error: {}
+    },
+    search: ''
 }
 
 const dashboardSlice = createSlice({
     name: 'dashboard',
     initialState,
-    reducers: {},
+    reducers: {
+        searchWords(state, action) {
+            state.search = action.payload;
+        }
+    },
     extraReducers: builder => {
         builder.addCase(fetchSearchResult.fulfilled, (state, action) => {
             state.recentAddedList = {
@@ -249,6 +302,27 @@ const dashboardSlice = createSlice({
                 error: error,
             }
         })
+        builder.addCase(fetchAllHostAddresses.fulfilled, (state, action) => {
+            state.allHostAddressList = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(fetchAllHostAddresses.pending, (state, _) => {
+            state.allHostAddressList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(fetchAllHostAddresses.rejected, (state, { error }) => {
+            state.allHostAddressList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
         builder.addCase(updateHostAddresses.fulfilled, (state, action) => {
         })
         builder.addCase(updateHostAddresses.pending, (state, _) => {
@@ -282,7 +356,50 @@ const dashboardSlice = createSlice({
                 error: error,
             }
         })
+        builder.addCase(fetchSearchTagResult.fulfilled, (state, action) => {
+            state.searchTag = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(fetchSearchTagResult.pending, (state, _) => {
+            state.searchTag = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(fetchSearchTagResult.rejected, (state, { error }) => {
+            state.searchTag = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(fetchLicenseResult.fulfilled, (state, action) => {
+            state.licenseList = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(fetchLicenseResult.pending, (state, _) => {
+            state.licenseList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(fetchLicenseResult.rejected, (state, { error }) => {
+            state.licenseList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
     }
 })
 
+export const {searchWords} = dashboardSlice.actions;
 export default dashboardSlice.reducer

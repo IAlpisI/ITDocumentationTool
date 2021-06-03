@@ -9,7 +9,7 @@ namespace IToolAPI.DTOs
     public class RouterDeviceDTO
     {
         public int Id { get; set; }
-        public General General { get; set; }
+        public string Title { get; set; }
         public string RoutingProtocol { get; set; }
         public string GatewayAddress { get; set; }
     }

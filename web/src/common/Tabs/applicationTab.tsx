@@ -3,19 +3,19 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import {
     applicationForDevice,
-    licenseGet,
-    fetchApplication,
-    updateApplication,
-    updateLicenseKey,
     fetchApplications,
-    fetchLicense,
-    fetchLicenses
+    clientApplciationModifier,
+    clientLicenseModifier,
+    serverApplciationModifier,
+    serverLicenseModifier,
+    fetchLicensesForApplication,
+    fetchDeviceLicensesForApplication
 } from '../../features/application/applicationSlice';
 import { Button } from '../Styles/common.style';
 import {
     Header,
     Links,
-    HeaderForLicense,
+    LicenseHeader,
     HeaderForApp,
     HeaderForLicenseAdd
 } from '../../features/application/applicationData';
@@ -23,13 +23,11 @@ import TableContainer from '../TableContainer';
 import { useParams } from 'react-router-dom';
 import { DataAcceptWindow } from '../popWindows';
 import ListOfItems from '../listOfItems';
-import { Convert } from '../helpers/filterKeys';
 import * as FormStyle from '../Styles/form.style';
-import * as TabStyle from '../Styles/tabs.style'
+import * as TabStyle from '../Styles/tabs.style';
 
 
-
-const ApplicationTab = () => {
+const ApplicationTab = ({device}:any) => {
     let { id } = useParams<{ id: string }>();
     const dispatch = useDispatch();
     const applicationList = useSelector(
@@ -41,8 +39,8 @@ const ApplicationTab = () => {
     const applicationForDeviceList = useSelector(
         (state: any) => state.application.applicationForDeviceList
     );
-    const singleApplication = useSelector(
-        (state: any) => state.application.singleApplication.data
+    const licenseForDevice = useSelector(
+        (state: any) => state.application.licenseForDevice
     );
 
     const [showLicense, setShowLicense] = useState<{
@@ -54,115 +52,119 @@ const ApplicationTab = () => {
     const [createLicense, setCreateLicense] = useState<boolean>(false);
 
     const getAppForDevice = {
-        deviceName: 'server',
+        deviceName: device,
         deviceId: id
     };
 
-    const getLicenseForDevice = {
+    const licenseForApplication = {
         deviceId: id,
-        deviceName: 'server',
+        deviceName: device,
         applicationId: 1
     };
 
+    const softwareDevice = {
+        softwareId:0,
+        deviceId:id,
+        remove:false
+    }
+
     useEffect(() => {
-        dispatch(applicationForDevice(getAppForDevice));
+        dispatch(applicationForDevice(getAppForDevice))
         dispatch(fetchApplications());
     }, [dispatch]);
 
     const toggleLicense = (id: number) => {
         setShowLicense({ show: true, id });
-        getLicenseForDevice.applicationId = id;
-        dispatch(licenseGet(getLicenseForDevice));
+        licenseForApplication.applicationId = id;
+        dispatch(fetchDeviceLicensesForApplication(licenseForApplication));
     };
 
-    function ignoreAppKeys([key, _]: any) {
-        return key !== 'generalId';
-    }
 
     const toggleShowApp = () => {
         setShowApp((showApp) => !showApp);
     };
 
     const toggleCreteLicense = () => {
-        dispatch(fetchLicenses())
         setCreateLicense((createLicense) => !createLicense);
+        dispatch(fetchLicensesForApplication(showLicense.id));
     };
 
-    const addApplication = async (appId: number) => {
+    const addApplication = async (softwareId: number) => {
         toggleShowApp();
-        const temp: any = await dispatch(fetchApplication(appId));
-        let app = Object.assign({}, temp.payload);
-        app.serverDeviceId = parseInt(id);
-        console.log(app);
-        await dispatch(updateApplication(app));
-        await dispatch(applicationForDevice(getAppForDevice));
+
+        softwareDevice.softwareId = softwareId;
+        softwareDevice.remove = false;
+
+        switch(device){
+            case "server":
+                await dispatch(serverApplciationModifier(softwareDevice));
+                break;
+            case "client":
+                await dispatch(clientApplciationModifier(softwareDevice));
+                break;
+        }
+        await dispatch(applicationForDevice(getAppForDevice))
     };
 
-    const removeApplication = async (appId: number) => {
-        const temp: any = await dispatch(fetchApplication(appId));
-        let app = Object.assign({}, temp.payload);
-        app.serverDeviceId = null;
-        await dispatch(updateApplication(app));
-        await dispatch(fetchApplications());
-        await dispatch(applicationForDevice(getAppForDevice));
+    const removeApplication = async (softwareId: number) => {
+        softwareDevice.softwareId = softwareId;
+        softwareDevice.remove = true;
+
+        switch(device){
+            case "server":
+                await dispatch(serverApplciationModifier(softwareDevice));
+                break;
+            case "client":
+                await dispatch(clientApplciationModifier(softwareDevice));
+                break;
+        }
+        await dispatch(applicationForDevice(getAppForDevice))
     };
 
-    const addLicense = async (licenseId: number) => {
-        // toggleCreteLicense()
-        const temp: any = await dispatch(fetchLicense(licenseId));
-        let app = Object.assign({}, temp.payload);
-        app.serverDeviceId = parseInt(id);
-        console.log(app);
-        await dispatch(updateLicenseKey(app));
-        await dispatch(licenseGet(getLicenseForDevice));
+    const addLicense = async (softwareId: number) => {
+        toggleCreteLicense();
+
+        softwareDevice.softwareId = softwareId;
+        softwareDevice.remove = false;
+
+        switch(device){
+            case "server":
+                await dispatch(serverLicenseModifier(softwareDevice));
+                break;
+            case "client":
+                await dispatch(clientLicenseModifier(softwareDevice));
+                break;
+        }
+        licenseForApplication.applicationId = showLicense.id;
+        await dispatch(fetchDeviceLicensesForApplication(licenseForApplication));
     };
 
-    const removeLicense = async (licenseId: number) => {
-        console.log(licenseId);
-        const temp: any = await dispatch(fetchLicense(licenseId));
-        let licenseTemp = Object.assign({}, temp.payload);
-        licenseTemp.serverDeviceId = null;
-        console.log(licenseTemp);
-        await dispatch(updateLicenseKey(licenseTemp));
-        await dispatch(licenseGet(getLicenseForDevice));
+    const removeLicense = async (softwareId: number) => {
+        softwareDevice.softwareId = softwareId;
+        softwareDevice.remove = true;
+
+        switch(device){
+            case "server":
+                await dispatch(serverLicenseModifier(softwareDevice));
+                break;
+            case "client":
+                await dispatch(clientLicenseModifier(softwareDevice));
+                break;
+        }
+        licenseForApplication.applicationId = showLicense.id;
+        await dispatch(fetchDeviceLicensesForApplication(licenseForApplication));
     };
 
     function filter(x: any) {
-        return x.serverDeviceId !== parseInt(id);
+        return !applicationForDeviceList.data.some((device:any) => device.id === x.id)
     }
-
-    // function filter(x:any) {
-    //     return x.
-    // }
-
-    function filterApplicationKeys([key, _]: any) {
-        return (
-            key !== 'general' &&
-            key !== 'serverDeviceId' &&
-            key !== 'licenseKey'
-        );
-    }
-
-    function filterLicense([key, _]: any) {
-        return (
-            key !== 'amount' &&
-            key !== 'expireDate' &&
-            key !== 'pricePerUnit' &&
-            key !== 'description' &&
-            key !== 'applicationId' &&
-            key !== 'serverDeviceId' &&
-            key !== 'application'
-        );
-    }
-
-    console.log(applicationForDeviceList.data);
 
     return (
         <>
             {showApp && applicationList.data && (
                 <DataAcceptWindow>
                     <ListOfItems
-                        items={Convert(applicationList.data, ignoreAppKeys)}
+                        items={applicationList.data}
                         activasionFunction={addApplication}
                         headers={HeaderForApp}
                         filterFunction={filter}
@@ -181,7 +183,7 @@ const ApplicationTab = () => {
             {createLicense && (
                 <DataAcceptWindow>
                     <ListOfItems
-                        items={Convert(licenseList.data, ignoreAppKeys)}
+                        items={licenseList.data}
                         activasionFunction={addLicense}
                         headers={HeaderForLicenseAdd}
                         filterFunction={filter}
@@ -197,8 +199,11 @@ const ApplicationTab = () => {
                     </TabStyle.PositionButton>
                 </DataAcceptWindow>
             )}
-            <TabStyle.Container>
+            <TabStyle.Container
+                width={'100%'}
+            >
                 <TabStyle.ContentLayout width={'60%'}>
+                <TabStyle.ContentName>Applications</TabStyle.ContentName>
                     <TabStyle.TableFlow>
                         <Button
                             onClick={toggleShowApp}
@@ -209,14 +214,13 @@ const ApplicationTab = () => {
                             Add application
                         </Button>
                         <TableContainer
-                            tableList={Convert(
-                                applicationForDeviceList.data,
-                                filterApplicationKeys
-                            )}
+                            width={'100%'}
+                            tableList={applicationForDeviceList.data}
                             tableHeader={Header}
                             tableLinks={Links}
                             tableButtons={false}
                             tableNameActive={false}
+                            // displayDetail={false}
                             addActivasionFunction={toggleLicense}
                             removePadding
                             displayAdd
@@ -224,11 +228,13 @@ const ApplicationTab = () => {
                             displayEdit={false}
                             displayRemove={true}
                             removeActivasionFunction={removeApplication}
+                            showCheckBox={false}
                         />
                     </TabStyle.TableFlow>
                 </TabStyle.ContentLayout>
                 <TabStyle.ContentLayout width={'40%'}>
-                    {showLicense && (
+                 <TabStyle.ContentName>Licenses</TabStyle.ContentName>
+                    {showLicense.show && (
                         <TabStyle.TableFlow>
                             <Button
                                 onClick={toggleCreteLicense}
@@ -239,19 +245,20 @@ const ApplicationTab = () => {
                                 Add license
                             </Button>
                             <TableContainer
-                                tableList={Convert(
-                                    licenseList.data,
-                                    filterLicense
-                                )}
+                                width={'100%'}
+                                tableList={licenseForDevice.data}
+                                showPagination={false}
                                 removeActivasionFunction={removeLicense}
                                 displayRemove={true}
                                 displayDelete={false}
                                 displayEdit={false}
-                                tableHeader={HeaderForLicense}
+                                tableHeader={LicenseHeader}
                                 tableLinks={Links}
                                 tableButtons={false}
                                 tableNameActive={false}
                                 removePadding
+                                showCheckBox={false}
+                                displayDetail={false}
                             />
                         </TabStyle.TableFlow>
                     )}

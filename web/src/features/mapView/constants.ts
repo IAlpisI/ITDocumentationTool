@@ -6,7 +6,8 @@ export const SHAPE_TYPES = {
     ROUTER: 'router',
     TABLE: 'table',
     DOORS: 'doors',
-    WINDOW: 'window'
+    WINDOW: 'window',
+    SERVER: 'server'
   };
 
   export const TOTAL_TYPES = {
@@ -24,15 +25,16 @@ export const SHAPE_TYPES = {
       ROTATION: 0,
     },
     TABLE : {
-      STROKE: "#ffffff",
-      FILL: "#000000",
-      WIDTH: 250,
-      HEIGHT: 20,
+      STROKE: "#000000",
+      FILL: "#ffffff",
+      WIDTH: 200,
+      HEIGHT: 100,
       ROTATION: 0,
     },
     SVG: {
-      WIDTH: 40,
-      HEIGHT: 40,
+      FILL: "#000000",
+      WIDTH: 100,
+      HEIGHT: 100,
       ROTATION: 0,
     }
   };

@@ -19,11 +19,11 @@ export const Header = [
 
 export const Links =
 {
-    editLink: 'printer/edit/',
+    editLink: '/printer/edit/',
     deleteLink: 'printer',
-    viewLink: 'printer/detail/',
-    formLink: 'printer/form',
+    viewLink: '/printer/detail/',
+    formLink: '/printer/form',
     index: 'printer'
 }
 
-export const scrolIds = ['General', 'HostAddress', 'Printer', 'Save']
+export const scrolIds = ['General', 'Printer', 'Save']

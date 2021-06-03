@@ -14,11 +14,11 @@ export const ConnectForm = ({ children }: any) => {
     return children({ ...methods });
 };
 
-export const HostAddress = ({props}: any) => {
+export const HostAddress = ({ props }: any) => {
     const dispatch = useDispatch();
     const { register, getValues } = useForm();
     const [error, setError] = useState<string>('');
-    const valueRef = useRef(null)
+    const valueRef = useRef(null);
 
     const layerThreeNetworks = useSelector(
         (state: any) => state.layerThreeNetwork.layerThreeNetworkList
@@ -28,35 +28,28 @@ export const HostAddress = ({props}: any) => {
         dispatch(fetchLayerThreeNetworks());
     }, [dispatch]);
 
-    const ipControl = {
-        guide: false,
-        placeholderChar: '\u2000',
-        mask: (value: string | any[]) => Array(value.length).fill(/[\d.]/),
-        pipe: (value: string) => {
-            if (value === '.' || value.endsWith('..')) return false;
+    // const ipControl = {
+    //     guide: false,
+    //     placeholderChar: '\u2000',
+    //     mask: (value: string | any[]) => Array(value.length).fill(/[\d.]/),
+    //     pipe: (value: string) => {
+    //         if (value === '.' || value.endsWith('..')) return false;
 
-            const parts = value.split('.');
+    //         const parts = value.split('.');
 
-            if (
-                parts.length > 4 ||
-                parts.some(
-                    (part: string | number) =>
-                        part === '00' || part < 0 || part > 255
-                )
-            ) {
-                return false;
-            }
+    //         if (
+    //             parts.length > 4 ||
+    //             parts.some(
+    //                 (part: string | number) =>
+    //                     part === '00' || part < 0 || part > 255
+    //             )
+    //         ) {
+    //             return false;
+    //         }
 
-            return value;
-        }
-    };
-
-    const temp = (address: string) => {
-
-        console.log(address);
-        // let block = new Netmask();
-        // console.log("test")
-    };
+    //         return value;
+    //     }
+    // };
 
     return (
         <ConnectForm>
@@ -68,7 +61,11 @@ export const HostAddress = ({props}: any) => {
                                 Host Address
                             </Module.ComponentName>
                             <Module.Label>Address</Module.Label>
-                            <Controller
+                            <Module.Input
+                                {...register('address')}
+                                defaultValue={layerThreeNetworks.data.netIp}
+                            />
+                            {/* <Controller
                                 
                                 control={control}
                                 name='address'
@@ -118,29 +115,27 @@ export const HostAddress = ({props}: any) => {
                                          }}
                                    />
                                 )}
-                            />
+                            /> */}
                             <Module.ErrorMessage>{error}</Module.ErrorMessage>
 
                             <Module.Label>Network</Module.Label>
-                            <Module.Select {...register('network')} defaultValue={props?.networkId}>
+                            <Module.Select
+                                {...register('network')}
+                                defaultValue={props?.networkId}>
                                 {layerThreeNetworks.data.map(
                                     (x: any, index: number) => (
-                                        <option
-                                            key={index}
-                                            value={x.id}>
+                                        <option key={index} value={x.id}>
                                             {`${x.title} - ${x.netIp}`}
                                         </option>
                                     )
                                 )}
                             </Module.Select>
 
-                            <Module.Label>Description</Module.Label>
+                            {/* <Module.Label>Description</Module.Label>
                             <Controller
                                 name='hostAddressDescription'
                                 control={control}
-                                defaultValue={
-                                    props?.description || '<p></p>'
-                                }
+                                defaultValue={props?.description || '<p></p>'}
                                 render={({
                                     field: { onChange, value }
                                 }: any) => (
@@ -150,7 +145,7 @@ export const HostAddress = ({props}: any) => {
                                         onChange={onChange}
                                     />
                                 )}
-                            />
+                            /> */}
                         </Module.Column>
                     </Module.Container>
                 );

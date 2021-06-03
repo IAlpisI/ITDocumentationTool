@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+export const Container = styled.div<{width?: string}>`
     display: flex;
     flex-direction: row;
-    width: 100%;
+    max-width: ${(props) => props.width ? props.width : '1800px'};
 `;
 
 export const ContentName = styled.div`

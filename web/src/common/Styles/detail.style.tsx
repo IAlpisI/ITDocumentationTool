@@ -18,9 +18,17 @@ export const ObjectName = styled.div`
     font-size: 15px;
 `
 
+export const ObjectLinkName = styled.div`
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: underline;
+`
+
 export const ObjectData = styled.div`
     font-size: 15px;
 `
+
 
 export const DetailGrid = styled.div`
     display: grid;

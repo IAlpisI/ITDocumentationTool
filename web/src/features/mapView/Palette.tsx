@@ -1,13 +1,24 @@
 import ComputerSvg from './svg/computerSvg';
 import { SvgPrinter, SvgRouter, SvgSwitch } from '../networkDiagram/svgs';
 import { DRAG_DATA_KEY, SHAPE_TYPES } from './constants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { saveDiagram } from './stateSlice';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Module from './palette.styles';
 import { DoorSvg, TableSvg, WallSvg, WindowSvg } from './svg/doorSvg';
+import { Server } from './svg/computerSvg';
+import { fetchClients } from '../clientPc/clientPcSlice';
+import { fetchPrinters } from '../printer/printerSlice';
+import { fetchServers } from '../serverDevice/serverSlice';
+import { fetchRouters } from '../routerDevice/routerSlice';
+import { fetchSwitches } from '../switchDevice/switchSlice';
 
-const handleDragStart = (event: any, id?:number, ) => {
+import { DataAcceptWindow } from '../../common/popWindows';
+import { FormButtons, FormName, Form } from './mapGallery';
+import { Button } from '../../common/Styles/common.style';
+
+const handleDragStart = (event: any, deviceId?: number) => {
+    console.log(deviceId);
     const type = event.target.dataset.shape;
 
     if (type) {
@@ -22,7 +33,8 @@ const handleDragStart = (event: any, id?:number, ) => {
             offsetX,
             offsetY,
             clientWidth,
-            clientHeight
+            clientHeight,
+            deviceId
         });
 
         event.nativeEvent.dataTransfer.setData(DRAG_DATA_KEY, dragPayload);
@@ -40,6 +52,21 @@ interface Library {
 
 const Palette = (props: any) => {
     const dispatch = useDispatch();
+    const clientList = useSelector(
+        (state: any) => state.client.clientList.data
+    );
+    const printerList = useSelector(
+        (state: any) => state.printer.printerList.data
+    );
+    const serverList = useSelector(
+        (state: any) => state.server.serverList.data
+    );
+    const routerList = useSelector(
+        (state: any) => state.router.routerList.data
+    );
+    const switchList = useSelector(
+        (state: any) => state.switch.switchList.data
+    );
 
     const [showObjects, setObjects] = useState<Library>({
         officeObjects: false,
@@ -49,6 +76,21 @@ const Palette = (props: any) => {
         switches: false,
         servers: false
     });
+
+    const [save, setSave] = useState<boolean>(false);
+    const [popup, setPopup] = useState<boolean>(false);
+
+    useEffect(() => {
+        dispatch(fetchSwitches());
+        dispatch(fetchRouters());
+        dispatch(fetchClients());
+        dispatch(fetchPrinters());
+        dispatch(fetchServers());
+    }, [dispatch]);
+
+    const tootglePopWindow = () => {
+        setPopup((popup) => !popup);
+    };
 
     const showObject = (field: keyof Library) => {
         setObjects(() => ({
@@ -91,6 +133,12 @@ const Palette = (props: any) => {
                 setObjects((showObjects) => ({
                     ...showObjects,
                     routers: current
+                }));
+                break;
+            case 'servers':
+                setObjects((showObjects) => ({
+                    ...showObjects,
+                    servers: current
                 }));
                 break;
             default:
@@ -163,15 +211,21 @@ const Palette = (props: any) => {
                         onDragStart={handleDragStart}>
                         <ComputerSvg />
                     </Module.ObjectWrap>
-                    <Module.ObjectWrap
-                        data-shape={SHAPE_TYPES.COMPUTER}
-                        draggable
-                        onDragStart={handleDragStart}>
-                        <ComputerSvg />
-                        <Module.PalleteObjectLabel>
-                            Client1
-                        </Module.PalleteObjectLabel>
-                    </Module.ObjectWrap>
+                    {clientList &&
+                        clientList.map((x: any, index: number) => (
+                            <Module.ObjectWrap
+                                key={index}
+                                data-shape={SHAPE_TYPES.COMPUTER}
+                                draggable
+                                onDragStart={(e) => {
+                                    handleDragStart(e, x.id);
+                                }}>
+                                <ComputerSvg />
+                                <Module.PalleteObjectLabel>
+                                    {x.title}
+                                </Module.PalleteObjectLabel>
+                            </Module.ObjectWrap>
+                        ))}
                 </Module.ObjectContainer>
             )}
 
@@ -187,8 +241,23 @@ const Palette = (props: any) => {
                         data-shape={SHAPE_TYPES.PRINTER}
                         draggable
                         onDragStart={handleDragStart}>
-                        <SvgPrinter circle={false} />
+                        <SvgPrinter circle={false} color={'black'} />
                     </Module.ObjectWrap>
+                    {printerList &&
+                        printerList.map((x: any, index: number) => (
+                            <Module.ObjectWrap
+                                key={index}
+                                data-shape={SHAPE_TYPES.PRINTER}
+                                draggable
+                                onDragStart={(e) => {
+                                    handleDragStart(e, x.id);
+                                }}>
+                                <SvgPrinter circle={false} color={'black'} />
+                                <Module.PalleteObjectLabel>
+                                    {x.title}
+                                </Module.PalleteObjectLabel>
+                            </Module.ObjectWrap>
+                        ))}
                 </Module.ObjectContainer>
             )}
 
@@ -206,6 +275,21 @@ const Palette = (props: any) => {
                         onDragStart={handleDragStart}>
                         <SvgRouter rectangle={false} />
                     </Module.ObjectWrap>
+                    {routerList &&
+                        routerList.map((x: any, index: number) => (
+                            <Module.ObjectWrap
+                                key={index}
+                                data-shape={SHAPE_TYPES.ROUTER}
+                                draggable
+                                onDragStart={(e) => {
+                                    handleDragStart(e, x.id);
+                                }}>
+                                <SvgRouter rectangle={false} />
+                                <Module.PalleteObjectLabel>
+                                    {x.title}
+                                </Module.PalleteObjectLabel>
+                            </Module.ObjectWrap>
+                        ))}
                 </Module.ObjectContainer>
             )}
 
@@ -221,12 +305,63 @@ const Palette = (props: any) => {
                         data-shape={SHAPE_TYPES.SWITCH}
                         draggable
                         onDragStart={handleDragStart}>
-                        <SvgSwitch rectangle={false} />
+                        <SvgSwitch rectangle={false} color={'black'} />
                     </Module.ObjectWrap>
+                    {switchList &&
+                        switchList.map((x: any, index: number) => {
+                            console.log(x);
+                            return (
+                                <Module.ObjectWrap
+                                    key={index}
+                                    data-shape={SHAPE_TYPES.SWITCH}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        handleDragStart(e, x.id);
+                                    }}>
+                                    <SvgSwitch
+                                        rectangle={false}
+                                        color={'black'}
+                                    />
+                                    <Module.PalleteObjectLabel>
+                                        {x.title}
+                                    </Module.PalleteObjectLabel>
+                                </Module.ObjectWrap>
+                            );
+                        })}
                 </Module.ObjectContainer>
             )}
 
-            <Module.ObjectText>Servers</Module.ObjectText>
+            <Module.ObjectText
+                onClick={() => {
+                    showObject('servers');
+                }}>
+                Servers
+            </Module.ObjectText>
+            {showObjects.servers && (
+                <Module.ObjectContainer>
+                    <Module.ObjectWrap
+                        data-shape={SHAPE_TYPES.SERVER}
+                        draggable
+                        onDragStart={handleDragStart}>
+                        <Server />
+                    </Module.ObjectWrap>
+                    {serverList &&
+                        serverList.map((x: any, index: number) => (
+                            <Module.ObjectWrap
+                                key={index}
+                                data-shape={SHAPE_TYPES.SERVER}
+                                draggable
+                                onDragStart={(e) => {
+                                    handleDragStart(e, x.id);
+                                }}>
+                                <Server />
+                                <Module.PalleteObjectLabel>
+                                    {x.title}
+                                </Module.PalleteObjectLabel>
+                            </Module.ObjectWrap>
+                        ))}
+                </Module.ObjectContainer>
+            )}
 
             <Module.PalleteButton
                 onClick={() => {
@@ -234,15 +369,50 @@ const Palette = (props: any) => {
                 }}>
                 Reset view
             </Module.PalleteButton>
-            <Module.PalleteButton onClick={props.backToGallery}>
+            <Module.PalleteButton onClick={tootglePopWindow}>
                 Back
             </Module.PalleteButton>
             <Module.PalleteButton
                 onClick={() => {
                     dispatch(saveDiagram({ props }));
+                    setSave((save) => true);
+                    setTimeout(function () {
+                        setSave((save) => false);
+                    }, 1000);
                 }}>
                 Save changes
             </Module.PalleteButton>
+            {save && <Module.SaveMessage>Saved</Module.SaveMessage>}
+            {popup && (
+                <DataAcceptWindow>
+                    <Form>
+                        <FormName>Are you sure you want to leave?</FormName>
+                        <FormButtons>
+                            <Button
+                                height='30px'
+                                width='70px'
+                                padding='0 10px'
+                                background
+                                margin='110px 0 0 0'
+                                type='button'
+                                onClick={props.backToGallery}>
+                                Back
+                            </Button>
+                            <Button
+                                height='30px'
+                                width='70px'
+                                padding='0 10px'
+                                margin='110px 20px 0 0'
+                                type='button'
+                                onClick={() => {
+                                    tootglePopWindow();
+                                }}>
+                                Cancel
+                            </Button>
+                        </FormButtons>{' '}
+                    </Form>
+                </DataAcceptWindow>
+            )}
         </Module.PaletteAside>
     );
 };

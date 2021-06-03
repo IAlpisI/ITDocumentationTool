@@ -30,6 +30,10 @@ const ApplicationForm = () => {
         if (id) dispatch(fetchApplication(id));
     }, [dispatch, id]);
 
+    const redirect = (path: string) => {
+        history.push(path);
+    }
+
     const onSubmit = async (data: any) => {
 
         application = {
@@ -51,7 +55,7 @@ const ApplicationForm = () => {
         } else {
             await dispatch(createApplication(application));
         }
-        history.push('/application');
+        redirect('/application');
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -61,8 +65,7 @@ const ApplicationForm = () => {
     return (
         <FormStyle.FormContainer>
             <FormStyle.InfoRow>
-                <FormStyle.FormName>Create a new software</FormStyle.FormName>
-                <FormStyle.LinkName>Test</FormStyle.LinkName>
+                <FormStyle.FormName>Create a new application</FormStyle.FormName>
             </FormStyle.InfoRow>
             <FormStyle.FormsContainer>
                 <FormProvider {...methods}>
@@ -91,14 +94,14 @@ const ApplicationForm = () => {
                                     <FormStyle.Label>Full name</FormStyle.Label>
                                     <FormStyle.Input
                                         {...methods.register('specification')}
-                                        defaultValue={software.data.fullName}
+                                        defaultValue={software.data.specification}
                                     />
                                     <FormStyle.Label>
                                         Manufacturer
                                     </FormStyle.Label>
                                     <FormStyle.Input
                                         {...methods.register('manufacturer')}
-                                        defaultValue={software.data.emailAddress}
+                                        defaultValue={software.data.manufacturer}
                                     />
                                 </FormStyle.Column>
                             )}
@@ -111,7 +114,12 @@ const ApplicationForm = () => {
                                 type='submit'>
                                 Submit
                             </FormStyle.TableConfirmationButton>
-                            <FormStyle.TableConfirmationButton primary={''}>
+                            <FormStyle.TableConfirmationButton 
+                                type={'button'}
+                                primary={''}
+                                onClick={() => {
+                                    redirect('/application');
+                                }}>
                                 Cancel
                             </FormStyle.TableConfirmationButton>
                         </FormStyle.FormSpacingButtons>

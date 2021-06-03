@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import * as api from '../../common/api'
-import {userGetAll, user} from '../../common/constants'
+import {userGetAll, user, userRegister} from '../../common/constants'
 axios.defaults.withCredentials = true;
 
 const instance = axios.create({
@@ -62,7 +62,7 @@ export const createUser = createAsyncThunk(
     'user/create',
     async (data: any, { rejectWithValue }) => {
         try {
-            return await api.createData(data, user)
+            return await api.createData(data, userRegister)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -190,46 +190,46 @@ const userSlice = createSlice({
             }
         })
         builder.addCase(createUser.fulfilled, (state, action) => {
-            state.userList = {
-                status: 'completed',
-                data: action.payload,
-                error: {}
-            }
+            // state.userList = {
+            //     status: 'completed',
+            //     data: action.payload,
+            //     error: {}
+            // }
         })
         builder.addCase(createUser.pending, (state, _) => {
-            state.userList = {
-                status: 'idle',
-                data: [],
-                error: {},
-            }
+            // state.userList = {
+            //     status: 'idle',
+            //     data: [],
+            //     error: {},
+            // }
         })
         builder.addCase(createUser.rejected, (state, { error }) => {
-            state.userList = {
-                status: 'failed',
-                data: [],
-                error: error,
-            }
+            // state.userList = {
+            //     status: 'failed',
+            //     data: [],
+            //     error: error,
+            // }
         })
         builder.addCase(updateUser.fulfilled, (state, action) => {
-            state.userList = {
-                status: 'completed',
-                data: action.payload,
-                error: {}
-            }
+            // state.userList = {
+            //     status: 'completed',
+            //     data: action.payload,
+            //     error: {}
+            // }
         })
         builder.addCase(updateUser.pending, (state, _) => {
-            state.userList = {
-                status: 'idle',
-                data: [],
-                error: {},
-            }
+            // state.userList = {
+            //     status: 'idle',
+            //     data: [],
+            //     error: {},
+            // }
         })
         builder.addCase(updateUser.rejected, (state, { error }) => {
-            state.userList = {
-                status: 'failed',
-                data: [],
-                error: error,
-            }
+            // state.userList = {
+            //     status: 'failed',
+            //     data: [],
+            //     error: error,
+            // }
         })
     }
 })

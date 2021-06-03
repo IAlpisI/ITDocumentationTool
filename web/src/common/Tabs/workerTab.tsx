@@ -1,4 +1,6 @@
-import * as Module from '../Styles/detail.style'
+import * as Module from '../Styles/detail.style';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export type PersonDetail = {
     fullName?: string;
@@ -6,6 +8,10 @@ export type PersonDetail = {
     companyNumber?: string;
     personalNumber?: string
     description?: string;
+};
+
+const modules = {
+    toolbar: false
 };
 
 const WorkerDetail = (props: PersonDetail) => {
@@ -22,7 +28,14 @@ const WorkerDetail = (props: PersonDetail) => {
                 <Module.ObjectName>Personla number:</Module.ObjectName>
                 <Module.ObjectData>{props.personalNumber}</Module.ObjectData>
                 <Module.ObjectName>Description:</Module.ObjectName>
-                <Module.ObjectData>{props.description}</Module.ObjectData>
+                <Module.ObjectData>
+                    <ReactQuill
+                        readOnly={true}
+                        modules={modules}
+                        theme='snow'
+                        value={props.description || ''}
+                    />
+                </Module.ObjectData>
             </Module.DetailGrid>
         </Module.Container>
     );

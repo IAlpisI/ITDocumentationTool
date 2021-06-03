@@ -14,14 +14,24 @@ const Container = styled.div`
 
 const ItemHeader = styled.div`
     font-weight: 800;
-    /* border: 1px solid ${props => props.theme.colors.grey1}; */
 `;
 
 const Item = styled.div`
     max-height: 40px;
+    width: 300px;
     padding: 3px;
     cursor: pointer;
-    /* border: 1px solid ${props => props.theme.colors.grey1}; */
+`;
+
+const ItemWrapper = styled.div`
+    grid-column: 1 / span 2;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &:hover {
+        background: ${(props) => props.theme.colors.violet1};
+        color: ${(props) => props.theme.colors.white};
+    }
 `;
 
 const notEmpty = (object: any) => {
@@ -42,8 +52,7 @@ export default function ListOfItems<DataItem extends object | string>({
     headers,
     filterFunction
 }: Props<DataItem>) {
-    console.log('headers');
-    console.log(headers);
+    console.log(items);
 
     return (
         <>
@@ -55,33 +64,32 @@ export default function ListOfItems<DataItem extends object | string>({
                     {items
                         .filter(filterFunction)
                         .map((item: any, index: number) => {
+                            console.log(item);
                             return (
-                                // <ItemWrap
-                                //     key={index}
-                                //     onClick={() => {
-                                //         if (activasionFunction !== undefined)
-                                //             activasionFunction(item.id);
-                                //     }}>
-                                Object.keys(item).map((itemKey, index) => {
-                                    if (itemKey !== 'id')
-                                        return (
-                                            item[itemKey]!==null && <Item
-                                                onClick={() => {
-                                                    if (
-                                                        activasionFunction !==
-                                                        undefined
-                                                    )
-                                                        activasionFunction(
-                                                            item.id
-                                                        );
-                                                }}
-                                                key={index}>
-                                                {item[itemKey]}
-                                            </Item> 
-                                        )
-                                })
-
-                                // </ItemWrap>
+                                <ItemWrapper
+                                    key={index}
+                                >
+                                    {Object.keys(item).map((itemKey, index) => {
+                                        if (itemKey !== 'id')
+                                            return (
+                                                item[itemKey] !== null && (
+                                                    <Item
+                                                        onClick={() => {
+                                                            if (
+                                                                activasionFunction !==
+                                                                undefined
+                                                            )
+                                                                activasionFunction(
+                                                                    item.id
+                                                                );
+                                                        }}
+                                                        key={index}>
+                                                        {item[itemKey]}
+                                                    </Item>
+                                                )
+                                            );
+                                    })}
+                                </ItemWrapper>
                             );
                         })}
                 </Container>

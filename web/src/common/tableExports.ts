@@ -14,6 +14,13 @@ export const switchDevice =
     spanningtree: "",
 }
 
+export const clientDevice = {
+    KeyboardLayout: "",
+    Display: "",
+    DisplayMeasure: "",
+    Resolution: "",
+}
+
 export const general =
 {
     title: "",
@@ -21,11 +28,6 @@ export const general =
     status: "",
 }
 
-export const applciation =
-{
-    specification: "",
-    manufacturer: "",
-}
 
 export const formFactor =
 {
@@ -38,7 +40,7 @@ export const formFactor =
     weightmeasure: "",
 }
 
-export const cable = 
+export const cable =
 {
     cableType: "",
     cableLength: "",
@@ -71,9 +73,4 @@ export const powerConsumer =
     watt: "",
     ampere: "",
     description: ""
-}
-
-export const hostAddress = {
-    address: "",
-    networkId: "",
 }

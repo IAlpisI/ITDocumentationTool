@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { searchWords } from '../dashboard/dashboardSlice';
 
 const Nav = styled.div`
     background: ${(props) => props.theme.colors.white};
@@ -35,6 +37,10 @@ const SearchButton = styled.button`
     font-size: 15px;
     border: none;
     cursor: pointer;
+
+    &:hover {
+        background: #5a25d6;
+    }
 `;
 
 const UserInfoWrapper = styled.div`
@@ -86,39 +92,67 @@ const DropDownItem = styled.div`
 function Navbar() {
     let history = useHistory();
     const [hoverMenu, setHoverMenu] = useState<boolean>(false);
+    const [search, setSearch] = useState<string>('');
+    const dispatch = useDispatch();
 
     const logout = () => {
         localStorage.removeItem('name');
         localStorage.removeItem('role');
 
-        history.push('/login');
+        redirect('/login');
     };
 
     const toggleHoverMenu = (state: boolean) => {
         setHoverMenu((hoverMenu) => state);
     };
 
+    const redirect = (address: string) => {
+        history.push(address);
+        setSearch((search) => (search = ''));
+    };
+
+    const setSearchValue = (e: any) => {
+        setSearch((search) => e.target.value);
+    };
+
     return (
         <Nav>
             <Wrapper>
-                <SearchBar placeholder='Search...' />
-                <SearchButton>Search</SearchButton>
+                <SearchBar
+                    onChange={setSearchValue}
+                    value={search}
+                    placeholder='Search...'
+                />
+                <SearchButton
+                    onClick={() => {
+                        dispatch(searchWords(search));
+                        redirect(`/search/${search}`);
+                    }}>
+                    Search
+                </SearchButton>
             </Wrapper>
             <UserInfoWrapper>
                 <UserName
                     onMouseOver={() => {
                         toggleHoverMenu(true);
                     }}>
-                    {localStorage.getItem('name') || ''}
+                    {localStorage.getItem('name') || logout}
                 </UserName>
-                <UserRole>{localStorage.getItem('role') || ''}</UserRole>
+                <UserRole>{localStorage.getItem('role') || logout}</UserRole>
                 <DropDown
                     onMouseLeave={() => {
                         toggleHoverMenu(false);
                     }}>
                     {hoverMenu && (
                         <DropDownMenu>
-                            <DropDownItem>Create users</DropDownItem>
+                            {localStorage.getItem('role') === 'Admin' && (
+                                <DropDownItem
+                                    onClick={() => {
+                                        redirect('/user');
+                                    }}>
+                                    Create users
+                                </DropDownItem>
+                            )}
                             <DropDownItem onClick={logout}>Logout</DropDownItem>
                         </DropDownMenu>
                     )}

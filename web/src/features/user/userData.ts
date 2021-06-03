@@ -8,6 +8,10 @@ export const Header = [
         headerName: 'Username'
     },
     {
+        entityColumn: 'role',
+        headerName: 'Role'
+    },
+    {
         entityColumn: 'action',
         headerName: 'Action'
     }

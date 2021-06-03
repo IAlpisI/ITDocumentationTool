@@ -7,6 +7,12 @@ import { TableImportData } from './tableExportData';
 import TableImported from '../common/tableImported';
 import { useDispatch } from 'react-redux';
 import { createWorker } from '../features/workers/workerSlice';
+import { createServer } from '../features/serverDevice/serverSlice';
+import { createPrinter } from '../features/printer/printerSlice';
+import { createRouter } from '../features/routerDevice/routerSlice';
+import { createSwitch } from '../features/switchDevice/switchSlice';
+import { createClient } from '../features/clientPc/clientPcSlice';
+import styled from 'styled-components';
 
 type Props = {
     tableLinks: any;
@@ -33,7 +39,14 @@ type Props = {
     tableExportButtons?: boolean;
     numberOfPages?: number;
     showCheckBox?: boolean;
+    width?: string;
+    removeActionColumn?: boolean;
 };
+
+const ErrorMessage = styled.div`
+    color: red;
+    margin: 15px 15px 0 0;
+`;
 
 const TableContainer = ({
     tableLinks,
@@ -56,18 +69,20 @@ const TableContainer = ({
     displayRemove,
     removeActivasionFunction,
     displayDetail,
-    exportData=[],
-    tableExportButtons=true,
+    exportData = [],
+    tableExportButtons = true,
     numberOfPages,
-    showCheckBox
+    showCheckBox,
+    width,
+    removeActionColumn
 }: Props) => {
-    const messageRef = useRef(null);
     const dispatch = useDispatch();
     const inputFile = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<FileList | null>(null);
+    const [error, setError] = useState<boolean>(false);
 
     return (
-        <Table.Container padding={removePadding ? '0px' : ''}>
+        <Table.Container padding={removePadding ? '0px' : ''} width={width}>
             {tableNameActive && (
                 <Table.InfoRow>
                     <Table.TableName>{tableName}</Table.TableName>
@@ -76,91 +91,199 @@ const TableContainer = ({
             <Table.TableContainer>
                 {tableButtons && (
                     <Table.TableButtonsRow>
-                        <Table.TableLinkButton
-                            to={tableLinks.formLink}
-                            primary={'primary'}>
-                            Add {buttonName}
-                        </Table.TableLinkButton>
-                        {tableExportButtons && <Table.TableSpacingButtons>
-                            <div ref={messageRef}></div>
+                        {localStorage.getItem('role') !== 'User' && (
+                            <Table.TableLinkButton
+                                to={tableLinks.formLink}
+                                primary={'primary'}>
+                                Add {buttonName}
+                            </Table.TableLinkButton>
+                        )}
+                        {tableExportButtons && (
+                            <Table.TableSpacingButtons>
+                                {error && (
+                                    <ErrorMessage>
+                                        File format is inocrect
+                                    </ErrorMessage>
+                                )}
+                                <Table.TableButton primary={''}>
+                                    <CSVLink
+                                        className='areset'
+                                        filename={`${tableName}Data.csv`}
+                                        data={exportData}>
+                                        Export
+                                    </CSVLink>
+                                </Table.TableButton>
 
-                            <Table.TableButton primary={''}>
-                                <CSVLink
-                                    className='areset'
-                                    filename={`${tableName}Data.csv`}
-                                    data={exportData}>
-                                    Export
-                                </CSVLink>
-                            </Table.TableButton>
-
-                            <Table.TableButton
-                                primary={''}
-                                onClick={() => {
-                                    if (inputFile.current !== null) {
-                                        inputFile.current.click();
-                                    }
-                                }}>
-                                Import
-                                <input
-                                    onChange={(e) => {
-                                        setFile(e.target.files);
-                                    }}
-                                    type='file'
-                                    accept='.csv'
-                                    ref={inputFile}
-                                    style={{ display: 'none' }}
-                                />
-                                {file &&
-                                    Array.from(file).forEach(async (f) => {
-                                        const text = await f.text();
-                                        const result = parse(text, {
-                                            header: true
-                                        });
-                                        result.data.pop();
-                                        console.log(result.data);
-                                        if (
-                                            TableImportData(
-                                                result.data,
-                                                buttonName
-                                            )
-                                        ) {
-                                            setFile((file) => (file = null));
-                                            let temp = TableImported(
-                                                buttonName,
-                                                result.data
-                                            );
-
-                                            switch (buttonName) {
-                                                case 'person':
-                                                    temp.forEach(
-                                                        async (
-                                                            element: any
-                                                        ) => {
-                                                            const temp = await dispatch(
-                                                                createWorker(
-                                                                    element
-                                                                )
-                                                            );
-                                                        }
-                                                    );
-                                                    
+                                {localStorage.getItem('role') !== 'User' && (
+                                    <Table.TableButton
+                                        primary={''}
+                                        onClick={() => {
+                                            if (inputFile.current !== null) {
+                                                inputFile.current.click();
                                             }
-                                            
-                                        } else {
-                                        }
-                                    })
-                                    
-                                    }
-                            </Table.TableButton>
-                            <Table.TableButton primary={''}>
-                                <CSVLink
-                                    className='areset'
-                                    filename={`${tableName}Template.csv`}
-                                    data={exportHeader}>
-                                    Template
-                                </CSVLink>
-                            </Table.TableButton>
-                        </Table.TableSpacingButtons> }
+                                        }}>
+                                        Import
+                                        <input
+                                            onChange={(e) => {
+                                                setFile(e.target.files);
+                                            }}
+                                            type='file'
+                                            accept='.csv'
+                                            ref={inputFile}
+                                            style={{ display: 'none' }}
+                                        />
+                                        {file &&
+                                            Array.from(file).forEach(
+                                                async (f) => {
+                                                    const text = await f.text();
+                                                    const result = parse(text, {
+                                                        header: true
+                                                    });
+                                                    result.data.pop();
+                                                    console.log(result.data);
+                                                    if (
+                                                        TableImportData(
+                                                            result.data,
+                                                            buttonName
+                                                        )
+                                                    ) {
+                                                        setFile(
+                                                            (file) =>
+                                                                (file = null)
+                                                        );
+                                                        let temp =
+                                                            TableImported(
+                                                                buttonName,
+                                                                result.data
+                                                            );
+
+                                                        switch (buttonName) {
+                                                            case 'person':
+                                                                temp.forEach(
+                                                                    async (
+                                                                        element: any
+                                                                    ) => {
+                                                                        await dispatch(
+                                                                            createWorker(
+                                                                                element
+                                                                            )
+                                                                        );
+                                                                        await dispatch(
+                                                                            fetchData()
+                                                                        );
+                                                                    }
+                                                                );
+                                                                break;
+                                                            case 'server':
+                                                                temp.forEach(
+                                                                    async (
+                                                                        element: any
+                                                                    ) => {
+                                                                        await dispatch(
+                                                                            createServer(
+                                                                                element
+                                                                            )
+                                                                        );
+                                                                        await dispatch(
+                                                                            fetchData()
+                                                                        );
+                                                                    }
+                                                                );
+                                                                break;
+                                                            case 'printer':
+                                                                temp.forEach(
+                                                                    async (
+                                                                        element: any
+                                                                    ) => {
+                                                                        await dispatch(
+                                                                            createPrinter(
+                                                                                element
+                                                                            )
+                                                                        );
+                                                                        await dispatch(
+                                                                            fetchData()
+                                                                        );
+                                                                    }
+                                                                );
+                                                                break;
+                                                            case 'router':
+                                                                temp.forEach(
+                                                                    async (
+                                                                        element: any
+                                                                    ) => {
+                                                                        await dispatch(
+                                                                            createSwitch(
+                                                                                element
+                                                                            )
+                                                                        );
+                                                                        await dispatch(
+                                                                            fetchData()
+                                                                        );
+                                                                    }
+                                                                );
+                                                                break;
+                                                            case 'switch':
+                                                                temp.forEach(
+                                                                    async (
+                                                                        element: any
+                                                                    ) => {
+                                                                        await dispatch(
+                                                                            createRouter(
+                                                                                element
+                                                                            )
+                                                                        );
+                                                                        await dispatch(
+                                                                            fetchData()
+                                                                        );
+                                                                    }
+                                                                );
+                                                                break;
+                                                            case 'client':
+                                                                temp.forEach(
+                                                                    async (
+                                                                        element: any
+                                                                    ) => {
+                                                                        await dispatch(
+                                                                            createClient(
+                                                                                element
+                                                                            )
+                                                                        );
+                                                                        await dispatch(
+                                                                            fetchData()
+                                                                        );
+                                                                    }
+                                                                );
+                                                                break;
+                                                        }
+                                                    } else {
+                                                        setFile(
+                                                            (file) =>
+                                                                (file = null)
+                                                        );
+                                                        setError(
+                                                            (error) => !error
+                                                        );
+                                                        setTimeout(function () {
+                                                            setError(
+                                                                (error) =>
+                                                                    !error
+                                                            );
+                                                        }, 3000);
+                                                    }
+                                                }
+                                            )}
+                                    </Table.TableButton>
+                                )}
+                                <Table.TableButton primary={''}>
+                                    <CSVLink
+                                        className='areset'
+                                        filename={`${tableName}Template.csv`}
+                                        data={exportHeader}>
+                                        Template
+                                    </CSVLink>
+                                </Table.TableButton>
+                            </Table.TableSpacingButtons>
+                        )}
                     </Table.TableButtonsRow>
                 )}
 
@@ -181,6 +304,7 @@ const TableContainer = ({
                     displayDetail={displayDetail}
                     numberOfPages={numberOfPages}
                     showCheckBox={showCheckBox}
+                    removeActionColumn={removeActionColumn}
                 />
             </Table.TableContainer>
         </Table.Container>

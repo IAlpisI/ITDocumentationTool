@@ -150,6 +150,17 @@ aside {
     background: darkgray;
 }
 
+.calendarInput { 
+    height: 35px;
+    width: 150px;
+    padding: 6px;
+    background-color: #f1f3fa;
+}
+
+.calendarInput:hover {
+    box-shadow: inset 0 0 0 1.5px darkgray; 
+}
+
 /* Tree-Nodes */
 
 /* .node circle {

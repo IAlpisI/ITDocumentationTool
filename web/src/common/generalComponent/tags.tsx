@@ -24,16 +24,19 @@ const Tags = (props: any) => {
     };
 
     const removeTags = (index: number) => {
-        setTags([...tags.filter((tag) => tags.indexOf(tag) !== index)]);
+        setTags(tags => ([...tags.filter((tag) => tags.indexOf(tag) !== index)]));
+        props.setValue('tags', [...tags.filter((tag) => tags.indexOf(tag) !== index)], {
+            shouldValidate: true,
+            shouldDirty: true
+        })
+
     };
 
-    const init = () => {
-        props.tag && props.tag.forEach((x:any) => {
-            !tags.includes(x) && setTags([...tags, x]);
-        })
-    }
+    // console.log(tags);
 
-    init();
+    useEffect(() => {
+        props.tag && setTags([...props.tag]);
+    }, [])
 
     return (
         <Module.TagInput>

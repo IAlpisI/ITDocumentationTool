@@ -4,7 +4,7 @@ import { fetchUsers } from './userSlice';
 import { Header, Links } from './userData';
 import TableContainer from '../../common/TableContainer';
 
-function WorkerIndex() {
+function UserIndex() {
     const dispatch = useDispatch();
     const userList = useSelector((state: any) => state.user.userList);
 
@@ -12,16 +12,24 @@ function WorkerIndex() {
         dispatch(fetchUsers());
     }, [dispatch]);
 
+    console.log(userList.data);
+
     return (
-        <TableContainer
-            fetchData={fetchUsers}
-            tableList={userList.data}
-            tableHeader={Header}
-            tableLinks={Links}
-            tableName={'Users'}
-            buttonName={'user'}
-        />
+        <>
+            {userList.status === 'completed' && userList.data.length !== 0 && (
+                <TableContainer
+                    tableExportButtons={false}
+                    displayDetail={false}
+                    fetchData={fetchUsers}
+                    tableList={userList.data}
+                    tableHeader={Header}
+                    tableLinks={Links}
+                    tableName={'Users'}
+                    buttonName={'user'}
+                />
+            )}
+        </>
     );
 }
 
-export default WorkerIndex;
+export default UserIndex;

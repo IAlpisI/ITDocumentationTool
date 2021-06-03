@@ -1,6 +1,6 @@
 import Tree from 'react-d3-tree';
 import 'react-tree-graph/dist/style.css';
-import styled from 'styled-components';
+import * as Module from './network.style';
 import {
     SvgComputer,
     SvgRouter,
@@ -9,129 +9,196 @@ import {
     SvgServer,
     SvgSwitch
 } from './svgs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCenteredContainer } from '../../common/helpers/centerContainer';
-
-const orgChart = {
-    name: 'Internet',
-    id: 'test55',
-    children: [
-        {
-            name: 'Router',
-            // ipaddress: '10.0.0.1',
-            children: [
-                {
-                    name: 'Switch',
-                    ipaddress: '10.0.1.3',
-                    children: [
-                        {
-                            name: 'Pc',
-                            ipaddress: '10.0.1.10'
-                        }
-                    ]
-                },
-                {
-                    name: 'Switch',
-                    ipaddress: '10.0.1.4',
-                    children: [
-                        {
-                            name: 'Pc',
-                            ipaddress: '10.0.1.50'
-                        },
-                        {
-                            name: 'Printer',
-                            ipaddress: '10.0.1.51'
-                        },
-                        {
-                            name: 'Server',
-                            ipaddress: '10.0.1.52'
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-};
-
-const Container = styled.div`
-    height: 88vh;
-`;
-
-const LabelContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin: 25px 0 0 5px;
-`;
-
-const Label = styled.div`
-    width: auto;
-    height: 20px;
-    background: ${(props) => props.theme.colors.white};
-    margin-top: 5px;
-    display: flex;
-    justify-content: center;
-    border: 1px solid ${(props) => props.theme.colors.grey3};
-`;
-
-const DiagramContainer = styled.div`
-    display: grid;
-    grid-template-columns: auto 300px;
-`;
-
-const NetworkDiagram = styled.div`
-    background: ${(props) => props.theme.colors.grey1};
-`;
-
-const NetworkInformationConatainer = styled.div`
-    background: ${(props) => props.theme.colors.white};
-`;
-
-const DisplayInfo = styled.div`
-    height: 100%;
-    width: 100%;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 60% 40%;
-    grid-template-rows: repeat(7, 50px);
-    /* grid-template-rows: */
-`;
-
-const DisplayInfoName = styled.div`
-    grid-area: 1 / 1 / 2 / 3;
-    display: flex;
-    justify-content: center;
-`;
-
-const DisplayInforLabel = styled.div`
-    font-size: 15px;
-`;
-
-const DisplayInfoValue = styled.div`
-    font-size: 15px;
-`;
-
-const DiagramName = styled.div`
-    margin: 10px;
-    font-size: 25px;
-`;
-
-const Button = styled.button`
-    width: 80px;
-    height: 30px;
-    font-size: 10px;
-    /* padding: 3px; */
-    color: ${props => props.theme.colors.white};
-    background: ${props => props.theme.colors.violet};
-    cursor: pointer;
-`
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRouters } from '../routerDevice/routerSlice';
+import { fetchSwitches } from '../switchDevice/switchSlice';
+import { fetchLayerThreeNetworks } from '../layerThreeNetwork/layerThreeNetworkSlice';
+import { fetchAllHostAddresses } from '../dashboard/dashboardSlice';
+import { fetchClients } from '../clientPc/clientPcSlice';
+import { fetchPrinters } from '../printer/printerSlice';
+import { fetchServers } from '../serverDevice/serverSlice';
+import { useHistory } from 'react-router-dom';
 
 const NetworkIndex = () => {
-    const [Id, setId] = useState<string>('');
+    const [device, setDevice] = useState<{
+        id: any;
+        title: any;
+        ipaddress: any;
+        prefix: any;
+        link: any;
+    }>({
+        id: '',
+        title: '',
+        ipaddress: '',
+        prefix: '',
+        link: ''
+    });
+
+    let history = useHistory();
     const [translate, containerRef] = useCenteredContainer();
+    const dispatch = useDispatch();
     const nodeSize = { x: 200, y: 200 };
 
-    const test = (id: any) => {
-        setId(id);
+    const routerList = useSelector((state: any) => state.router.routerList);
+    const switchList = useSelector((state: any) => state.switch.switchList);
+    const layerThreeNetwork = useSelector(
+        (state: any) => state.layerThreeNetwork.layerThreeNetworkList
+    );
+    const hostAddressList = useSelector(
+        (state: any) => state.dashboard.allHostAddressList.data
+    );
+    const clientList = useSelector(
+        (state: any) => state.client.clientList.data
+    );
+    const printerList = useSelector(
+        (state: any) => state.printer.printerList.data
+    );
+    const serverList = useSelector(
+        (state: any) => state.server.serverList.data
+    );
+    const updateDevice = (
+        id: any,
+        title: any,
+        ipaddress: any,
+        link: any,
+        prefix: any
+    ) => {
+        setDevice({
+            id,
+            title,
+            ipaddress,
+            prefix,
+            link
+        });
+    };
+
+    let networkChart: any = { name: 'internet', children: [] };
+
+    useEffect(() => {
+        dispatch(fetchLayerThreeNetworks());
+        dispatch(fetchSwitches());
+        dispatch(fetchRouters());
+        dispatch(fetchAllHostAddresses());
+        dispatch(fetchClients());
+        dispatch(fetchPrinters());
+        dispatch(fetchServers());
+    }, [dispatch]);
+
+    const GenerateTree = () => {
+        let routerSet = new Set();
+        let routers: any = [];
+        let init: any = [];
+        let switches: any = [];
+
+        layerThreeNetwork.data.forEach((x: any, index: number) => {
+            routerSet.add(x.routerDeviceId);
+        });
+
+        const routerIterator = routerSet.values();
+
+        for (const entry of routerIterator) {
+            routerList.data.forEach((router: any) => {
+                if (router.id === entry) {
+                    routers.push(router.id);
+                    init.push({
+                        name: 'Router',
+                        link: '/router/detail',
+                        id: entry,
+                        children: []
+                    });
+                }
+            });
+        }
+        networkChart.children = init;
+
+        routers.forEach((router: any) => {
+            layerThreeNetwork.data.forEach((network: any) => {
+                if (router === network.routerDeviceId) {
+                    hostAddressList.forEach((host: any) => {
+                        if (
+                            host.networkId === network.id &&
+                            host.switchDeviceId !== null
+                        ) {
+                            switches.push({
+                                name: 'Switch',
+                                routerId: router,
+                                link: '/switch/detail',
+                                id: `${host.switchDeviceId}`,
+                                networkId: network.id,
+                                prefix: network.prefix,
+                                ipaddress: host.address,
+                                children: []
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        switches.forEach((switchDevice: any) => {
+            hostAddressList.forEach((host: any) => {
+                if (
+                    host.clientPcId !== null &&
+                    host.networkId === switchDevice.networkId
+                ) {
+                    let prefix = layerThreeNetwork.data.find(
+                        (x: any) => x.id === host.networkId
+                    ).prefix;
+                    switchDevice.children.push({
+                        name: 'Pc',
+                        id: host.clientPcId,
+                        ipaddress: host.address,
+                        prefix,
+                        link: '/client/detail'
+                    });
+                }
+                if (
+                    host.serverDeviceId !== null &&
+                    host.networkId === switchDevice.networkId
+                ) {
+                    let prefix = layerThreeNetwork.data.find(
+                        (x: any) => x.id === host.networkId
+                    ).prefix;
+                    switchDevice.children.push({
+                        name: 'Server',
+                        id: host.serverDeviceId,
+                        ipaddress: host.address,
+                        prefix,
+                        link: '/server/detail'
+                    });
+                }
+                if (
+                    host.printerId !== null &&
+                    host.networkId === switchDevice.networkId
+                ) {
+                    let prefix = layerThreeNetwork.data.find(
+                        (x: any) => x.id === host.networkId
+                    ).prefix;
+                    switchDevice.children.push({
+                        name: 'Printer',
+                        id: host.printerId,
+                        ipaddress: host.address,
+                        prefix,
+                        link: '/printer/detail'
+                    });
+                }
+            });
+        });
+
+        networkChart.children.forEach((router: any) => {
+            if (router.name === 'Router') {
+                switches.forEach((switchDevice: any) => {
+                    if (switchDevice.routerId === router.id) {
+                        console.log(router);
+                        router.children.push(switchDevice);
+                    }
+                });
+            }
+        });
+
+        return true;
     };
 
     const SvgSelector = (device: string) => {
@@ -156,17 +223,23 @@ const NetworkIndex = () => {
     const renderRectSvgNode = ({ nodeDatum, toggleNode }: any) => (
         <g
             onClick={() => {
-                test(nodeDatum?.id);
+                updateDevice(
+                    nodeDatum?.id,
+                    nodeDatum?.name,
+                    nodeDatum?.ipaddress,
+                    nodeDatum?.link,
+                    nodeDatum?.prefix
+                );
             }}>
             <rect width='20' height='20' fill='none' stroke='none' x='-100' />
 
             <foreignObject y='60' x='-80' width='150' height='200'>
-                <LabelContainer>
-                    <Label>{nodeDatum?.name}</Label>
+                <Module.LabelContainer>
+                    <Module.Label>{nodeDatum?.name}</Module.Label>
                     {nodeDatum?.ipaddress && (
-                        <Label>{nodeDatum?.ipaddress}</Label>
+                        <Module.Label>{nodeDatum?.ipaddress}</Module.Label>
                     )}
-                </LabelContainer>
+                </Module.LabelContainer>
             </foreignObject>
             {SvgSelector(nodeDatum?.name)}
         </g>
@@ -174,40 +247,58 @@ const NetworkIndex = () => {
 
     return (
         <>
-            <DiagramName>Network diagram</DiagramName>
-            <DiagramContainer>
-                <NetworkDiagram>
-                    <Container ref={containerRef}>
-                        <Tree
-                            translate={translate}
-                            data={orgChart}
-                            nodeSize={nodeSize}
-                            orientation='vertical'
-                            collapsible={false}
-                            renderCustomNodeElement={renderRectSvgNode}
-                        />
-                    </Container>
-                </NetworkDiagram>
-                <NetworkInformationConatainer>
-                    <DisplayInfo>
-                        <DisplayInfoName>Node infomrations</DisplayInfoName>
-                        <DisplayInforLabel>Title:</DisplayInforLabel>
-                        <DisplayInfoValue>ClinetPC1</DisplayInfoValue>
-                        <DisplayInforLabel>
-                            Last status changed:
-                        </DisplayInforLabel>
-                        <DisplayInfoValue>2021.04.01</DisplayInfoValue>
-                        <DisplayInforLabel>IP address:</DisplayInforLabel>
-                        <DisplayInfoValue>10.0.1.50</DisplayInfoValue>
-                        <DisplayInforLabel>Prefix:</DisplayInforLabel>
-                        <DisplayInfoValue>28</DisplayInfoValue>
-                        {/* <DisplayInforLabel>Total connected:</DisplayInforLabel>
-                        <DisplayInfoValue></DisplayInfoValue> */}
-                        <Button>View device</Button>
-                        <DisplayInfoValue></DisplayInfoValue>
-                    </DisplayInfo>
-                </NetworkInformationConatainer>
-            </DiagramContainer>
+            <Module.DiagramName>Network diagram</Module.DiagramName>
+            <Module.DiagramContainer>
+                <Module.NetworkDiagram>
+                    <Module.Container ref={containerRef}>
+                        {GenerateTree() && (
+                            <Tree
+                                translate={translate}
+                                data={networkChart}
+                                nodeSize={nodeSize}
+                                orientation='vertical'
+                                collapsible={false}
+                                renderCustomNodeElement={renderRectSvgNode}
+                            />
+                        )}
+                    </Module.Container>
+                </Module.NetworkDiagram>
+                <Module.NetworkInformationConatainer>
+                    <Module.DisplayInfo>
+                        <Module.DisplayInfoName>
+                            Node information
+                        </Module.DisplayInfoName>
+                        <Module.DisplayInforLabel>
+                            Title:
+                        </Module.DisplayInforLabel>
+                        <Module.DisplayInfoValue>
+                            {device.title && device.title}
+                        </Module.DisplayInfoValue>
+                        <Module.DisplayInforLabel>
+                            IP address:
+                        </Module.DisplayInforLabel>
+                        <Module.DisplayInfoValue>
+                            {device.ipaddress && device.ipaddress}
+                        </Module.DisplayInfoValue>
+                        <Module.DisplayInforLabel>
+                            Prefix:
+                        </Module.DisplayInforLabel>
+                        <Module.DisplayInfoValue>
+                            {device.prefix && device.prefix}
+                        </Module.DisplayInfoValue>
+
+                        {device.link && (
+                            <Module.Button
+                                onClick={() => {
+                                    history.push(`${device.link}/${device.id}`);
+                                }}>
+                                View device
+                            </Module.Button>
+                        )}
+                        <Module.DisplayInfoValue></Module.DisplayInfoValue>
+                    </Module.DisplayInfo>
+                </Module.NetworkInformationConatainer>
+            </Module.DiagramContainer>
         </>
     );
 };

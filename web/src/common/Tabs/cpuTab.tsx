@@ -1,4 +1,6 @@
 import * as Module from '../Styles/detail.style';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export type CpuProps = {
     title?: string;
@@ -8,6 +10,10 @@ export type CpuProps = {
     cpuFrequency?: string;
     cpuFrequencyType?: string;
     description?: string;
+};
+
+const modules = {
+    toolbar: false
 };
 
 const CPUTab = ({
@@ -36,7 +42,14 @@ const CPUTab = ({
                 <Module.ObjectName>CPU frequency Type:</Module.ObjectName>
                 <Module.ObjectData>{cpuFrequencyType}</Module.ObjectData>
                 <Module.ObjectName>Description:</Module.ObjectName>
-                <Module.ObjectData>{description}</Module.ObjectData>
+                <Module.ObjectData>
+                    <ReactQuill
+                        readOnly={true}
+                        modules={modules}
+                        theme='snow'
+                        value={description || ''}
+                    />
+                </Module.ObjectData>
             </Module.DetailGrid>
         </Module.Container>
     );

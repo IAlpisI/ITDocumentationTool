@@ -36,7 +36,7 @@ function PrinterForm() {
             colored: data.colored,
             duplex: data.duplex,
             emulation: data.emulation,
-            paperformat: data.paperformat,
+            paperformat: data.paperFormat,
             general: {
                 title: data.generalTitle,
                 purpose: data.purpose,
@@ -44,16 +44,11 @@ function PrinterForm() {
                 tag: data.tags,
                 description: data.generalDescription
             },
-            hostaddress: {
-                address: data.address,
-                networkId: data.network,
-                description: data.hostAddressDescription
-            }
         };
+        // console.log(printerData);
         if (isEdit) {
             printerData['id'] = id;
             printerData.general.id = printer.data.generalId;
-            printerData.hostaddress.id = printer.data.hostAddress.id;
 
             await dispatch(updatePrinter(printerData));
         } else {
@@ -62,6 +57,8 @@ function PrinterForm() {
         }
         mainPage();
     };
+
+    console.log(printer)
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.code === 'Enter') e.preventDefault();
@@ -86,14 +83,6 @@ function PrinterForm() {
                             <General />
                         )}
 
-                        {isEdit ? (
-                            printer.data.hostAddress && (
-                                <HostAddress props={printer.data.hostAddress} />
-                            )
-                        ) : (
-                            <HostAddress />
-                        )}
-
                         <FormStyle.Container id={'Printer'}>
                             {((printer.data &&
                                 printer.status === 'completed') ||
@@ -108,14 +97,16 @@ function PrinterForm() {
                                         defaultValue={printer.data.type}
                                     />
                                     <FormStyle.Label>Colored</FormStyle.Label>
-                                    <FormStyle.Input
+                                    <FormStyle.CheckBox
+                                        type={'checkbox'}
                                         {...methods.register('colored')}
                                         defaultValue={
                                             printer.data.colored || false
                                         }
                                     />
                                     <FormStyle.Label>Duplex</FormStyle.Label>
-                                    <FormStyle.Input
+                                    <FormStyle.CheckBox
+                                        type={'checkbox'}
                                         {...methods.register('duplex')}
                                         defaultValue={
                                             printer.data.duplex || false
@@ -129,6 +120,10 @@ function PrinterForm() {
                                     <FormStyle.Label>
                                         Paper format
                                     </FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('paperFormat')}
+                                        defaultValue={printer.data.paperFormat}
+                                    />
                                 </FormStyle.Column>
                             )}
                         </FormStyle.Container>

@@ -58,9 +58,6 @@ const LoginForm = () => {
 
     const onSubmit = async (data: any) => {
         await dispatch(loginUser(data));
-        // if(status === 'completed') {
-            
-        // }   
     };
 
     useEffect(() => {
@@ -71,13 +68,15 @@ const LoginForm = () => {
         }
     }, [dispatch, error, status]);
 
+    console.log(error);
+
     return (
         <form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
             <LoginFormContainer>
                 <FormName>Sign in</FormName>
                 <FormLabel>Username</FormLabel>
                 <Module.Input width={'100%'} {...register('username', { required: 'required', })} />
-                {error.username && (
+                {errors.username && (
                     <ErrorMessage role='alert'>{errors.username.message}</ErrorMessage>
                 )}
                 <FormLabel>Password</FormLabel>
@@ -93,6 +92,7 @@ const LoginForm = () => {
                     })}
                 />
                 {errors.password && <ErrorMessage role="alert">{errors.password.message}</ErrorMessage>}
+                {error.name !== undefined && <ErrorMessage role='alert'>Incorrect login information</ErrorMessage>}
                 <FormSubmitButton type='submit'>Login</FormSubmitButton>
             </LoginFormContainer>
         </form>

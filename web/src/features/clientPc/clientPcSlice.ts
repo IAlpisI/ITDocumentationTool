@@ -1,6 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import * as api from "../../common/api"
-import {clientPc, clientPcGetAll} from "../../common/constants"
+import {clientPc, clientPcGetAll, clientPcExport} from "../../common/constants"
+
+export const ExportClientPc = createAsyncThunk(
+    'client/exportall',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await api.getAll(clientPcExport)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
 
 export const fetchClients = createAsyncThunk(
     'client/fetchall',
@@ -67,6 +78,11 @@ const initialState = {
         data: [],
         status: {},
         error: {}
+    },
+    exportList: {
+        data: [],
+        status: {},
+        error: {}
     }
 }
 
@@ -80,6 +96,11 @@ const clientSlice = createSlice({
                 status: 'completed',
                 data: action.payload,
                 error: {}
+            }
+            state.singleClient = {
+                status: 'idle',
+                data: [],
+                error: {},
             }
         })
         builder.addCase(fetchClients.pending, (state, _) => {
@@ -175,6 +196,27 @@ const clientSlice = createSlice({
         })
         builder.addCase(updateClient.rejected, (state, { error }) => {
             state.singleClient = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(ExportClientPc.fulfilled, (state, action) => {
+            state.exportList = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(ExportClientPc.pending, (state, _) => {
+            state.exportList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(ExportClientPc.rejected, (state, { error }) => {
+            state.exportList = {
                 status: 'failed',
                 data: [],
                 error: error,

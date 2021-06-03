@@ -18,8 +18,9 @@ function CableIndex() {
             tableList={cableList.data}
             tableHeader={Header}
             tableLinks={Links}
-            tableName={'Cable'}
+            tableName={'Cables'}
             buttonName={'cable'}
+            tableExportButtons={false}
         />
     );
 }

@@ -15,9 +15,13 @@ export const ButtonLink = styled(Link)`
     /* display:flex; */
 `;
 
+export const CheckBox = styled.input`
+`
+
 export const ErrorMessage = styled.span`
     font-size: 12px;
     color: red;
+    padding-top: 5px;
 `;
 
 export const FormSpacingButtons = styled.div`
@@ -115,7 +119,7 @@ export const FormContainer = styled.div`
 `;
 
 export const FormName = styled.div`
-    font-size: 40px;
+    font-size: 30px;
     color: #708188;
     margin: 4px;
 `;

@@ -4,21 +4,18 @@ export const Header = [
         headerName: 'Title'
     },
     {
+        entityColumn: 'cpuCores',
+        headerName: 'CPU cores'
+    },
+    {
         entityColumn: 'manufacturer',
         headerName: 'Manufacturer'
     },
-    {
-        entityColumn: 'type',
-        headerName: 'Type'
-    },
-    {
-        entityColumn: 'capacity',
-        headerName: 'Capacity'
-    },
-    {
-        entityColumn: 'capacitytype',
-        headerName: 'Capacity type'
-    },
+
+    // {
+    //     entityColumn: 'cpuFrequency',
+    //     headerName: 'Cpu frequency'
+    // },
     {
         entityColumn: 'action',
         headerName: 'Action'

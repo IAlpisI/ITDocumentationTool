@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchWorkers, ExportWorkers } from './workerSlice';
 import { Header, Links } from './workerData';
 import TableContainer from '../../common/TableContainer';
-import {person, general} from '../../common/tableExports'
+import {person, general} from '../../common/tableExports';
 
 function WorkerIndex() {
     const exportTemplate = [{...general, ...person}]

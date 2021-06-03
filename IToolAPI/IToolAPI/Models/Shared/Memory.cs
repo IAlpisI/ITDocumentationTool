@@ -14,7 +14,6 @@ namespace IToolAPI.Models.Shared
         public string Capacity { get; set; }
         public string CapacityType { get; set; }
         public string Description { get; set; }
-
         public int? ServerDeviceId { get; set; }
         public ServerDevice ServerDevice { get; set; }
     }

@@ -1,4 +1,5 @@
-import React from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import * as Module from '../Styles/detail.style';
 
 export type PowerConsumer = {
@@ -9,6 +10,10 @@ export type PowerConsumer = {
     watt?: string;
     ampere?: string;
     description?: string;
+};
+
+const modules = {
+    toolbar: false
 };
 
 const PowerConsumerTab = ({
@@ -37,7 +42,14 @@ const PowerConsumerTab = ({
                 <Module.ObjectName>Ampere:</Module.ObjectName>
                 <Module.ObjectData>{ampere}</Module.ObjectData>
                 <Module.ObjectName>Description:</Module.ObjectName>
-                <Module.ObjectData>{description}</Module.ObjectData>
+                <Module.ObjectData>
+                    <ReactQuill
+                        readOnly={true}
+                        modules={modules}
+                        theme='snow'
+                        value={description || ''}
+                    />
+                </Module.ObjectData>
             </Module.DetailGrid>
         </Module.Container>
     );

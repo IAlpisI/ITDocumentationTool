@@ -19,44 +19,32 @@ export const HeaderForApp = [
 ]
 
 export const HeaderForLicenseAdd = [
-    'Serial', 'key'
+    'Serial', 'Key'
 ]
 
-export const HeaderForLicense = [
-    {
-        entityColumn: 'serial',
-        headerName: 'Serial'
-    },
-    {
-        entityColumn: 'key',
-        headerName: 'Key'
-    },
-    {
-        entityColumn: 'action',
-        headerName: 'Action'
-    },
-]
+// export const HeaderForLicense = [
+//     {
+//         entityColumn: 'serial',
+//         headerName: 'Serial'
+//     },
+//     {
+//         entityColumn: 'key',
+//         headerName: 'Key'
+//     },
+//     {
+//         entityColumn: 'action',
+//         headerName: 'Action'
+//     },
+// ]
 
 export const LicenseHeader = [
     {
-        entityColumn: 'amount',
-        headerName: 'Amount'
-    },
-    {
-        entityColumn: 'key',
+        entityColumn: 'keyInformation',
         headerName: 'Key'
     },
     {
         entityColumn: 'serial',
         headerName: 'Serial'
-    },
-    {
-        entityColumn: 'expireDay',
-        headerName: 'Expire day'
-    },
-    {
-        entityColumn: 'pricePerUnit',
-        headerName: 'Price per unit'
     },
     {
         entityColumn: 'action',
@@ -67,7 +55,15 @@ export const LicenseHeader = [
 export const Links =
 {
     editLink: 'application/edit/',
-    deleteLink: 'application/delete/',
+    deleteLink: 'application',
+    viewLink: '/application/detail/',
+    formLink: 'application/form',
+    index: 'application'
+}
+
+export const LicenseLinks = {
+    deleteLink: 'application/license',
+    editLink: 'application/edit/',
     viewLink: 'application/detail/',
     formLink: 'application/form',
     index: 'application'

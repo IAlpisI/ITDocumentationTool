@@ -42,7 +42,8 @@ const PropertiesTitle = styled.div`
     justify-content: center;
     font-size: 24px;
     font-weight: 800;
-` 
+    color: ${(props) => props.theme.colors.grey3};
+`;
 
 const PropertiesPanel = () => {
     const dispatch = useDispatch();
@@ -54,7 +55,8 @@ const PropertiesPanel = () => {
     const updateAttr = useCallback((event) => {
         const attr = event.target.name;
         let value = event.target.value;
-        console.log(value)
+        console.log(value);
+        console.log(attr);
         // if(isNaN(value) || value === undefined) return
         if (attr !== 'stroke' && attr !== 'fill') value = parseInt(value);
 
@@ -79,22 +81,29 @@ const PropertiesPanel = () => {
                         <div className='properties'>
                             <>
                                 <div className='key'>
-                                    Title{' '}
+                                    Type{' '}
                                     <span className='value'>
-                                        {selectedShape.type}
+                                        {selectedShapeData?.type}
                                     </span>
                                 </div>
 
-                                <div className='key'>
-                                    Stroke{' '}
-                                    <input
-                                        className='value'
-                                        name='stroke'
-                                        type='color'
-                                        value={selectedShapeData?.stroke}
-                                        onChange={updateAttr}
-                                    />
-                                </div>
+                                {(selectedShapeData?.type === 'wall' ||
+                                    selectedShapeData?.type === 'table') && (
+                                    <>
+                                        <div className='key'>
+                                            Stroke{' '}
+                                            <input
+                                                className='value'
+                                                name='stroke'
+                                                type='color'
+                                                value={
+                                                    selectedShapeData?.stroke
+                                                }
+                                                onChange={updateAttr}
+                                            />
+                                        </div>{' '}
+                                    </>
+                                )}
 
                                 <div className='key'>
                                     Fill{' '}
@@ -120,13 +129,17 @@ const PropertiesPanel = () => {
                                     <PropertyInput
                                         name='width'
                                         onChange={updateAttr}
-                                        value={selectedShapeData?.width}
+                                        value={Math.round(
+                                            selectedShapeData?.width
+                                        )}
                                         area={'3 / 2 / 4 / 3'}
                                     />
                                     <PropertyInput
                                         name='height'
                                         onChange={updateAttr}
-                                        value={selectedShapeData?.height}
+                                        value={Math.round(
+                                            selectedShapeData?.height
+                                        )}
                                         area={'2 / 2 / 3 / 3'}
                                     />
                                 </PropertyContainer>
@@ -144,13 +157,13 @@ const PropertiesPanel = () => {
                                     <PropertyInput
                                         name='y'
                                         onChange={updateAttr}
-                                        value={selectedShapeData?.y}
+                                        value={Math.round(selectedShapeData?.y)}
                                         area={'3 / 2 / 4 / 3'}
                                     />
                                     <PropertyInput
                                         name='x'
                                         onChange={updateAttr}
-                                        value={selectedShapeData?.x}
+                                        value={Math.round(selectedShapeData?.x)}
                                         area={'2 / 2 / 3 / 3'}
                                     />
                                 </PropertyContainer>
@@ -165,7 +178,9 @@ const PropertiesPanel = () => {
                                     <PropertyInput
                                         name='rotation'
                                         onChange={updateAttr}
-                                        value={selectedShapeData?.rotation}
+                                        value={Math.round(
+                                            selectedShapeData?.rotation
+                                        )}
                                         area={'2 / 2 / 3 / 3'}
                                     />
                                 </PropertyContainer>

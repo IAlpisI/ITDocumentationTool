@@ -23,17 +23,22 @@ export const FormFactor = (props: Props) => {
                 return (
                     <Module.Container id={'FormFactor'}>
                         <Module.Column>
-                            <Module.ComponentName>Form factor</Module.ComponentName>
+                            <Module.ComponentName>
+                                Form factor
+                            </Module.ComponentName>
                             <Module.Label>Name</Module.Label>
                             <Module.Input
                                 {...register('name')}
                                 defaultValue={formFactor?.name}
                             />
-                            <Module.Label>Rack unit</Module.Label>
-                            <Module.Input
-                                {...register('rackunit')}
-                                defaultValue={formFactor?.dimensionUnit || 0}
-                            />
+                            <Module.Label>Dimensions</Module.Label>
+                            <Module.Select
+                                {...register('dimensionUnit')}
+                                defaultValue={formFactor?.dimesnsionUnit}>
+                                <option value={'mm'}>mm</option>
+                                <option value={'cm'}>cm</option>
+                                <option value={'m'}>m</option>
+                            </Module.Select>
                             <Module.Label>Width</Module.Label>
                             <Module.Input
                                 {...register('width')}
@@ -55,10 +60,13 @@ export const FormFactor = (props: Props) => {
                                 defaultValue={formFactor?.weight || 0}
                             />
                             <Module.Label>Weight measure</Module.Label>
-                            <Module.Input
+                            <Module.Select
                                 {...register('weightMeasure')}
-                                defaultValue={formFactor?.weightMeasure || 0}
-                            />
+                                defaultValue={formFactor?.weightMeasure || 0}>
+                                <option value={'kg'}>kg</option>
+                                <option value={'g'}>g</option>
+                                <option value={'t'}>t</option>
+                            </Module.Select>
 
                             <Module.Label>Description</Module.Label>
                             <Controller

@@ -25,6 +25,7 @@ function ApplicationIndex() {
             tableLinks={Links}
             tableName={'Applications'}
             buttonName={'application'}
+            tableExportButtons={false}
         />
     );
 }

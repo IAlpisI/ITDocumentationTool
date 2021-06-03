@@ -18,6 +18,8 @@ import {
     updateHostAddresses,
     createHostAddresses
 } from '../../features/dashboard/dashboardSlice';
+import { checkMask } from '../../common/helpers/networkMaskCheck';
+import { fetchAllHostAddresses } from '../dashboard/dashboardSlice';
 
 const LayerThreeNetworkDetail = () => {
     const dispatch = useDispatch();
@@ -32,6 +34,7 @@ const LayerThreeNetworkDetail = () => {
 
     const { id } = useParams<{ id: string }>();
     const [menu, setMenu] = useState<boolean>(false);
+    let switchIsPresent: boolean = true;
     const [items, setItems] = useState<{
         printer: boolean;
         client: boolean;
@@ -67,6 +70,10 @@ const LayerThreeNetworkDetail = () => {
         (state: any) => state.dashboard.hostAddressList
     );
 
+    const allHostAddressList = useSelector(
+        (state: any) => state.dashboard.allHostAddressList
+    );
+
     useEffect(() => {
         dispatch(fetchLayerThreeNetwork(id));
         dispatch(fetchPrinters());
@@ -75,6 +82,7 @@ const LayerThreeNetworkDetail = () => {
         dispatch(fetchRouters());
         dispatch(fetchSwitches());
         dispatch(fetchHostAddresses(id));
+        dispatch(fetchAllHostAddresses());
     }, [dispatch, id]);
 
     const generateAddresses = () => {
@@ -82,13 +90,62 @@ const LayerThreeNetworkDetail = () => {
             ipAddresses.push({
                 id: x.id,
                 ip: x.address,
-                test: getDeviceName(x)
+                test: getFullDeviceName(x)
             });
+        });
+
+        ipAddresses.sort(function (a: any, b: any) {
+            if (a.ip < b.ip) {
+                return -1;
+            }
+            if (a.ip > b.ip) {
+                return 1;
+            }
+            return 0;
         });
     };
 
     const toggleMenu = () => {
         setMenu((menu) => !menu);
+    };
+
+    const getFullDeviceName = (x: any) => {
+        if (x.clientPcId !== null) {
+            const data = clientList.data.find(function (client: any) {
+                return client.id === x.clientPcId;
+            });
+
+            return `client - ${data?.title}`;
+        }
+        if (x.printerId !== null) {
+            const data = printerList.data.find(function (client: any) {
+                return client.id === x.printerId;
+            });
+
+            return `printer - ${data?.title}`;
+        }
+        if (x.routerDeviceId !== null) {
+            const data = routerList.data.find(function (client: any) {
+                return client.id === x.routerDeviceId;
+            });
+
+            return `router - ${data?.title}`;
+        }
+        if (x.serverDeviceId !== null) {
+            const data = serverList.data.find(function (client: any) {
+                return client.id === x.serverDeviceId;
+            });
+
+            return `server - ${data?.title}`;
+        }
+        if (x.switchDeviceId !== null) {
+            const data = switchList.data.find(function (client: any) {
+                return client.id === x.switchDeviceId;
+            });
+            switchIsPresent = false;
+
+            return `switch - ${data?.title}`;
+        }
     };
 
     const getDeviceName = (x: any) => {
@@ -102,12 +159,18 @@ const LayerThreeNetworkDetail = () => {
     };
 
     const onSubmit = async (data: any) => {
-        console.log(data.ip);
         const address = `${layerThreeNetwork.data.netIp}/${layerThreeNetwork.data.prefix}`;
         const net = new Netmask(address);
         const networkId = id;
-        let selector:any = {}
-        let isPresent = false
+        let selector: any = {};
+
+        if (!checkMask(data.ip)) {
+            setError('ip', {
+                type: 'manual',
+                message: 'Address format is incorrect'
+            });
+            return;
+        }
 
         if (!net.contains(data.ip)) {
             setError('ip', {
@@ -120,42 +183,81 @@ const LayerThreeNetworkDetail = () => {
         if (addressIsTaken(data.ip)) {
             setError('ip', {
                 type: 'manual',
-                message: 'Address is taken'
+                message: 'Address is already taken'
+            });
+            return;
+        }
+
+        if (selected.device === '' && selected.title === '') {
+            setError('device', {
+                type: 'manual',
+                message: 'Device is not selected'
             });
             return;
         }
 
         let host = hostAddressList.data.find((x: any) => x.address === data.ip);
 
-        let updatedHost = {          
+        let updatedHost = {
             address: data.ip,
             networkId: networkId
         };
 
+        let detachHost = null;
+
         switch (selected.device) {
             case 'printer':
-                selector = {...updatedHost, printerId: selected.id}
+                selector = { ...updatedHost, printerId: selected.id };
+                allHostAddressList.data.forEach((x: any) => {
+                    if (x.printerId === selected.id) {
+                        detachHost = { ...x, printerId: null };
+                    }
+                });
                 break;
             case 'client':
-                selector = {...updatedHost, clientPcId: selected.id}
+                selector = { ...updatedHost, clientPcId: selected.id };
+                allHostAddressList.data.forEach((x: any) => {
+                    if (x.clientPcId === selected.id) {
+                        detachHost = { ...x, clientPcId: null };
+                    }
+                });
                 break;
             case 'server':
-                selector = {...updatedHost, serverDeviceId: selected.id}
+                selector = { ...updatedHost, serverDeviceId: selected.id };
+                allHostAddressList.data.forEach((x: any) => {
+                    if (x.serverDeviceId === selected.id) {
+                        detachHost = { ...x, serverDeviceId: null };
+                    }
+                });
                 break;
-            case 'router':
-                selector = {...updatedHost, routerDeviceId: selected.id}
-                break;
+            // case 'router':
+            //     selector = { ...updatedHost, routerDeviceId: selected.id };
+            //     allHostAddressList.data.forEach((x: any) => {
+            //         if (x.routerDeviceId === selected.id) {
+            //             detachHost = { ...x, routerDeviceId: null };
+            //         }
+            //     });
+            //     break;
             case 'switch':
-                selector = {...updatedHost, switchDeviceId: selected.id}
+                selector = { ...updatedHost, switchDeviceId: selected.id };
+                allHostAddressList.data.forEach((x: any) => {
+                    if (x.switchDeviceId === selected.id) {
+                        detachHost = { ...x, switchDeviceId: null };
+                    }
+                });
                 break;
             default:
                 break;
         }
 
+        if (detachHost !== null)
+            await dispatch(updateHostAddresses(detachHost));
+
         if (host === undefined) {
             await dispatch(createHostAddresses(selector));
         } else {
-            selector.id = host.id
+            detachFromList(host.id);
+            selector.id = host.id;
             await dispatch(updateHostAddresses(selector));
         }
 
@@ -163,6 +265,18 @@ const LayerThreeNetworkDetail = () => {
         clearSelectedItems();
         clearSetItems();
         reset();
+    };
+
+    const getAvailableSwtiches = () => {
+        const switches = switchList.data.filter((s:any) => {
+            let isValid = allHostAddressList.data.some((h:any) => (
+                s.id === h.switchDeviceId
+            ))
+
+            if(!isValid) return s
+        })
+
+        return switches;
     };
 
     const addressIsTaken = (address: string) => {
@@ -224,7 +338,7 @@ const LayerThreeNetworkDetail = () => {
         }
     };
 
-    const detahcFromList = async (hostId: number) => {
+    const detachFromList = async (hostId: number) => {
         let host = hostAddressList.data.find((x: any) => x.id === hostId);
         if (host.id === undefined) return;
 
@@ -344,7 +458,7 @@ const LayerThreeNetworkDetail = () => {
                                         {x.title}
                                     </Module.Item>
                                 ))}
-                            <Module.Wrapper
+                            {/* <Module.Wrapper
                                 onClick={() => {
                                     toggleItems('router');
                                 }}>
@@ -364,7 +478,7 @@ const LayerThreeNetworkDetail = () => {
                                         }}>
                                         {x.title}
                                     </Module.Item>
-                                ))}
+                                ))} */}
                             <Module.Wrapper
                                 onClick={() => {
                                     toggleItems('server');
@@ -386,27 +500,33 @@ const LayerThreeNetworkDetail = () => {
                                         {x.title}
                                     </Module.Item>
                                 ))}
-                            <Module.Wrapper
-                                onClick={() => {
-                                    toggleItems('switch');
-                                }}>
-                                Switches
-                            </Module.Wrapper>
-                            {items.switchDevice &&
-                                switchList.data.map((x: any, index: number) => (
-                                    <Module.Item
-                                        key={index}
+                            {switchIsPresent && (
+                                <>
+                                    <Module.Wrapper
                                         onClick={() => {
-                                            toggleMenu();
-                                            setSelectedObject(
-                                                'switch',
-                                                x.id,
-                                                x.title
-                                            );
+                                            toggleItems('switch');
                                         }}>
-                                        {x.title}
-                                    </Module.Item>
-                                ))}
+                                        Switches
+                                    </Module.Wrapper>
+                                    {items.switchDevice &&
+                                        getAvailableSwtiches().map(
+                                            (x: any, index: number) => (
+                                                <Module.Item
+                                                    key={index}
+                                                    onClick={() => {
+                                                        toggleMenu();
+                                                        setSelectedObject(
+                                                            'switch',
+                                                            x.id,
+                                                            x.title
+                                                        );
+                                                    }}>
+                                                    {x.title}
+                                                </Module.Item>
+                                            )
+                                        )}
+                                </>
+                            )}
                         </Module.Container>
                         <Module.CloseButton onClick={toggleMenu}>
                             Close
@@ -461,7 +581,8 @@ const LayerThreeNetworkDetail = () => {
                             displayEdit={false}
                             displayDetail={false}
                             displayRemove={true}
-                            removeActivasionFunction={detahcFromList}
+                            removeActivasionFunction={detachFromList}
+                            showCheckBox={false}
                         />
                     )}
                     <Module.NetworkInformation>
@@ -470,8 +591,10 @@ const LayerThreeNetworkDetail = () => {
                         </Module.NetworkInformationName>
                         <Module.NetwokrInformationField>
                             {hostAddressList.status === 'completed' &&
-                                `${getNetInformation('size') ||
-                                    0 - layerThreeNetwork.data.length
+                                `${
+                                    getNetInformation('size') &&
+                                    Number(getNetInformation('size')) -
+                                        hostAddressList.data.length
                                 } addresses free`}
                         </Module.NetwokrInformationField>
                         <Module.NetwokrInformationField>

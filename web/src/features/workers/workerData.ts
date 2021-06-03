@@ -29,7 +29,7 @@ export const Links =
 {
     editLink: 'people/edit/',
     deleteLink: 'person',
-    viewLink: 'people/detail/',
+    viewLink: '/people/detail/',
     formLink: 'people/form',
     index: 'person'
 }

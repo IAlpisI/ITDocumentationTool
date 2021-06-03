@@ -21,14 +21,13 @@ export const recentHeader = [
         headerName: 'Title'
     },
     {
-        entityColumn: 'purpose',
-        headerName: 'Purpose'
-    },
-    {
         entityColumn: 'status',
         headerName: 'Status'
     },
-
+    {
+        entityColumn: 'purpose',
+        headerName: 'Purpose'
+    },
     {
         entityColumn: 'creationDate',
         headerName: 'Creation date'
@@ -37,10 +36,6 @@ export const recentHeader = [
         entityColumn: 'modifiedDate',
         headerName: 'Modified date'
     },
-    // {
-    //     entityColumn: 'action',
-    //     headerName: 'Action'
-    // }
 ]
 
 export const recentLinks =

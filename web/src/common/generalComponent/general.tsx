@@ -41,7 +41,9 @@ export const General = (props: Props) => {
                                 defaultValue={general?.purpose}
                             />
                             <Module.Label>Status</Module.Label>
-                            <Module.Select {...register('status')}>
+                            <Module.Select {...register('status')}
+                                defaultValue={general?.status}
+                            >
                                 <Module.FormOptions value="Pending">Pending</Module.FormOptions>
                                 <Module.FormOptions value="NonOperational">Non operational</Module.FormOptions>
                                 <Module.FormOptions value="Production">Production</Module.FormOptions>

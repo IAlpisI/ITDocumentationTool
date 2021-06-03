@@ -9,7 +9,7 @@ namespace IToolAPI.DTOs
     public class SwitchDeviceDTO
     {
         public int Id { get; set; }
-        public General General { get; set; }
+        public string Title { get; set; }
         public string Vlan { get; set; }
         public string Role { get; set; }
         public string SpanningTree { get; set; }

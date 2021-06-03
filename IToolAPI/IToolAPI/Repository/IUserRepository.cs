@@ -9,7 +9,7 @@ namespace IToolAPI.Data
     public interface IUserRepository
     {
         User Create(User user);
-        User GetByEmail(string email);
+        User GetByUsername(string email);
         User GetById(int id);
     }
 }

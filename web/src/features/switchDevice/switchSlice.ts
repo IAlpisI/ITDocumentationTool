@@ -1,7 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import * as api from "../../common/api"
-import {switchDevice, switchDeviceGetAll} from '../../common/constants'
+import {switchDevice, switchDeviceGetAll, switchDeviceExport} from '../../common/constants'
 
+export const ExportSwitch = createAsyncThunk(
+    'switch/exportall',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await api.getAll(switchDeviceExport)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
 
 export const fetchSwitches = createAsyncThunk(
     'switch/fetchall',
@@ -58,6 +68,18 @@ export const updateSwitch = createAsyncThunk(
     }
 )
 
+export const fetchSwitchPorts = createAsyncThunk(
+    'switch/devicePorts',
+    async (id: any, { rejectWithValue }) => {
+        try {
+            return await api.getData(id, switchDevice);
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+
 const initialState = {
     switchList: {
         data: [],
@@ -65,6 +87,16 @@ const initialState = {
         error: {}
     },
     singleSwitch: {
+        data: [],
+        status: {},
+        error: {}
+    },
+    switchPorts: {
+        data: [],
+        status: {},
+        error: {}
+    },
+    exportList: {
         data: [],
         status: {},
         error: {}
@@ -82,7 +114,13 @@ const switchSlice = createSlice({
                 data: action.payload,
                 error: {}
             }
+            state.singleSwitch = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
         })
+        
         builder.addCase(fetchSwitches.pending, (state, _) => {
             state.switchList = {
                 status: 'idle',
@@ -176,6 +214,48 @@ const switchSlice = createSlice({
         })
         builder.addCase(updateSwitch.rejected, (state, { error }) => {
             state.singleSwitch = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(fetchSwitchPorts.fulfilled, (state, action) => {
+            state.switchPorts = {
+                status: 'completed',
+                data: action.payload.devicePorts,
+                error: {}
+            }
+        })
+        builder.addCase(fetchSwitchPorts.pending, (state, _) => {
+            state.switchPorts = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(fetchSwitchPorts.rejected, (state, { error }) => {
+            state.switchPorts = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(ExportSwitch.fulfilled, (state, action) => {
+            state.exportList = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(ExportSwitch.pending, (state, _) => {
+            state.exportList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(ExportSwitch.rejected, (state, { error }) => {
+            state.exportList = {
                 status: 'failed',
                 data: [],
                 error: error,

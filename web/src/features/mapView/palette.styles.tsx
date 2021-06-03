@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const ObjectContainer = styled.div`
     display: grid;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 100px;
+    grid-template-rows: 100px 100px 100px 100px;
     height: 350px;
     width: 200px;
     overflow-y: scroll;
@@ -14,6 +14,10 @@ export const ObjectContainer = styled.div`
 
 export const ObjectWrap = styled.div`
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `;
 
 export const ObjectText = styled.button`
@@ -47,10 +51,16 @@ export const PalleteButton = styled.button`
 export const PalleteLabel = styled.div`
     font-weight: 800;
     font-size: 25px;
+    color: ${(props) => props.theme.colors.grey3};
 `;
 
 export const PalleteObjectLabel = styled.div`
     font-size: 10px;
     display: flex;
     justify-content: center;
+`
+
+export const SaveMessage = styled.div`
+    font-size: 15px;
+    color: #23bb23;
 `

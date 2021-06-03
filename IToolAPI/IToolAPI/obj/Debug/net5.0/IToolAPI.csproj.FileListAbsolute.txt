@@ -154,3 +154,5 @@ B:\Documents\Documentation tool\IToolAPI\IToolAPI\bin\Debug\net5.0\Microsoft.Asp
 B:\Documents\Documentation tool\IToolAPI\IToolAPI\bin\Debug\net5.0\Microsoft.AspNetCore.JsonPatch.dll
 B:\Documents\Documentation tool\IToolAPI\IToolAPI\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 B:\Documents\Documentation tool\IToolAPI\IToolAPI\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
+B:\Documents\Documentation tool\IToolAPI\IToolAPI\bin\Debug\net5.0\AutoMapper.dll
+B:\Documents\Documentation tool\IToolAPI\IToolAPI\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

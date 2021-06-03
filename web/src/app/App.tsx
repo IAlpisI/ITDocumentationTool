@@ -37,7 +37,9 @@ import CableForm from '../features/cables/cableForm';
 import CableDetails from '../features/cables/cableDetails';
 import DefectedItems from '../features/dashboard/defectedItems';
 import Search from '../features/dashboard/search';
-
+import LicenseExpire from '../features/dashboard/licenseExpire';
+import UserIndex from '../features/user/userIndex'; 
+import UserForm from '../features/user/userForm'; 
 
 export const SidebarStyle = styled.div`
     display: flex;
@@ -146,10 +148,16 @@ const DefaultContainer = () => (
             <Route path='/cable/form' exact component={CableForm} />
             <Route path='/cable/detail/:id' exact component={CableDetails} />
             <Route path='/cable/edit/:id' exact component={CableForm} />
+                        {/* User */}
+                        <Route path='/user' exact component={UserIndex} />
+            <Route path='/user/form' exact component={UserForm} />
+            <Route path='/user/edit/:id' exact component={UserForm} />
             {/* defected items */}
             <Route path='/defected' exact component={DefectedItems} />
-            {/* defected items */}
-            <Route path='/search' exact component={Search} />
+            {/* search by tags items */}
+            <Route path='/search/:word' exact component={Search} />
+            {/* license experation date */}
+            <Route path='/expiredlicense' exact component={LicenseExpire} />
 
             {/* <Route component={NotFound} /> */}
         </NavbarStyle>

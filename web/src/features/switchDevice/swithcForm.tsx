@@ -48,7 +48,7 @@ function SwitchForm() {
             },
             formfactor: {
                 name: data.name,
-                rackunit: data.rackunit,
+                dimesnsionunit: data.dimensionUnit,
                 width: data.width,
                 height: data.height,
                 depth: data.depth,
@@ -65,18 +65,12 @@ function SwitchForm() {
                 ampere: data.ampere,
                 description: data.powerConsumerDescription
             },
-            hostaddress: {
-                address: data.address,
-                networkId: data.network,
-                description: data.hostAddressDescription
-            }
         };
         if (isEdit) {
             switchData['id'] = id;
             switchData.general.id = switchDevice.data.generalId;
             switchData.formfactor.id = switchDevice.data.formFactorId;
             switchData.powerconsumer.id = switchDevice.data.powerConsumerId;
-            switchData.hostaddress.id = switchDevice.data.hostAddress.id
 
             await dispatch(updateSwitch(switchData));
         } else {
@@ -130,7 +124,7 @@ function SwitchForm() {
                         ) : (
                             <FormFactor />
                         )}
-
+{/* 
                         {isEdit ? (
                             switchDevice.data.hostAddress && (
                                 <HostAddress
@@ -139,7 +133,7 @@ function SwitchForm() {
                             )
                         ) : (
                             <HostAddress />
-                        )}
+                        )} */}
 
                         <FormStyle.Container id={'Switch'}>
                             {((switchDevice.data &&

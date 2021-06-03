@@ -3,8 +3,9 @@ import { LicenseKey } from '../../common/licenseKeyComponent/licenseKey';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as FormStyle from '../../common/Styles/form.style';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { createLicenseKey, updateLicenseKey } from './applicationSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { createLicenseKey, updateLicenseKey, getLicenseForApplication, resetSingleLicense } from './applicationSlice';
+import { useEffect } from 'react';
 
 const Container = styled.div`
     position: absolute;
@@ -23,45 +24,53 @@ const Blur = styled.div`
     width: 100%;
     height: 100%;
     background: #00000070;
-    /* filter: blur(1000px); */
 `;
 
-let licenseKey = {};
+
 
 const LicenseModal = (props: any) => {
     const methods = useForm();
-    const { switchModal, id } = props;
+    const { switchModal, applicationId, license } = props;
     let history = useHistory();
     const dispatch = useDispatch();
-    const isEdit = window.location.href.includes('edit');
-
-    function handleModal() {
+    const singleLicense = useSelector((state: any) => state.application.singleLicense);
+    let licenseKey:any = {};
+    async function handleModal() {
+        // await dispatch(resetSingleLicense());
         switchModal();
     }
+
+    useEffect(() => {
+        if(license) dispatch(getLicenseForApplication(license))
+    }, [])
 
     const onSubmit = async (data: any) => {
         licenseKey = {
             amount: data.amount,
-            key: data.key,
+            keyInformation: data.key,
             serial: data.serial,
             expireDate: data.expireDate,
             pricePerUnit: data.pricePerUnit,
-            applicationId: id,
+            applicationId: applicationId,
             description: data.licenseDescription
         };
 
-        if (isEdit) {
+        console.log(license);
+
+        if (license !== null) {
+            licenseKey['id'] = license;
             await dispatch(updateLicenseKey(licenseKey));
         } else {
             await dispatch(createLicenseKey(licenseKey));
         }
 
-        history.push(`/application/detail/${id}`);
+        history.push(`/application/detail/${applicationId}`);
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.code === 'Enter') e.preventDefault();
     };
+
 
     return (
         <>
@@ -72,7 +81,7 @@ const LicenseModal = (props: any) => {
                         onKeyDown={(e) => checkKeyDown(e)}
                         autoComplete='off'
                         onSubmit={methods.handleSubmit(onSubmit)}>
-                        <LicenseKey />
+                        {license ? (singleLicense.status === 'completed' && <LicenseKey { ...singleLicense.data} /> ) : <LicenseKey /> }
                         <FormStyle.FormSpacingButtons>
                             <FormStyle.TableConfirmationButton
                                 primary={'primary'}

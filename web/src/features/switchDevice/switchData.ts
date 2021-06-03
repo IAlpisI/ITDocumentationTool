@@ -25,9 +25,9 @@ export const Links =
 {
     editLink: 'switch/edit/',
     deleteLink: 'switchdevice',
-    viewLink: 'switch/detail/',
+    viewLink: '/switch/detail/',
     formLink: 'switch/form',
     index: 'switch'
 }
 
-export const scrolIds = ['General', 'PowerConsumer', 'FormFactor', 'HostAddress', 'Switch',  'Save']
+export const scrolIds = ['General', 'PowerConsumer', 'FormFactor', 'Switch',  'Save']

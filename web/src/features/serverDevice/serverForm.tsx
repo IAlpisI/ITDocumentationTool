@@ -43,7 +43,7 @@ function ServerForm() {
             },
             formfactor: {
                 name: data.name,
-                rackunit: data.rackunit,
+                dimesnsionUnit: data.dimensionUnit,
                 width: data.width,
                 height: data.height,
                 depth: data.depth,
@@ -51,15 +51,15 @@ function ServerForm() {
                 weightmeasure: data.weightMeasure,
                 description: data.fomrFactorDescription
             },
-            hostaddress: {
-                address: data.address,
-                networkId: data.network,
-                description: data.hostAddressDescription
-            }
+            // hostaddress: {
+            //     address: data.address,
+            //     networkId: data.network,
+            //     description: data.hostAddressDescription
+            // }
         };
         if (isEdit) {
             server['id'] = id;
-            server.hostaddress = serverDevice.data.hostAddress.id;
+            // server.hostaddress = serverDevice.data.hostAddress?.id;
             await dispatch(updateServer(server));
         } else {
             console.log(server);
@@ -68,6 +68,8 @@ function ServerForm() {
 
         mainPage();
     };
+
+    console.log(serverDevice)
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.code === 'Enter') e.preventDefault();
@@ -93,15 +95,15 @@ function ServerForm() {
                         )}
 
                         {isEdit ? (
-                            serverDevice.data.formfactor && (
+                            serverDevice.data.formFactor && (
                                 <FormFactor
-                                    formFactor={serverDevice.data.formfactor}
+                                    formFactor={serverDevice.data.formFactor}
                                 />
                             )
                         ) : (
                             <FormFactor />
                         )}
-
+{/* 
                         {isEdit ? (
                             serverDevice.data.hostAddress && (
                                 <HostAddress
@@ -110,7 +112,7 @@ function ServerForm() {
                             )
                         ) : (
                             <HostAddress />
-                        )}
+                        )} */}
 
                         <FormStyle.FormSpacingButtons>
                             <FormStyle.TableConfirmationButton

@@ -129,12 +129,15 @@ const MemoryList = (memoryList: any) => {
             {detailMemory.show && (
                 <DataAcceptWindow>
                     <MemoryTab {...getMemory(detailMemory.id)} />
-                    <FormStyle.TableConfirmationButton
+                    <Button
                         type='button'
                         onClick={setDetailMemoryFalse}
-                        primary={''}>
+                        margin='-30px 0 0 -330px'
+                        width='70px'
+                        height='35px'
+                        background>
                         Close
-                    </FormStyle.TableConfirmationButton>
+                    </Button>
                 </DataAcceptWindow>
             )}
             <Module.Container>
@@ -152,6 +155,7 @@ const MemoryList = (memoryList: any) => {
                             Add memory
                         </Button>
                         <TableContainer
+                            width={'100%'}
                             tableList={Convert(memoryList.memoryList, filter)}
                             tableHeader={Header}
                             tableLinks={Links}

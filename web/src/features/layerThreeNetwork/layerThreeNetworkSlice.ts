@@ -81,6 +81,11 @@ const layerThreeNetworkSlice = createSlice({
                 data: action.payload,
                 error: {}
             }
+            state.layerThreeNetwork = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
         })
         builder.addCase(fetchLayerThreeNetworks.pending, (state, _) => {
             state.layerThreeNetworkList = {

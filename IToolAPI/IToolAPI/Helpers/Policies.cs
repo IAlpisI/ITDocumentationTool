@@ -9,14 +9,24 @@ namespace IToolAPI.Helpers
     public class Policies
     {
         public const string Admin = "Admin";
-public const string User = "User";
-public static AuthorizationPolicy AdminPolicy()
+        public const string User = "User";
+        public const string Manager = "Maanger";
+        public const string Editor = "Editor";
+        public static AuthorizationPolicy AdminPolicy()
         {
             return new AuthorizationPolicyBuilder().RequireAuthenticatedUser().RequireRole(Admin).Build();
         }
         public static AuthorizationPolicy UserPolicy()
         {
             return new AuthorizationPolicyBuilder().RequireAuthenticatedUser().RequireRole(User).Build();
+        }
+        public static AuthorizationPolicy ManagerPolicy()
+        {
+            return new AuthorizationPolicyBuilder().RequireAuthenticatedUser().RequireRole(Manager).Build();
+        }
+        public static AuthorizationPolicy EditorPolicy()
+        {
+            return new AuthorizationPolicyBuilder().RequireAuthenticatedUser().RequireRole(Editor).Build();
         }
     }
 }

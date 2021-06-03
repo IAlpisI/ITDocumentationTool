@@ -1,9 +1,8 @@
-import React from 'react';
 import * as Module from '../Styles/detail.style';
 
 export type LicenseKeyProps = {
     amount?: number;
-    key?: string;
+    keyInformation?: string;
     serial?: string;
     expireDate?: Date;
     pricePerUnit?: number;
@@ -12,12 +11,15 @@ export type LicenseKeyProps = {
 
 const LicenseKeyTab = ({
     amount,
-    key,
+    keyInformation,
     serial,
     expireDate,
     pricePerUnit,
     description
 }: LicenseKeyProps) => {
+
+    console.log(amount);
+
     return (
         <Module.Container>
             <Module.ComponentName>License key</Module.ComponentName>
@@ -25,7 +27,7 @@ const LicenseKeyTab = ({
                 <Module.ObjectName>Amount:</Module.ObjectName>
                 <Module.ObjectData>{amount}</Module.ObjectData>
                 <Module.ObjectName>Key:</Module.ObjectName>
-                <Module.ObjectData>{key}</Module.ObjectData>
+                <Module.ObjectData>{keyInformation}</Module.ObjectData>
                 <Module.ObjectName>Serial:</Module.ObjectName>
                 <Module.ObjectData>{serial}</Module.ObjectData>
                 <Module.ObjectName>Expire date:</Module.ObjectName>

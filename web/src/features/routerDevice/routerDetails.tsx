@@ -8,46 +8,47 @@ import RouterTab from '../../common/Tabs/routerTab';
 import { fetchRouter } from './routerSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import NetworkList from '../../common/hostAddress/networkList';
+import PortComponent from '../../common/portComponent/port';
 
 const RouterDetails = () => {
     const dispatch = useDispatch();
     const router = useSelector((state: any) => state.router.singleRouter);
-    const {id} = useParams<{id:string}>();
+    const { id } = useParams<{ id: string }>();
 
     useEffect(() => {
         dispatch(fetchRouter(id));
-    }, [dispatch, id]);
+    }, [dispatch]);
 
     return (
-        <div className='container'>
-            <Tabs>
-                <TabPane name='General' key='1'>
-                    {router.status === 'completed' && (
-                        <GeneralTab {...router.data.general} />
-                    )}
-                </TabPane>
-                <TabPane name='Router' key='2'>
-                    {router.status === 'completed' && (
-                        <RouterTab {...router.data} />
-                    )}
-                </TabPane>
-                <TabPane name='Forma factor' key='3'>
-                    {router.status === 'completed' && (
-                        <PowerConsumerTab {...router.data.powerconsumer} />
-                    )}
-                </TabPane>
-                <TabPane name='Forma factor' key='4'>
-                    {router.status === 'completed' && (
-                        <RouterTab {...router.data} />
-                    )}
-                </TabPane>
-                <TabPane name='Power consumer' key='5'>
-                    {router.status === 'completed' && (
-                        <FormFactorTab {...router.data.formfactor} />
-                    )}
-                </TabPane>
-            </Tabs>
-        </div>
+        <>
+            {router.status === 'completed' && router.data && (
+                <div className='container'>
+                    <Tabs>
+                        <TabPane name='General' key='1'>
+                            <GeneralTab {...router.data.general} />
+                        </TabPane>
+                        <TabPane name='Router' key='2'>
+                            <RouterTab {...router.data} />
+                        </TabPane>
+                        <TabPane name='Power consumer' key='3'>
+                            <PowerConsumerTab {...router.data.powerConsumer} />
+                        </TabPane>
+                        <TabPane name='Networks' key='4'>
+                            <NetworkList
+                                networkList={router.data.layerThreeNetworks}
+                            />
+                        </TabPane>
+                        <TabPane name='Form factor' key='5'>
+                            <FormFactorTab {...router.data.formFactor} />
+                        </TabPane>
+                        <TabPane name='Ports' key='8'>
+                            <PortComponent device='router' />
+                        </TabPane>
+                    </Tabs>
+                </div>
+            )}{' '}
+        </>
     );
 };
 

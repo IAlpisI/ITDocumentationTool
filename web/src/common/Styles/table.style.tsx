@@ -20,6 +20,11 @@ const base = css<{primary:string}>`
     margin: 5px;
     outline: 1px solid ${(props) => props.theme.colors.cyan};
     outline-offset: -0px;
+    transition: 0.1s;
+
+    &:hover {
+        background: ${(props) => props.primary === "primary" ? props.theme.colors.darkenCyan : props.theme.colors.darkenWhite};
+    }
 `
 
 export const TableButton = styled.div`
@@ -58,9 +63,9 @@ export const TableContainer = styled.div`
     box-shadow: 0 0 25px 0 rgba(154,161,171,0.15);
 `
 
-export const Container = styled.div<{padding?: string}>`
+export const Container = styled.div<{padding?: string, width?: string}>`
     background-color: #f8f9fd;
-    width: 100%;
+    width: ${(props) => props.width ? props.width : '1400px'};
     padding:${props => props.padding ? props.padding : '20px 50px'} ;
     display: flex;
     flex-flow: row wrap;

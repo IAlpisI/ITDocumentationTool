@@ -12,6 +12,7 @@ namespace IToolAPI.Models
         public General General { get; set; }
         public string NetIp { get; set; }
         public string Prefix { get; set; }
-
+        public int? RouterDeviceId { get; set; }
+        public RouterDevice RouterDevice { get; set; }
     }
 }

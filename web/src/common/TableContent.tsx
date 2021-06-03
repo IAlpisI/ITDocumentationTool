@@ -55,7 +55,6 @@ function getComparator(order: any, orderBy: any) {
 }
 
 const sortedRowInformation = (rowArray: any, comparator: any) => {
-    console.log(`kitasrow ${Array}`);
     const stabilizeRowArray = rowArray.map((el: any, index: any) => [
         el,
         index
@@ -85,6 +84,7 @@ type Props<DataItem> = {
     displayDetail?: any;
     numberOfPages?: number;
     showCheckBox?: boolean;
+    removeActionColumn?: boolean;
 };
 
 interface ItableLinks {
@@ -115,7 +115,8 @@ export default function TableContent<DataItem extends object | string>({
     displayDetail = true,
     fetchOne,
     numberOfPages = 5,
-    showCheckBox = true
+    showCheckBox = true,
+    removeActionColumn = false
 }: Props<DataItem>) {
     const [popwindow, setPopWindow] = useState<boolean>(false);
     const [orderDirection, setOrderDirection] = useState<string>('asc');
@@ -220,6 +221,7 @@ export default function TableContent<DataItem extends object | string>({
                                 width='70px'
                                 padding='0 10px'
                                 background
+                                margin='80px 0 0 0'
                                 type='button'
                                 onClick={deleteSelected}>
                                 Delete
@@ -228,6 +230,7 @@ export default function TableContent<DataItem extends object | string>({
                                 height='30px'
                                 width='70px'
                                 padding='0 10px'
+                                margin='80px 20px 0 0'
                                 type='button'
                                 onClick={() => {
                                     tootglePopWindow();
@@ -269,7 +272,7 @@ export default function TableContent<DataItem extends object | string>({
                                         key={index}
                                         selected={isItemSelected}>
                                         <TableCell padding='checkbox'>
-                                            {showCheckBox && (
+                                            {showCheckBox && localStorage.getItem('role') !== 'User' && (
                                                 <Checkbox
                                                     onClick={(event) =>
                                                         handleClick(
@@ -284,9 +287,11 @@ export default function TableContent<DataItem extends object | string>({
                                                 />
                                             )}
                                         </TableCell>
-                                        {(Object.keys(tableData[0]) as Array<
-                                            keyof DataItem
-                                        >).map(
+                                        {(
+                                            Object.keys(tableData[0]) as Array<
+                                                keyof DataItem
+                                            >
+                                        ).map(
                                             (key, i) =>
                                                 key !== 'id' && (
                                                     <TableCell key={i}>
@@ -294,13 +299,30 @@ export default function TableContent<DataItem extends object | string>({
                                                     </TableCell>
                                                 )
                                         )}
-                                        <TableCell align='center'>
-                                            { displayDetail && <IconWrapper>
-                                                {detailsActivasionFunction ===
-                                                undefined ? (
-                                                    <Module.ButtonLink
-                                                        to={`${tableLinks.viewLink}${data['id']}`}>
-                                                        <Tooltip title='details'>
+                                        {!removeActionColumn && <TableCell align='center'>
+                                            {displayDetail && (
+                                                <IconWrapper>
+                                                    {detailsActivasionFunction ===
+                                                    undefined ? (
+                                                        <Module.ButtonLink
+                                                            to={`${tableLinks.viewLink}${data['id']}`}>
+                                                            <Tooltip title='details'>
+                                                                <VisibilityIcon
+                                                                    color='disabled'
+                                                                    style={{
+                                                                        fontSize: 15
+                                                                    }}
+                                                                />
+                                                            </Tooltip>
+                                                        </Module.ButtonLink>
+                                                    ) : (
+                                                        <Tooltip
+                                                            onClick={() => {
+                                                                activateDetail(
+                                                                    data['id']
+                                                                );
+                                                            }}
+                                                            title='details'>
                                                             <VisibilityIcon
                                                                 color='disabled'
                                                                 style={{
@@ -308,54 +330,27 @@ export default function TableContent<DataItem extends object | string>({
                                                                 }}
                                                             />
                                                         </Tooltip>
-                                                    </Module.ButtonLink>
-                                                ) : (
-                                                    <Tooltip
-                                                        onClick={() => {
-                                                            activateDetail(
-                                                                data['id']
-                                                            );
-                                                        }}
-                                                        title='details'>
-                                                        <VisibilityIcon
-                                                            color='disabled'
-                                                            style={{
-                                                                fontSize: 15
-                                                            }}
-                                                        />
-                                                    </Tooltip>
+                                                    )}
+                                                </IconWrapper>
+                                            )}
+                                            {displayEdit &&
+                                                localStorage.getItem('role') !==
+                                                    'User' && (
+                                                    <IconWrapper>
+                                                        <Module.ButtonLink
+                                                            to={`${tableLinks.editLink}${data['id']}`}>
+                                                            <Tooltip title='edit'>
+                                                                <EditIcon
+                                                                    color='disabled'
+                                                                    style={{
+                                                                        fontSize: 15
+                                                                    }}
+                                                                />
+                                                            </Tooltip>
+                                                        </Module.ButtonLink>
+                                                    </IconWrapper>
                                                 )}
-                                            </IconWrapper> }
-                                            {displayEdit && (
-                                                <IconWrapper>
-                                                    <Module.ButtonLink
-                                                        to={`${tableLinks.editLink}${data['id']}`}>
-                                                        <Tooltip title='edit'>
-                                                            <EditIcon
-                                                                color='disabled'
-                                                                style={{
-                                                                    fontSize: 15
-                                                                }}
-                                                            />
-                                                        </Tooltip>
-                                                    </Module.ButtonLink>
-                                                </IconWrapper>
-                                            )}
-                                            {displayDelete && (
-                                                <IconWrapper
-                                                    onClick={() => {
-                                                        tootglePopWindow();
-                                                    }}>
-                                                    <Tooltip title='delete'>
-                                                        <DeleteIcon
-                                                            color='disabled'
-                                                            style={{
-                                                                fontSize: 15
-                                                            }}
-                                                        />
-                                                    </Tooltip>
-                                                </IconWrapper>
-                                            )}
+
                                             {displayAdd && (
                                                 <IconWrapper
                                                     onClick={() => {
@@ -394,8 +389,29 @@ export default function TableContent<DataItem extends object | string>({
                                                     </Tooltip>
                                                 </IconWrapper>
                                             )}
-                                        </TableCell>
-                                    </TableRow>
+                                            {displayDelete &&
+                                                (localStorage.getItem(
+                                                    'role'
+                                                ) === 'Admin' ||
+                                                    localStorage.getItem(
+                                                        'role'
+                                                    ) === 'Manager') && (
+                                                    <IconWrapper
+                                                        onClick={() => {
+                                                            tootglePopWindow();
+                                                        }}>
+                                                        <Tooltip title='delete'>
+                                                            <DeleteIcon
+                                                                color='disabled'
+                                                                style={{
+                                                                    fontSize: 15
+                                                                }}
+                                                            />
+                                                        </Tooltip>
+                                                    </IconWrapper>
+                                                )}
+                                        </TableCell>}
+                                    </TableRow> 
                                 );
                             })}
                     </TableBody>

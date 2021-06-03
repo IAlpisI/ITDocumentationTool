@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import * as api from "../../common/api"
-import {cable, cableGetAll} from "../../common/constants"
+import {cable, cableGetAll, cableFullInformation} from "../../common/constants"
 
 
 export const fetchCables = createAsyncThunk(
@@ -13,6 +13,18 @@ export const fetchCables = createAsyncThunk(
         }
     }
 )
+
+export const fetchCablesWithFullInformation = createAsyncThunk(
+    'cable/getallinformation',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await api.getAll(cableFullInformation)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
 
 export const fetchCable = createAsyncThunk(
     'cable/getone',
@@ -64,6 +76,11 @@ const initialState = {
         status: {},
         error: {}
     },
+    cablePorts: {
+        data: [],
+        status: {},
+        error: {}
+    },
     singleCable: {
         data: [],
         status: {},
@@ -101,6 +118,32 @@ const cableSlice = createSlice({
         })
         builder.addCase(fetchCables.rejected, (state, { error }) => {
             state.cableList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(fetchCablesWithFullInformation.fulfilled, (state, action) => {
+            state.cablePorts = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+            // state.cablePorts = {
+            //     data: [],
+            //     status: 'idle',
+            //     error: {}
+            // }
+        })
+        builder.addCase(fetchCablesWithFullInformation.pending, (state, _) => {
+            state.cablePorts = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(fetchCablesWithFullInformation.rejected, (state, { error }) => {
+            state.cablePorts = {
                 status: 'failed',
                 data: [],
                 error: error,

@@ -34,11 +34,11 @@ export const IpHeader =
 
 export const Links =
 {
-    editLink: 'layerThreeNetwork/edit/',
-    deleteLink: 'layerThreeNetwork/delete/',
-    viewLink: 'layerThreeNetwork/detail/',
-    formLink: 'layerThreeNetwork/form',
-    index: 'layerThreeNetwork'
+    editLink: 'layerthreenetwork/edit/',
+    deleteLink: 'layerthreenetwork',
+    viewLink: 'layerthreenetwork/detail/',
+    formLink: 'layerthreenetwork/form',
+    index: 'layerthreenetwork'
 }
 
 export const scrolIds = ['General', 'Network', 'Save']

@@ -27,7 +27,7 @@ const PrinterDetails = () => {
                 </TabPane>
                 <TabPane name='Host address' key='3'>
                     {printer.status === 'completed' && (
-                        <HostAddressTab {...printer.data.hostaddress} />
+                        <HostAddressTab {...printer.data.hostAddress} />
                     )}
                 </TabPane>
                 <TabPane name='Printer' key='2'>

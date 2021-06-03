@@ -7,7 +7,7 @@ export const Content = styled.div`
 export const Layout = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 50px 150px 290px 290px;
+    grid-template-rows: 50px 150px 280px 280px;
     gap: 20px;
 `;
 
@@ -29,8 +29,6 @@ export const TableName = styled.div`
     font-size: 20px;
     color: ${(props) => props.theme.colors.grey3};
 `;
-
-export const TableContent = styled.div``;
 
 export const ContentLabel = styled.div<{ area: string }>`
     grid-area: ${(props) => props.area};

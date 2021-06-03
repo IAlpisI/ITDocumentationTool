@@ -21,11 +21,8 @@ namespace IToolAPI.Models
         public Cpu Cpu { get; set; }
         public int? PowerConsumerId { get; set; }
         public PowerConsumer PowerConsumer { get; set; }
-        public int? ApplicationId { get; set; }
-        public Application Application { get; set; }
-        public int? LicenseKeyId { get; set; }
-        public LicenseKey LicenseKey { get; set; }
-        public int? HostAddressId { get; set; }
         public HostAddress HostAddress { get; set; }
+        public List<ClientPcApplication> ClientPcApplications { get; set; }
+        public List<ClientPcLicenseKey> ClientPcLicenseKeys { get; set; }
     }
 }

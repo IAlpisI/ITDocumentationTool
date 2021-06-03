@@ -16,6 +16,7 @@ using IToolAPI.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using IToolAPI.Repository;
 
 namespace IToolAPI
 {
@@ -32,6 +33,8 @@ namespace IToolAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
@@ -69,12 +72,15 @@ namespace IToolAPI
             });
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IApplicationRepository, ApplicationRespository>();
             services.AddScoped<JwtService>();
 
             services.AddAuthorization(config =>
             {
                 config.AddPolicy(Policies.Admin, Policies.AdminPolicy());
                 config.AddPolicy(Policies.User, Policies.UserPolicy());
+                config.AddPolicy(Policies.Manager, Policies.ManagerPolicy());
+                config.AddPolicy(Policies.Editor, Policies.EditorPolicy());
             });
 
             services.AddCors();

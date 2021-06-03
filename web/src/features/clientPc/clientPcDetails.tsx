@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import GeneralTab from '../../common/Tabs/generalTab';
 import TabPane from '../../common/Tabs/tabPane';
 import Tabs from '../../common/Tabs/tabs';
@@ -9,7 +9,8 @@ import { fetchClient } from './clientPcSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import ApplicationTab from '../../common/Tabs/applicationTab';
-import HostAddressTAb from '../../common/Tabs/hostAddressTab'
+import HostAddressTAb from '../../common/Tabs/hostAddressTab';
+import PortComponent from '../../common/portComponent/port';
 
 const ClientDetails = () => {
     const dispatch = useDispatch();
@@ -43,14 +44,12 @@ const ClientDetails = () => {
                         <PowerConsumer {...client.data.powerConsumer} />
                     )}
                 </TabPane>
-                <TabPane name='Host address' key='4'>
+                <TabPane name='Application' key='5'>
+                    <ApplicationTab device={'client'} />
+                </TabPane>
+                <TabPane name='Host address' key='6'>
                     {client.status === 'completed' && (
                         <HostAddressTAb {...client.data.hostAddress} />
-                    )}
-                </TabPane>
-                <TabPane name='Application' key='5'>
-                    {client.status === 'completed' && (
-                        <ApplicationTab {...client.data.application} />
                     )}
                 </TabPane>
             </Tabs>

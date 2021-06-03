@@ -20,7 +20,7 @@ export const Header = [
 export const Links =
 {
     editLink: 'application/edit/',
-    deleteLink: 'application/delete/',
+    deleteLink: 'search/removeport',
     viewLink: 'application/detail/',
     formLink: 'application/form',
     index: 'application'

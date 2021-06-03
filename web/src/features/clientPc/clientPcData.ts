@@ -2,15 +2,15 @@ export const Header = [
     {
         entityColumn: 'title',
         headerName: 'Title'
+    }, {
+        entityColumn: 'purpose',
+        headerName: 'Purpose'
     },
     {
         entityColumn: 'status',
         headerName: 'Status'
     },
-    {
-        entityColumn: 'purpose',
-        headerName: 'Purpose'
-    },
+
     {
         entityColumn: 'action',
         headerName: 'Action'
@@ -26,4 +26,4 @@ export const Links =
     index: 'client'
 }
 
-export const scrollIds = ['General', 'Memory', 'CPU', 'PowerConsumer', 'HostAddress', 'Save']
+export const scrollIds = ['General', 'Memory', 'CPU', 'PowerConsumer', 'Client', 'Save']

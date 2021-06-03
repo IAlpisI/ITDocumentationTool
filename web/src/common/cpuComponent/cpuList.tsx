@@ -17,7 +17,7 @@ import { Header, Links } from './cpuData';
 import { Convert } from '../helpers/filterKeys';
 import CPUTab from '../Tabs/cpuTab';
 
-const MemoryList = (CPUlist: any) => {
+const CPUList = (CPUlist: any) => {
     const methods = useForm();
     const dispatch = useDispatch();
     const { id } = useParams<{ id: string }>();
@@ -33,38 +33,41 @@ const MemoryList = (CPUlist: any) => {
         id: number;
     }>({ show: false, id: 0 });
 
-    const toggleDetailMemory = (id: number) => {
+    const toggleDetailCPU = (id: number) => {
         setDetailCPU({ show: !detailCPU.show, id });
     };
 
-    const setDetailMemoryFalse = () => {
+    const setDetailCPUFalse = () => {
         setDetailCPU({ ...detailCPU, show: false });
     };
 
-    const setEditMomoryShowToFalse = () => {
+    const setEditCPUShowToFalse = () => {
         setEditCPU({ ...editCPU, show: false });
     };
 
-    const toggleAddMemory = () => {
+    const toggleAddCPU = () => {
         setShowCPU((showCPU) => !showCPU);
         methods.reset();
     };
 
-    const toggleSetMemory = (id: number) => {
+    const toggleSetCPU = (id: number) => {
         setEditCPU({ show: !editCPU.show, id });
-        toggleAddMemory();
+        toggleAddCPU();
     };
 
     const onSubmit = (data: any) => {
         CPU = {
-            title: data.cppuTitle,
-            cpuCores: data.cpuManufacturer,
-            manufacturer: data.cpuManufacture,
+            title: data.title,
+            cpuCores: data.cpuCores,
+            manufacturer: data.cpuManufacturer,
             type: data.cpuType,
             cpuFrequency: data.cpuFrequency,
-            cpuFrequencyType: data.cpuFrequencytype,
+            cpuFrequencyType: data.cpuFrequencyType,
             description: data.cpuDescription,
+            serverdeviceid: id
         };
+
+        console.log(CPU)
 
         if (editCPU.show) {
             CPU['id'] = editCPU.id;
@@ -79,10 +82,11 @@ const MemoryList = (CPUlist: any) => {
     };
 
     function filter([key, _]: any) {
-        return key !== 'description' && key !== 'serverDeviceId';
+        return key !== 'description' && key !== 'serverDeviceId'
+         && key !== 'type' && key !== 'cpuFrequencyType' && key !== 'cpuFrequency'
     }
 
-    const getMemory = (id: number) => {
+    const getCPU = (id: number) => {
         if (CPUlist.CPUlist) {
             const value = CPUlist.CPUlist.find((x: any) => x.id === id);
             return value;
@@ -100,7 +104,7 @@ const MemoryList = (CPUlist: any) => {
                             autoComplete='off'
                             onSubmit={methods.handleSubmit(onSubmit)}>
                             {editCPU.show ? (
-                                <CPUForm CPU={getMemory(editCPU.id)} />
+                                <CPUForm CPU={getCPU(editCPU.id)} />
                             ) : (
                                 <CPUForm />
                             )}
@@ -115,8 +119,8 @@ const MemoryList = (CPUlist: any) => {
                                 <FormStyle.TableConfirmationButton
                                     type='button'
                                     onClick={() => {
-                                        setEditMomoryShowToFalse();
-                                        toggleAddMemory();
+                                        setEditCPUShowToFalse();
+                                        toggleAddCPU();
                                     }}
                                     primary={''}>
                                     Cancel
@@ -128,13 +132,16 @@ const MemoryList = (CPUlist: any) => {
             )}
             {detailCPU.show && (
                 <DataAcceptWindow>
-                    <CPUTab {...getMemory(detailCPU.id)} />
-                    <FormStyle.TableConfirmationButton
+                    <CPUTab {...getCPU(detailCPU.id)} />
+                    <Button
                         type='button'
-                        onClick={setDetailMemoryFalse}
-                        primary={''}>
+                        onClick={setDetailCPUFalse}
+                        margin='-30px 0 0 -330px'
+                        width='70px'
+                        height='35px'
+                        background>
                         Close
-                    </FormStyle.TableConfirmationButton>
+                    </Button>
                 </DataAcceptWindow>
             )}
             <Module.Container>
@@ -142,8 +149,8 @@ const MemoryList = (CPUlist: any) => {
                     <Module.TableFlow>
                         <Button
                             onClick={() => {
-                                toggleAddMemory();
-                                setEditMomoryShowToFalse();
+                                toggleAddCPU();
+                                setEditCPUShowToFalse();
                             }}
                             padding={'5px'}
                             height={'25px'}
@@ -152,14 +159,15 @@ const MemoryList = (CPUlist: any) => {
                             Add CPU
                         </Button>
                         <TableContainer
+                            width={'100%'}
                             tableList={Convert(CPUlist.CPUlist, filter)}
                             tableHeader={Header}
                             tableLinks={Links}
                             tableButtons={false}
                             tableNameActive={false}
                             displayEdit={false}
-                            addActivasionFunction={toggleSetMemory}
-                            detailsActivasionFunction={toggleDetailMemory}
+                            addActivasionFunction={toggleSetCPU}
+                            detailsActivasionFunction={toggleDetailCPU}
                             displayAdd
                             fetchOne={fetchServer}
                             removePadding
@@ -171,4 +179,4 @@ const MemoryList = (CPUlist: any) => {
     );
 };
 
-export default MemoryList;
+export default CPUList;

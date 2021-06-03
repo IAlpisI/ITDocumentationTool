@@ -1,7 +1,5 @@
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { General } from '../../common/generalComponent/general';
 import * as FormStyle from '../../common/Styles/form.style';
-import ReactQuill from 'react-quill';
 import Scrollspy from 'react-scrollspy';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
@@ -11,7 +9,7 @@ import React from 'react';
 import { scrolIds } from './userData';
 import { useHistory, useParams } from 'react-router-dom';
 
-function WorkerForm() {
+function UserForm() {
     const methods = useForm();
     const dispatch = useDispatch();
     const currentUser: any = useSelector(
@@ -34,11 +32,12 @@ function WorkerForm() {
         };
         if (window.location.href.includes('edit')) {
             user['id'] = id;
+            console.log(user);
             await dispatch(updateUser(user));
         } else {
             await dispatch(createUser(user));
         }
-        history.push('/users');
+        history.push('/user');
     };
 
     const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -64,26 +63,32 @@ function WorkerForm() {
                                     <FormStyle.ComponentName>
                                         User
                                     </FormStyle.ComponentName>
-                                    <FormStyle.Label>name</FormStyle.Label>
+                                    <FormStyle.Label>Name</FormStyle.Label>
                                     <FormStyle.Input
                                         {...methods.register('name')}
                                         defaultValue={currentUser.data.name}
                                     />
-                                    <FormStyle.Label>username</FormStyle.Label>
+                                    <FormStyle.Label>Username</FormStyle.Label>
                                     <FormStyle.Input
                                         {...methods.register('username')}
                                         defaultValue={currentUser.data.username}
                                     />
-                                    <FormStyle.Label>password</FormStyle.Label>
+                                    <FormStyle.Label>Password</FormStyle.Label>
                                     <FormStyle.Input
+                                        type={'password'}
                                         {...methods.register('password')}
-                                        defaultValue={currentUser.data.password}
+                                        // defaultValue={currentUser.data.password}
                                     />
-                                    <FormStyle.Label>role</FormStyle.Label>
-                                    <FormStyle.Input
+                                    <FormStyle.Label>Role</FormStyle.Label>
+                                    <FormStyle.Select
                                         {...methods.register('role')}
                                         defaultValue={currentUser.data.role}
-                                    />
+                                    >
+                                        {/* <option value={'Admin'}>Admin</option> */}
+                                        <option value={'Manager'}>Manager</option>
+                                        <option value={'Editor'}>Editor</option>
+                                        <option value={'User'}>User</option>
+                                    </FormStyle.Select>
                                 </FormStyle.Column>
                             )}
                         </FormStyle.Container>
@@ -95,13 +100,17 @@ function WorkerForm() {
                                 type='submit'>
                                 Submit
                             </FormStyle.TableConfirmationButton>
-                            <FormStyle.TableConfirmationButton primary={''}>
+                            <FormStyle.TableConfirmationButton 
+                                onClick={() => {
+                                    history.push('/user')
+                                }}
+                            primary={''}>
                                 Cancel
                             </FormStyle.TableConfirmationButton>
                         </FormStyle.FormSpacingButtons>
                     </form>
                 </FormProvider>
-                <FormStyle.SpyMenu>
+                {/* <FormStyle.SpyMenu>
                     <Scrollspy
                         items={scrolIds}
                         currentClassName='is-current'
@@ -115,10 +124,10 @@ function WorkerForm() {
                             </FormStyle.SpyLi>
                         ))}
                     </Scrollspy>
-                </FormStyle.SpyMenu>
+                </FormStyle.SpyMenu> */}
             </FormStyle.FormsContainer>
         </FormStyle.FormContainer>
     );
 }
 
-export default WorkerForm;
+export default UserForm;

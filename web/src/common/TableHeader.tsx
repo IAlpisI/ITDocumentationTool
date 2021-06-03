@@ -44,7 +44,7 @@ export default function TableHeader(props: any) {
         <TableHead>
             <TableRow>
                 <StyledTableCell padding='checkbox'>
-                    {showPagination && <Checkbox
+                    {showPagination && localStorage.getItem('role') !== 'User' && <Checkbox
                         indeterminate={
                             numSelected > 0 && numSelected < rowCount
                         }
@@ -64,8 +64,21 @@ export default function TableHeader(props: any) {
                                 valueToOrderBy === entityColumn
                                     ? orderDirection
                                     : false
-                            }>
-                            <TableSortLabel
+                            }>{headerName}
+                            {/* <TableSortLabel
+                                active={valueToOrderBy === entityColumn}
+                                direction={
+                                    valueToOrderBy === entityColumn
+                                        ? orderDirection
+                                        : 'asc'
+                                }
+                                onClick={createSortHandler(entityColumn)}>
+                                
+                            </TableSortLabel> */}
+                        </StyledTableCell>
+                    ) : (
+                        <StyledTableCell key={entityColumn}>
+                                                        <TableSortLabel
                                 active={valueToOrderBy === entityColumn}
                                 direction={
                                     valueToOrderBy === entityColumn
@@ -75,10 +88,6 @@ export default function TableHeader(props: any) {
                                 onClick={createSortHandler(entityColumn)}>
                                 {headerName}
                             </TableSortLabel>
-                        </StyledTableCell>
-                    ) : (
-                        <StyledTableCell key={entityColumn}>
-                            {headerName}
                         </StyledTableCell>
                     );
                 })}

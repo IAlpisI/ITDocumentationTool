@@ -11,7 +11,6 @@ import 'react-quill/dist/quill.snow.css';
 import React from 'react';
 import { scrolIds } from './routerData';
 import { useHistory, useParams } from 'react-router-dom';
-import { HostAddress } from '../../common/hostAddress/hostAddress';
 
 function RouterForm() {
     const methods = useForm();
@@ -47,7 +46,7 @@ function RouterForm() {
             },
             formfactor: {
                 name: data.name,
-                rackunit: data.rackunit,
+                dimesnsionunit: data.dimensionUnit,
                 width: data.width,
                 height: data.height,
                 depth: data.depth,
@@ -64,18 +63,18 @@ function RouterForm() {
                 ampere: data.ampere,
                 description: data.powerConsumerDescription
             },
-            hostaddress: {
-                address: data.address,
-                networkId: data.network,
-                description: data.hostAddressDescription
-            }
+            // hostaddress: {
+            //     address: data.address,
+            //     networkId: data.network,
+            //     description: data.hostAddressDescription
+            // }
         };
         if (isEdit) {
             router['id'] = id;
             router.general.id = routerDevice.data.generalId;
             router.formfactor.id = routerDevice.data.formFactorId;
             router.powerconsumer.id = routerDevice.data.powerConsumerId;
-            router.hostaddress.id = routerDevice.data.hostAddress.id;
+            // router.hostaddress.id = routerDevice.data.hostAddress.id;
 
             console.log(routerDevice)
             console.log(router)
@@ -130,7 +129,7 @@ function RouterForm() {
                             <FormFactor />
                         )}
 
-                        {isEdit ? (
+                        {/* {isEdit ? (
                             routerDevice.data.hostAddress && (
                                 <HostAddress
                                     props={routerDevice.data.hostAddress}
@@ -138,7 +137,7 @@ function RouterForm() {
                             )
                         ) : (
                             <HostAddress />
-                        )}
+                        )} */}
 
                         <FormStyle.Container id={'Router'}>
                             {((routerDevice.data && routerDevice.status === 'completed') ||

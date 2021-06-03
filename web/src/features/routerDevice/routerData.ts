@@ -23,8 +23,8 @@ export const routerLinks =
 {
     editLink: 'router/edit/',
     deleteLink: 'routerdevice',
-    viewLink: 'router/detail/',
+    viewLink: '/router/detail/',
     formLink: 'router/form'
 }
 
-export const scrolIds = ['General', 'PowerConsumer', 'FormFactor', 'HostAddress', 'Router', 'Save']
+export const scrolIds = ['General', 'PowerConsumer', 'FormFactor', 'Router', 'Save']

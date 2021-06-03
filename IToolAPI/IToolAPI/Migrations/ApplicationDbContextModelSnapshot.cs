@@ -42,15 +42,54 @@ namespace IToolAPI.Migrations
                     b.ToTable("Applications");
                 });
 
-            modelBuilder.Entity("IToolAPI.Models.ClientPc", b =>
+            modelBuilder.Entity("IToolAPI.Models.Cable", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ApplicationId")
+                    b.Property<string>("CableLength")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CableLengthMeasure")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CableType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EndPortId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("GeneralId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartPortId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndPortId");
+
+                    b.HasIndex("GeneralId");
+
+                    b.HasIndex("StartPortId");
+
+                    b.ToTable("Cables");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.ClientPc", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("CpuId")
                         .HasColumnType("int");
@@ -64,14 +103,8 @@ namespace IToolAPI.Migrations
                     b.Property<int?>("GeneralId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("HostAddressId")
-                        .HasColumnType("int");
-
                     b.Property<string>("KeyboardLayout")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("LicenseKeyId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("MemoryId")
                         .HasColumnType("int");
@@ -84,17 +117,11 @@ namespace IToolAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
-
                     b.HasIndex("CpuId");
 
                     b.HasIndex("GeneralId")
                         .IsUnique()
                         .HasFilter("[GeneralId] IS NOT NULL");
-
-                    b.HasIndex("HostAddressId");
-
-                    b.HasIndex("LicenseKeyId");
 
                     b.HasIndex("MemoryId");
 
@@ -103,35 +130,34 @@ namespace IToolAPI.Migrations
                     b.ToTable("ClientPc");
                 });
 
-            modelBuilder.Entity("IToolAPI.Models.DCandidate", b =>
+            modelBuilder.Entity("IToolAPI.Models.ClientPcApplication", b =>
                 {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int?>("ClientPcId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("address")
-                        .HasColumnType("varchar(100)");
+                    b.Property<int?>("ApplicationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("age")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
+                    b.HasKey("ClientPcId", "ApplicationId");
 
-                    b.Property<string>("bloodGroup")
-                        .HasColumnType("varchar(100)");
+                    b.HasIndex("ApplicationId");
 
-                    b.Property<string>("email")
-                        .HasColumnType("varchar(100)");
+                    b.ToTable("ClientPcApplications");
+                });
 
-                    b.Property<string>("fullName")
-                        .HasColumnType("varchar(100)");
+            modelBuilder.Entity("IToolAPI.Models.ClientPcLicenseKey", b =>
+                {
+                    b.Property<int?>("ClientPcId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("mobille")
-                        .HasColumnType("varchar(100)");
+                    b.Property<int?>("LicenseKeyId")
+                        .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("ClientPcId", "LicenseKeyId");
 
-                    b.ToTable("DCandidates");
+                    b.HasIndex("LicenseKeyId");
+
+                    b.ToTable("ClienPcLicenseKeys");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.LayerThreeNetwork", b =>
@@ -150,9 +176,14 @@ namespace IToolAPI.Migrations
                     b.Property<string>("Prefix")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("RouterDeviceId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GeneralId");
+
+                    b.HasIndex("RouterDeviceId");
 
                     b.ToTable("LayerThreeNetwoks");
                 });
@@ -176,7 +207,7 @@ namespace IToolAPI.Migrations
                     b.Property<DateTime>("ExpireDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Key")
+                    b.Property<string>("KeyInformation")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("PricePerUnit")
@@ -190,51 +221,6 @@ namespace IToolAPI.Migrations
                     b.HasIndex("ApplicationId");
 
                     b.ToTable("LicenseKeys");
-                });
-
-            modelBuilder.Entity("IToolAPI.Models.Monitor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Display")
-                        .HasColumnType("float");
-
-                    b.Property<string>("DisplayMeasure")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("FormFactorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("GeneralId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Pivot")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("PowerConsumerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Resolution")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Speaker")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FormFactorId");
-
-                    b.HasIndex("GeneralId");
-
-                    b.HasIndex("PowerConsumerId");
-
-                    b.ToTable("Monitors");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Person", b =>
@@ -270,19 +256,6 @@ namespace IToolAPI.Migrations
                     b.HasIndex("GeneralId");
 
                     b.ToTable("People");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CompanyNumber = "213524",
-                            Description = "asfasfas",
-                            EmailAddress = "afassa",
-                            FullName = "asfsaffa",
-                            Function = "fasfasfsa",
-                            GeneralId = 1,
-                            PersonalNumber = "fsdfdsgdsg"
-                        });
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Printer", b =>
@@ -302,9 +275,6 @@ namespace IToolAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("GeneralId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Generald")
                         .HasColumnType("int");
 
                     b.Property<string>("PaperFormat")
@@ -372,7 +342,37 @@ namespace IToolAPI.Migrations
 
                     b.HasIndex("GeneralId");
 
-                    b.ToTable("serverDevices");
+                    b.ToTable("ServerDevices");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.ServerDeviceApplication", b =>
+                {
+                    b.Property<int?>("ServerDeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ServerDeviceId", "ApplicationId");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("ServerDeviceApplications");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.ServerDeviceLicenseKey", b =>
+                {
+                    b.Property<int?>("ServerDeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LicenseKeyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ServerDeviceId", "LicenseKeyId");
+
+                    b.HasIndex("LicenseKeyId");
+
+                    b.ToTable("ServerDeviceLicenseKeys");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Shared.Cpu", b =>
@@ -435,6 +435,54 @@ namespace IToolAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Desktops");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.Shared.DevicePort", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Plug")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RouterDeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServerDeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Speed")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SpeedMeassure")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SwitchDeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouterDeviceId");
+
+                    b.HasIndex("ServerDeviceId");
+
+                    b.HasIndex("SwitchDeviceId");
+
+                    b.ToTable("DevicePorts");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Shared.FormFactor", b =>
@@ -514,20 +562,6 @@ namespace IToolAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Generals");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ClinetPcId = 0,
-                            CreatioDate = new DateTime(2021, 4, 16, 0, 0, 0, 0, DateTimeKind.Local),
-                            Description = "fasfasfsa",
-                            ModifiedDate = new DateTime(2021, 4, 16, 0, 0, 0, 0, DateTimeKind.Local),
-                            Purpose = "fasfsafsa",
-                            Status = "ffasfas",
-                            Tag = "[\"test\",\"test\"]",
-                            Title = "fafasfas"
-                        });
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Shared.HostAddress", b =>
@@ -540,15 +574,48 @@ namespace IToolAPI.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ClientPcId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("NetworkId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PrinterId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RouterDeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServerDeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SwitchDeviceId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("ClientPcId")
+                        .IsUnique()
+                        .HasFilter("[ClientPcId] IS NOT NULL");
+
                     b.HasIndex("NetworkId");
+
+                    b.HasIndex("PrinterId")
+                        .IsUnique()
+                        .HasFilter("[PrinterId] IS NOT NULL");
+
+                    b.HasIndex("RouterDeviceId");
+
+                    b.HasIndex("ServerDeviceId")
+                        .IsUnique()
+                        .HasFilter("[ServerDeviceId] IS NOT NULL");
+
+                    b.HasIndex("SwitchDeviceId")
+                        .IsUnique()
+                        .HasFilter("[SwitchDeviceId] IS NOT NULL");
 
                     b.ToTable("HostAddresses");
                 });
@@ -669,9 +736,6 @@ namespace IToolAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -681,11 +745,14 @@ namespace IToolAPI.Migrations
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
+                    b.HasIndex("Username")
                         .IsUnique()
-                        .HasFilter("[Email] IS NOT NULL");
+                        .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -699,12 +766,29 @@ namespace IToolAPI.Migrations
                     b.Navigation("General");
                 });
 
+            modelBuilder.Entity("IToolAPI.Models.Cable", b =>
+                {
+                    b.HasOne("IToolAPI.Models.Shared.DevicePort", "EndPort")
+                        .WithMany()
+                        .HasForeignKey("EndPortId");
+
+                    b.HasOne("IToolAPI.Models.Shared.General", "General")
+                        .WithMany()
+                        .HasForeignKey("GeneralId");
+
+                    b.HasOne("IToolAPI.Models.Shared.DevicePort", "StartPort")
+                        .WithMany()
+                        .HasForeignKey("StartPortId");
+
+                    b.Navigation("EndPort");
+
+                    b.Navigation("General");
+
+                    b.Navigation("StartPort");
+                });
+
             modelBuilder.Entity("IToolAPI.Models.ClientPc", b =>
                 {
-                    b.HasOne("IToolAPI.Models.Application", "Application")
-                        .WithMany()
-                        .HasForeignKey("ApplicationId");
-
                     b.HasOne("IToolAPI.Models.Shared.Cpu", "Cpu")
                         .WithMany()
                         .HasForeignKey("CpuId");
@@ -712,14 +796,6 @@ namespace IToolAPI.Migrations
                     b.HasOne("IToolAPI.Models.Shared.General", "General")
                         .WithOne("ClientPc")
                         .HasForeignKey("IToolAPI.Models.ClientPc", "GeneralId");
-
-                    b.HasOne("IToolAPI.Models.Shared.HostAddress", "HostAddress")
-                        .WithMany()
-                        .HasForeignKey("HostAddressId");
-
-                    b.HasOne("IToolAPI.Models.LicenseKey", "LicenseKey")
-                        .WithMany()
-                        .HasForeignKey("LicenseKeyId");
 
                     b.HasOne("IToolAPI.Models.Shared.Memory", "Memory")
                         .WithMany()
@@ -729,19 +805,51 @@ namespace IToolAPI.Migrations
                         .WithMany()
                         .HasForeignKey("PowerConsumerId");
 
-                    b.Navigation("Application");
-
                     b.Navigation("Cpu");
 
                     b.Navigation("General");
 
-                    b.Navigation("HostAddress");
-
-                    b.Navigation("LicenseKey");
-
                     b.Navigation("Memory");
 
                     b.Navigation("PowerConsumer");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.ClientPcApplication", b =>
+                {
+                    b.HasOne("IToolAPI.Models.Application", "Application")
+                        .WithMany("ClientPcApplications")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IToolAPI.Models.ClientPc", "ClientPc")
+                        .WithMany("ClientPcApplications")
+                        .HasForeignKey("ClientPcId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("ClientPc");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.ClientPcLicenseKey", b =>
+                {
+                    b.HasOne("IToolAPI.Models.ClientPc", "ClientPc")
+                        .WithMany("ClientPcLicenseKeys")
+                        .HasForeignKey("ClientPcId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IToolAPI.Models.LicenseKey", "LicenseKey")
+                        .WithMany("ClientPcLicenseKeys")
+                        .HasForeignKey("LicenseKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClientPc");
+
+                    b.Navigation("LicenseKey");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.LayerThreeNetwork", b =>
@@ -750,37 +858,23 @@ namespace IToolAPI.Migrations
                         .WithMany()
                         .HasForeignKey("GeneralId");
 
+                    b.HasOne("IToolAPI.Models.RouterDevice", "RouterDevice")
+                        .WithMany("LayerThreeNetworks")
+                        .HasForeignKey("RouterDeviceId");
+
                     b.Navigation("General");
+
+                    b.Navigation("RouterDevice");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.LicenseKey", b =>
                 {
                     b.HasOne("IToolAPI.Models.Application", "Application")
                         .WithMany("LicenseKey")
-                        .HasForeignKey("ApplicationId");
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Application");
-                });
-
-            modelBuilder.Entity("IToolAPI.Models.Monitor", b =>
-                {
-                    b.HasOne("IToolAPI.Models.Shared.FormFactor", "FormFactor")
-                        .WithMany()
-                        .HasForeignKey("FormFactorId");
-
-                    b.HasOne("IToolAPI.Models.Shared.General", "General")
-                        .WithMany()
-                        .HasForeignKey("GeneralId");
-
-                    b.HasOne("IToolAPI.Models.Shared.PowerConsumer", "PowerConsumer")
-                        .WithMany()
-                        .HasForeignKey("PowerConsumerId");
-
-                    b.Navigation("FormFactor");
-
-                    b.Navigation("General");
-
-                    b.Navigation("PowerConsumer");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Person", b =>
@@ -843,6 +937,44 @@ namespace IToolAPI.Migrations
                     b.Navigation("General");
                 });
 
+            modelBuilder.Entity("IToolAPI.Models.ServerDeviceApplication", b =>
+                {
+                    b.HasOne("IToolAPI.Models.Application", "Application")
+                        .WithMany("ServerDeviceApplications")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IToolAPI.Models.ServerDevice", "ServerDevice")
+                        .WithMany("ServerDeviceApplications")
+                        .HasForeignKey("ServerDeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("ServerDevice");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.ServerDeviceLicenseKey", b =>
+                {
+                    b.HasOne("IToolAPI.Models.LicenseKey", "LicenseKey")
+                        .WithMany("ServerDeviceLicenseKeys")
+                        .HasForeignKey("LicenseKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IToolAPI.Models.ServerDevice", "ServerDevice")
+                        .WithMany("ServerDeviceLicenseKeys")
+                        .HasForeignKey("ServerDeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LicenseKey");
+
+                    b.Navigation("ServerDevice");
+                });
+
             modelBuilder.Entity("IToolAPI.Models.Shared.Cpu", b =>
                 {
                     b.HasOne("IToolAPI.Models.ServerDevice", "ServerDevice")
@@ -852,13 +984,58 @@ namespace IToolAPI.Migrations
                     b.Navigation("ServerDevice");
                 });
 
+            modelBuilder.Entity("IToolAPI.Models.Shared.DevicePort", b =>
+                {
+                    b.HasOne("IToolAPI.Models.RouterDevice", null)
+                        .WithMany("DevicePorts")
+                        .HasForeignKey("RouterDeviceId");
+
+                    b.HasOne("IToolAPI.Models.ServerDevice", null)
+                        .WithMany("DevicePorts")
+                        .HasForeignKey("ServerDeviceId");
+
+                    b.HasOne("IToolAPI.Models.SwitchDevice", null)
+                        .WithMany("DevicePorts")
+                        .HasForeignKey("SwitchDeviceId");
+                });
+
             modelBuilder.Entity("IToolAPI.Models.Shared.HostAddress", b =>
                 {
+                    b.HasOne("IToolAPI.Models.ClientPc", "ClientPc")
+                        .WithOne("HostAddress")
+                        .HasForeignKey("IToolAPI.Models.Shared.HostAddress", "ClientPcId");
+
                     b.HasOne("IToolAPI.Models.LayerThreeNetwork", "Network")
                         .WithMany()
                         .HasForeignKey("NetworkId");
 
+                    b.HasOne("IToolAPI.Models.Printer", "Printer")
+                        .WithOne("HostAddress")
+                        .HasForeignKey("IToolAPI.Models.Shared.HostAddress", "PrinterId");
+
+                    b.HasOne("IToolAPI.Models.RouterDevice", "RouterDevice")
+                        .WithMany()
+                        .HasForeignKey("RouterDeviceId");
+
+                    b.HasOne("IToolAPI.Models.ServerDevice", "ServerDevice")
+                        .WithOne("HostAddress")
+                        .HasForeignKey("IToolAPI.Models.Shared.HostAddress", "ServerDeviceId");
+
+                    b.HasOne("IToolAPI.Models.SwitchDevice", "SwitchDevice")
+                        .WithOne("HostAddress")
+                        .HasForeignKey("IToolAPI.Models.Shared.HostAddress", "SwitchDeviceId");
+
+                    b.Navigation("ClientPc");
+
                     b.Navigation("Network");
+
+                    b.Navigation("Printer");
+
+                    b.Navigation("RouterDevice");
+
+                    b.Navigation("ServerDevice");
+
+                    b.Navigation("SwitchDevice");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Shared.Memory", b =>
@@ -902,21 +1079,68 @@ namespace IToolAPI.Migrations
 
             modelBuilder.Entity("IToolAPI.Models.Application", b =>
                 {
+                    b.Navigation("ClientPcApplications");
+
                     b.Navigation("LicenseKey");
+
+                    b.Navigation("ServerDeviceApplications");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.ClientPc", b =>
+                {
+                    b.Navigation("ClientPcApplications");
+
+                    b.Navigation("ClientPcLicenseKeys");
+
+                    b.Navigation("HostAddress");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.LicenseKey", b =>
+                {
+                    b.Navigation("ClientPcLicenseKeys");
+
+                    b.Navigation("ServerDeviceLicenseKeys");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.Printer", b =>
+                {
+                    b.Navigation("HostAddress");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.RouterDevice", b =>
+                {
+                    b.Navigation("DevicePorts");
+
+                    b.Navigation("LayerThreeNetworks");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.ServerDevice", b =>
                 {
                     b.Navigation("Cpu");
 
+                    b.Navigation("DevicePorts");
+
+                    b.Navigation("HostAddress");
+
                     b.Navigation("Memory");
 
                     b.Navigation("PowerConsumer");
+
+                    b.Navigation("ServerDeviceApplications");
+
+                    b.Navigation("ServerDeviceLicenseKeys");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.Shared.General", b =>
                 {
                     b.Navigation("ClientPc");
+                });
+
+            modelBuilder.Entity("IToolAPI.Models.SwitchDevice", b =>
+                {
+                    b.Navigation("DevicePorts");
+
+                    b.Navigation("HostAddress");
                 });
 #pragma warning restore 612, 618
         }

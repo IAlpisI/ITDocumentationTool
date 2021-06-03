@@ -5,10 +5,13 @@ import {
     applicationGetAll,
     licenseKey,
     licenseKeyGetAll,
-    applicationDetachApp,
-    applicationDetachLicense,
+    serverApp,
+    serverLicense,
+    clientApp,
+    clientLicense,
     applicationGetApp,
-    applicationGetLicense
+    applicationGetLicense,
+    getApplicense
 } from "../../common/constants"
 
 export const fetchApplications = createAsyncThunk(
@@ -77,33 +80,11 @@ export const createLicenseKey = createAsyncThunk(
     }
 )
 
-export const updateLicenseKey = createAsyncThunk(
-    'licenseKey/update',
-    async (data: any, { rejectWithValue }) => {
-        try {
-            return await api.updateData(data, licenseKey)
-        } catch (err) {
-            return rejectWithValue(err)
-        }
-    }
-)
-
 export const fetchLicense = createAsyncThunk(
     'licenseKey/getone',
     async (id: any, { rejectWithValue }) => {
         try {
             return await api.getData(id, licenseKey);
-        } catch (err) {
-            return rejectWithValue(err)
-        }
-    }
-)
-
-export const licenseGet = createAsyncThunk(
-    'licenseKey/get',
-    async (data: any, { rejectWithValue }) => {
-        try {
-            return await api.createData(data, applicationGetLicense)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -121,11 +102,94 @@ export const applicationForDevice = createAsyncThunk(
     }
 )
 
-export const fetchLicenses = createAsyncThunk(
+
+
+//License
+export const fetchLicensesForApplication = createAsyncThunk(
     'license/fetchall',
-    async (_, { rejectWithValue }) => {
+    async (data:any, { rejectWithValue }) => {
         try {
-            return await api.getAll(licenseKeyGetAll)
+            return await api.getData(data, licenseKeyGetAll)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const getLicenseForApplication = createAsyncThunk(
+    'licenseKey/get',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await api.getData(data, applicationGetLicense)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const updateLicenseKey = createAsyncThunk(
+    'licenseKey/update',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await api.updateData(data, licenseKey)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+//Operations with devices
+
+export const serverApplciationModifier = createAsyncThunk(
+    'application/serverapp',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, serverApp)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const serverLicenseModifier = createAsyncThunk(
+    'application/serverlicense',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, serverLicense)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const clientApplciationModifier = createAsyncThunk(
+    'application/clientapp',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, clientApp)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const clientLicenseModifier = createAsyncThunk(
+    'application/clientlicense',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, clientLicense)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+//Get licenses for application
+export const fetchDeviceLicensesForApplication = createAsyncThunk(
+    'application/getapplicense',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, getApplicense)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -157,19 +221,37 @@ const initialState = {
         data: [],
         status: {},
         error: {}
+    },
+    licenseForDevice : {
+        data: [],
+        status: {},
+        error: {}
     }
 }
 
 const applicationSlice = createSlice({
     name: 'client',
     initialState,
-    reducers: {},
+    reducers: {
+        resetSingleLicense(state){
+            state.singleLicense = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        }
+    },
     extraReducers: builder => {
         builder.addCase(fetchApplications.fulfilled, (state, action) => {
             state.applicationList = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
+            }
+            state.singleApplication = {
+                status: 'idle',
+                data: [],
+                error: {},
             }
         })
         builder.addCase(fetchApplications.pending, (state, _) => {
@@ -189,7 +271,7 @@ const applicationSlice = createSlice({
         builder.addCase(fetchApplication.fulfilled, (state, action) => {
             state.singleApplication = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
             }
         })
@@ -210,7 +292,7 @@ const applicationSlice = createSlice({
         builder.addCase(deleteApplication.fulfilled, (state, action) => {
             state.singleApplication = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
             }
         })
@@ -231,7 +313,7 @@ const applicationSlice = createSlice({
         builder.addCase(createApplication.fulfilled, (state, action) => {
             state.singleApplication = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
             }
         })
@@ -271,21 +353,21 @@ const applicationSlice = createSlice({
             }
         })
         builder.addCase(createLicenseKey.fulfilled, (state, action) => {
-            state.applicationList = {
+            state.singleApplication = {
                 status: 'completed',
-                data: [],
+                data: action.payload.data,
                 error: {}
             }
         })
         builder.addCase(createLicenseKey.pending, (state, _) => {
-            state.applicationList = {
+            state.singleApplication = {
                 status: 'idle',
                 data: [],
                 error: {},
             }
         })
         builder.addCase(createLicenseKey.rejected, (state, { error }) => {
-            state.applicationList = {
+            state.singleApplication = {
                 status: 'failed',
                 data: [],
                 error: error,
@@ -294,7 +376,7 @@ const applicationSlice = createSlice({
         builder.addCase(updateLicenseKey.fulfilled, (state, action) => {
             state.singleLicense = {
                 status: 'completed',
-                data: [],
+                data: action.payload.data,
                 error: {}
             }
         })
@@ -312,22 +394,22 @@ const applicationSlice = createSlice({
                 error: error,
             }
         })
-        builder.addCase(licenseGet.fulfilled, (state, action) => {
-            state.licenseList = {
+        builder.addCase(getLicenseForApplication.fulfilled, (state, action) => {
+            state.licenseForDevice = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
             }
         })
-        builder.addCase(licenseGet.pending, (state, _) => {
-            state.licenseList = {
+        builder.addCase(getLicenseForApplication.pending, (state, _) => {
+            state.licenseForDevice = {
                 status: 'idle',
                 data: [],
                 error: {},
             }
         })
-        builder.addCase(licenseGet.rejected, (state, { error }) => {
-            state.licenseList = {
+        builder.addCase(getLicenseForApplication.rejected, (state, { error }) => {
+            state.licenseForDevice = {
                 status: 'failed',
                 data: [],
                 error: error,
@@ -336,7 +418,7 @@ const applicationSlice = createSlice({
         builder.addCase(applicationForDevice.fulfilled, (state, action) => {
             state.applicationForDeviceList = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
             }
         })
@@ -357,7 +439,7 @@ const applicationSlice = createSlice({
         builder.addCase(fetchLicense.fulfilled, (state, action) => {
             state.singleLicense = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
             }
         })
@@ -375,22 +457,127 @@ const applicationSlice = createSlice({
                 error: error,
             }
         })
-        builder.addCase(fetchLicenses.fulfilled, (state, action) => {
+        builder.addCase(fetchLicensesForApplication.fulfilled, (state, action) => {
             state.licenseList = {
                 status: 'completed',
-                data: action.payload,
+                data: action.payload.data,
                 error: {}
             }
         })
-        builder.addCase(fetchLicenses.pending, (state, _) => {
+        builder.addCase(fetchLicensesForApplication.pending, (state, _) => {
             state.licenseList = {
                 status: 'idle',
                 data: [],
                 error: {},
             }
         })
-        builder.addCase(fetchLicenses.rejected, (state, { error }) => {
+        builder.addCase(fetchLicensesForApplication.rejected, (state, { error }) => {
             state.licenseList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(serverLicenseModifier.fulfilled, (state, action) => {
+            state.licenseForDevice = {
+                status: 'completed',
+                data: action.payload.data,
+                error: {}
+            }
+        })
+        builder.addCase(serverLicenseModifier.pending, (state, _) => {
+            state.licenseForDevice = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(serverLicenseModifier.rejected, (state, { error }) => {
+            state.licenseForDevice = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(serverApplciationModifier.fulfilled, (state, action) => {
+            state.applicationForDeviceList = {
+                status: 'completed',
+                data: action.payload.data,
+                error: {}
+            }
+        })
+        builder.addCase(serverApplciationModifier.pending, (state, _) => {
+            state.applicationForDeviceList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(serverApplciationModifier.rejected, (state, { error }) => {
+            state.applicationForDeviceList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(clientApplciationModifier.fulfilled, (state, action) => {
+            state.applicationForDeviceList = {
+                status: 'completed',
+                data: action.payload.data,
+                error: {}
+            }
+        })
+        builder.addCase(clientApplciationModifier.pending, (state, _) => {
+            state.applicationForDeviceList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(clientApplciationModifier.rejected, (state, { error }) => {
+            state.applicationForDeviceList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(clientLicenseModifier.fulfilled, (state, action) => {
+            state.licenseForDevice = {
+                status: 'completed',
+                data: action.payload.data,
+                error: {}
+            }
+        })
+        builder.addCase(clientLicenseModifier.pending, (state, _) => {
+            state.licenseForDevice = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(clientLicenseModifier.rejected, (state, { error }) => {
+            state.licenseForDevice = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(fetchDeviceLicensesForApplication.fulfilled, (state, action) => {
+            state.licenseForDevice = {
+                status: 'completed',
+                data: action.payload.data,
+                error: {}
+            }
+        })
+        builder.addCase(fetchDeviceLicensesForApplication.pending, (state, _) => {
+            state.licenseForDevice = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(fetchDeviceLicensesForApplication.rejected, (state, { error }) => {
+            state.licenseForDevice = {
                 status: 'failed',
                 data: [],
                 error: error,
@@ -399,5 +586,5 @@ const applicationSlice = createSlice({
     }
 })
 
-
+export const {resetSingleLicense} = applicationSlice.actions
 export default applicationSlice.reducer

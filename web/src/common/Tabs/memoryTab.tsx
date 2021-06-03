@@ -1,5 +1,6 @@
-import React from 'react';
 import * as Module from '../Styles/detail.style';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export type MemoryProps = {
     title?: string;
@@ -8,6 +9,10 @@ export type MemoryProps = {
     capacity?: string;
     capacityType?: string;
     description?: string;
+};
+
+const modules = {
+    toolbar: false
 };
 
 const GeneralTab = ({
@@ -33,7 +38,14 @@ const GeneralTab = ({
                 <Module.ObjectName>Capacity type:</Module.ObjectName>
                 <Module.ObjectData>{capacityType}</Module.ObjectData>
                 <Module.ObjectName>Description:</Module.ObjectName>
-                <Module.ObjectData>{description}</Module.ObjectData>
+                <Module.ObjectData>
+                    <ReactQuill
+                        readOnly={true}
+                        modules={modules}
+                        theme='snow'
+                        value={description || ''}
+                    />
+                </Module.ObjectData>
             </Module.DetailGrid>
         </Module.Container>
     );

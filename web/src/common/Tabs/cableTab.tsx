@@ -1,4 +1,6 @@
-import * as Module from '../Styles/detail.style'
+import * as Module from '../Styles/detail.style';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export type PersonDetail = {
     cableType?: string;
@@ -6,6 +8,10 @@ export type PersonDetail = {
     cableLengthMeasure?: string;
     color?: string
     description?: string;
+};
+
+const modules = {
+    toolbar: false
 };
 
 const CableDetail = (props: PersonDetail) => {
@@ -22,7 +28,14 @@ const CableDetail = (props: PersonDetail) => {
                 <Module.ObjectName>Color:</Module.ObjectName>
                 <Module.ObjectData>{props.color}</Module.ObjectData>
                 <Module.ObjectName>Description:</Module.ObjectName>
-                <Module.ObjectData>{props.description}</Module.ObjectData>
+                <Module.ObjectData>
+                    <ReactQuill
+                        readOnly={true}
+                        modules={modules}
+                        theme='snow'
+                        value={props.description || ''}
+                    />
+                </Module.ObjectData>
             </Module.DetailGrid>
         </Module.Container>
     );

@@ -12,7 +12,6 @@ import 'react-quill/dist/quill.snow.css';
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { scrollIds } from './clientPcData';
-import { HostAddress } from '../../common/hostAddress/hostAddress';
 
 const ClientForm = () => {
     const methods = useForm();
@@ -39,10 +38,13 @@ const ClientForm = () => {
         history.push('/client');
     }
 
-    console.log(clientPc.data)
 
     const onSubmit = async (data: any) => {
         client = {
+            keyboardLayout: data.keyboardLayout,
+            display: data.display,
+            displayMeasure: data.displayMeasure,
+            resolution: data.resolution,
             general: {
                 title: data.generalTitle,
                 purpose: data.purpose,
@@ -76,21 +78,13 @@ const ClientForm = () => {
                 ampere: data.ampere,
                 description: data.powerConsumerDescription
             },
-            hostaddress: {
-                address: data.address,
-                networkId: data.network,
-                description: data.hostAddressDescription
-            }
         };
-        console.log(client);
-        // console.log(clientPc);
         if (isEdit) {
             client['id'] = parseInt(id);
             client.general.id = clientPc.data.generalId;
             client.memory.id = clientPc.data.memoryId;
             client.cpu.id = clientPc.data.cpuId;
             client.powerconsumer.id = clientPc.data.powerConsumerId;
-            client.hostaddress.id = clientPc.data.hostAddress.id;
 
             await dispatch(updateClient(client));
         } else {
@@ -148,15 +142,42 @@ const ClientForm = () => {
                             <PowerConsumerForm />
                         )}
 
-                        {isEdit ? (
-                            clientPc.data.hostAddress && (
-                                <HostAddress
-                                    props={clientPc.data.hostAddress}
-                                />
-                            )
-                        ) : (
-                            <HostAddress />
-                        )}
+                        <FormStyle.Container id={'Client'}>
+                            {((clientPc.data && clientPc.status === 'completed') ||
+                                !isEdit) && (
+                                <FormStyle.Column>
+                                    <FormStyle.ComponentName>
+                                        Client
+                                    </FormStyle.ComponentName>
+                                    <FormStyle.Label>Keyboard layout</FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('keyboardLayout')}
+                                        defaultValue={clientPc.data.keyboardLayout}
+                                    />
+                                    <FormStyle.Label>
+                                        Display size
+                                    </FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('display')}
+                                        defaultValue={clientPc.data.display}
+                                    />
+                                                      <FormStyle.Label>
+                                        Display measure
+                                    </FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('displayMeasure')}
+                                        defaultValue={clientPc.data.displayMeasure}
+                                    />
+                                    <FormStyle.Label>
+                                        Resolution
+                                    </FormStyle.Label>
+                                    <FormStyle.Input
+                                        {...methods.register('resolution')}
+                                        defaultValue={clientPc.data.resolution}
+                                    />
+                                </FormStyle.Column>
+                            )}
+                        </FormStyle.Container>
 
                         <FormStyle.FormSpacingButtons>
                             <FormStyle.TableConfirmationButton

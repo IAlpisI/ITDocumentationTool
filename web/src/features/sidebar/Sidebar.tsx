@@ -42,6 +42,7 @@ const SiteField = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 22px;
     height: 55px;
     background: ${(props) => props.theme.colors.black};
     color: ${(props) => props.theme.colors.white};

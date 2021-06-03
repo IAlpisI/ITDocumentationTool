@@ -81,14 +81,14 @@ const SvgRouter = ({ rectangle = true }: rectangle) => {
     );
 };
 
-const SvgPrinter = ({ circle = true }: circle) => {
+const SvgPrinter = ({ circle = true, color = 'grey' }: any) => {
     return (
         <>
             {circle && (
                 <circle cx='0' cy='27' r='40' stroke='none' fill='white' />
             )}
             <svg
-                fill='grey'
+                fill={color}
                 stroke='none'
                 height='50'
                 width='50'
@@ -453,7 +453,7 @@ const SvgServer = () => {
     );
 };
 
-const SvgSwitch = ({ rectangle = true }: rectangle) => {
+const SvgSwitch = ({ rectangle = true, color = 'grey' }: any) => {
     return (
         <>
             {rectangle && (
@@ -468,7 +468,7 @@ const SvgSwitch = ({ rectangle = true }: rectangle) => {
                 />
             )}
             <svg
-                fill='grey'
+                fill={color}
                 version='1.1'
                 id='Capa_1'
                 xmlns='http://www.w3.org/2000/svg'

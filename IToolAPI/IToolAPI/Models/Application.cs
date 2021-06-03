@@ -12,6 +12,8 @@ namespace IToolAPI.Models
         public General General { get; set; }
         public string Specification { get; set; }
         public string Manufacturer { get; set; }
+        public List<ClientPcApplication> ClientPcApplications { get; set; }
+        public List<ServerDeviceApplication> ServerDeviceApplications { get; set; }
         public List<LicenseKey> LicenseKey { get; set; }
     }
 }

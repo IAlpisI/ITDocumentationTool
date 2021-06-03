@@ -14,13 +14,22 @@ import {
 } from './stateSlice';
 
 const Canvas = (props: any) => {
-    const { title, sizeX, sizeY, stageRef, cordinatesXRef, cordinatesYRef } =
-        props;
+    const {
+        title,
+        sizeX,
+        sizeY,
+        stageRef,
+        cordinatesXRef,
+        cordinatesYRef,
+        gridArea,
+        drag = true
+    } = props;
 
     const GetCords = useRef<any>(null);
 
     const handleDragOver = (event: any) => event.preventDefault();
     const values = useSelector((state: any) => state.canvas.shape);
+    const axis = useSelector((state: any) => state.canvas.axis);
     const selector = useSelector((state: any) => state.canvas.selected);
     const dispatch = useDispatch();
 
@@ -37,15 +46,25 @@ const Canvas = (props: any) => {
     let extraGridOffset = -5;
     let gridOffsetY = -1;
 
+    useEffect(() => {
+        setCordinates();
+    }, []);
+
     const handleDrop = useCallback((event) => {
         const draggedData =
             event.nativeEvent.dataTransfer.getData(DRAG_DATA_KEY);
 
-            console.log(draggedData);
+        // console.log(draggedData);
 
         if (draggedData && stageRef.current) {
-            const { offsetX, offsetY, type, clientHeight, clientWidth } =
-                JSON.parse(draggedData);
+            const {
+                offsetX,
+                offsetY,
+                type,
+                clientHeight,
+                clientWidth,
+                deviceId
+            } = JSON.parse(draggedData);
 
             stageRef.current.setPointersPositions(event);
 
@@ -56,7 +75,7 @@ const Canvas = (props: any) => {
                     dispatch(
                         createShape({
                             x: coords.x - offsetX,
-                            y: coords.y - offsetY,
+                            y: coords.y,
                             type: SHAPE_TYPES.WALL,
                             format: TOTAL_TYPES.WALL
                         })
@@ -66,9 +85,10 @@ const Canvas = (props: any) => {
                     dispatch(
                         createShape({
                             x: coords.x - offsetX,
-                            y: coords.y - offsetY,
+                            y: coords.y,
                             type: SHAPE_TYPES.COMPUTER,
-                            format: TOTAL_TYPES.SVG
+                            format: TOTAL_TYPES.SVG,
+                            deviceId
                         })
                     );
                     break;
@@ -78,7 +98,8 @@ const Canvas = (props: any) => {
                             x: coords.x - offsetX,
                             y: coords.y - offsetY,
                             type: SHAPE_TYPES.PRINTER,
-                            format: TOTAL_TYPES.SVG
+                            format: TOTAL_TYPES.SVG,
+                            deviceId
                         })
                     );
                     break;
@@ -88,7 +109,8 @@ const Canvas = (props: any) => {
                             x: coords.x - offsetX,
                             y: coords.y - offsetY,
                             type: SHAPE_TYPES.SWITCH,
-                            format: TOTAL_TYPES.SVG
+                            format: TOTAL_TYPES.SVG,
+                            deviceId
                         })
                     );
                     break;
@@ -98,7 +120,8 @@ const Canvas = (props: any) => {
                             x: coords.x - offsetX,
                             y: coords.y - offsetY,
                             type: SHAPE_TYPES.ROUTER,
-                            format: TOTAL_TYPES.SVG
+                            format: TOTAL_TYPES.SVG,
+                            deviceId
                         })
                     );
                     break;
@@ -132,6 +155,17 @@ const Canvas = (props: any) => {
                         })
                     );
                     break;
+                case SHAPE_TYPES.SERVER:
+                    dispatch(
+                        createShape({
+                            x: coords.x - offsetX,
+                            y: coords.y - offsetY,
+                            type: SHAPE_TYPES.SERVER,
+                            format: TOTAL_TYPES.SVG,
+                            deviceId
+                        })
+                    );
+                    break;
                 default:
                     break;
             }
@@ -149,7 +183,9 @@ const Canvas = (props: any) => {
                     (ref.current && event.key === 'Escape') ||
                     event.key === 'Delete'
                 ) {
+                    
                     dispatch(removeShape());
+                    removeSelection();
                 }
             }
             document.addEventListener('keydown', handleClickOutside);
@@ -160,6 +196,7 @@ const Canvas = (props: any) => {
     }
 
     const setCordinates = () => {
+        // console.log(stageRef.current.x());
         cordinatesXRef.current.style.left = stageRef.current.x() + 'px';
         cordinatesYRef.current.style.top = stageRef.current.y() + 'px';
     };
@@ -169,42 +206,50 @@ const Canvas = (props: any) => {
 
         const scaleBy = 1.1;
         const stage = e.target.getStage();
+        // console.log(stage.scaleX());
         const oldScale = stage.scaleX();
         const mousePointTo = {
             x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
             y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
         };
 
-        const newScale =
+        let newScale =
             e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+        console.log(newScale);
+        if(newScale > 1) newScale = 1;
+        if (newScale < 1 && newScale > 0.5) {
+            setScroll({
+                stageScale: newScale,
+                stageX:
+                    -(
+                        mousePointTo.x -
+                        stage.getPointerPosition().x / newScale
+                    ) * newScale,
+                stageY:
+                    -(
+                        mousePointTo.y -
+                        stage.getPointerPosition().y / newScale
+                    ) * newScale
+            });
 
-        setScroll({
-            stageScale: newScale,
-            stageX:
-                -(mousePointTo.x - stage.getPointerPosition().x / newScale) *
-                newScale,
-            stageY:
-                -(mousePointTo.y - stage.getPointerPosition().y / newScale) *
-                newScale
-        });
+            cordinatesYRef.current.style.height =
+                e.evt.deltaY > 0
+                    ? cordinatesYRef.current.offsetHeight / 1.1 + 'px'
+                    : cordinatesYRef.current.offsetHeight * 1.1 + 'px';
 
-        cordinatesYRef.current.style.height =
-            e.evt.deltaY > 0
-                ? cordinatesYRef.current.offsetHeight / 1.1 + 'px'
-                : cordinatesYRef.current.offsetHeight * 1.1 + 'px';
+            cordinatesXRef.current.style.width =
+                e.evt.deltaY > 0
+                    ? cordinatesXRef.current.offsetWidth / 1.1 + 'px'
+                    : cordinatesXRef.current.offsetWidth * 1.1 + 'px';
 
-        cordinatesXRef.current.style.width =
-            e.evt.deltaY > 0
-                ? cordinatesXRef.current.offsetWidth / 1.1 + 'px'
-                : cordinatesXRef.current.offsetWidth * 1.1 + 'px';
-
-        setCordinates();
+            setCordinates();
+        }
     };
 
     return (
         <main
             className='canvas'
-            style={{ gridArea: '2 / 3 / 3 / 4' }}
+            style={{ gridArea }}
             onDrop={handleDrop}
             onDragOver={handleDragOver}>
             <Stage
@@ -278,11 +323,16 @@ const Canvas = (props: any) => {
                     {values.map(
                         (shape: { id: string | number | null | undefined }) => (
                             <Shape
+                                stageRef={stageRef}
+                                drag={drag}
                                 key={shape.id}
                                 shape={{ ...shape, id: shape.id, selector }}
                             />
                         )
                     )}
+
+                    {axis.axis === 'x' && <Line stroke={'#ff0808'} points={[0, axis.y, sizeX, axis.y]} />}
+                    {axis.axis === 'y' && <Line stroke={'#08ff3d'} points={[axis.x, 0, axis.x, sizeY]} />}
                 </Layer>
             </Stage>
         </main>

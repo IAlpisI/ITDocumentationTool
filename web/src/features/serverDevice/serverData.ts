@@ -19,9 +19,10 @@ export const Header = [
 
 export const Links =
 {
-    editLink: 'server/edit/',
-    viewLink: 'server/detail/',
-    formLink: 'server/form',
+    deleteLink: 'serverdevice',
+    editLink: '/server/edit/',
+    viewLink: '/server/detail/',
+    formLink: '/server/form',
     index: 'server'
 }
 

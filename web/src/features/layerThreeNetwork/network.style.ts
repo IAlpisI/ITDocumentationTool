@@ -62,7 +62,7 @@ export const IpAddressSearchButton = styled.button`
 export const IpAddressContainer = styled.div`
     background: ${props => props.theme.colors.white};
     height: 40px;
-    width: 62%;
+    width: 800px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -76,9 +76,20 @@ export const TableName = styled.div`
 
 export const IpAddressInput = styled.input`
     width: 150px;
-    height: 20px;
+    height: 25px;
     margin-right: 30px;
+    padding: 5px;
     background: ${props => props.theme.colors.grey1};
+
+    caret-color: #3600b5;
+
+    &:hover {
+        box-shadow: inset 0 0 0 1.5px ${(props) => props.theme.colors.grey2};
+    }
+    &:focus {
+        outline: 0;
+        box-shadow: inset 0 0 0 1.5px ${(props) => props.theme.colors.violet1};
+    }
 `
 
 export const IpAddressLabel = styled.div`

@@ -1,7 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import * as api from "../../common/api"
-import {serverDevice, serverDeviceCPUUpdate, serverDeviceGetAll, serverDeviceMemoryUpdate, serverDeviceMemory, serverDeviceCPU} from '../../common/constants'
+import {serverDevice, exportServer, serverDevicePowerConsumer, serverDevicePowerConsumerUpdate, serverDeviceCPUUpdate, serverDeviceGetAll, serverDeviceMemoryUpdate, serverDeviceMemory, serverDeviceCPU} from '../../common/constants'
 
+export const ExportAllServers = createAsyncThunk(
+    'worker/exportall',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await api.getAll(exportServer)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
 
 export const fetchServers = createAsyncThunk(
     'server/fetchall',
@@ -84,7 +94,7 @@ export const createCPUForServer = createAsyncThunk(
     'server/addCPU',
     async (data:any, { rejectWithValue }) => {
         try {
-            return await api.updateData(data, serverDeviceCPU)
+            return await api.createData(data, serverDeviceCPU)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -102,6 +112,39 @@ export const updateCPUForServer = createAsyncThunk(
     }
 )
 
+export const createPowerConsumerForServer = createAsyncThunk(
+    'server/addPowerConsumer',
+    async (data:any, { rejectWithValue }) => {
+        try {
+            return await api.createData(data, serverDevicePowerConsumer)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const updatePowerConsumerForServer = createAsyncThunk(
+    'server/updatePowerConsumer',
+    async (data:any, { rejectWithValue }) => {
+        try {
+            return await api.updateData(data, serverDevicePowerConsumerUpdate)
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
+export const fetchServerPorts = createAsyncThunk(
+    'server/devicePorts',
+    async (id: any, { rejectWithValue }) => {
+        try {
+            return await api.getData(id, serverDevice);
+        } catch (err) {
+            return rejectWithValue(err)
+        }
+    }
+)
+
 const initialState = {
     serverList: {
         data: [],
@@ -109,6 +152,16 @@ const initialState = {
         error: {}
     },
     singleServer: {
+        data: [],
+        status: {},
+        error: {}
+    },
+    exportList: {
+        data: [],
+        status: {},
+        error: {}
+    },
+    serverPorts: {
         data: [],
         status: {},
         error: {}
@@ -267,6 +320,27 @@ const routerSlice = createSlice({
                 error: error,
             }
         })
+        builder.addCase(createPowerConsumerForServer.fulfilled, (state, action) => {
+            state.singleServer = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(createPowerConsumerForServer.pending, (state, _) => {
+            state.singleServer = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(createPowerConsumerForServer.rejected, (state, { error }) => {
+            state.singleServer = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
         builder.addCase(updateMemoryForServer.fulfilled, (state, action) => {
             state.singleServer = {
                 status: 'completed',
@@ -304,6 +378,69 @@ const routerSlice = createSlice({
         })
         builder.addCase(updateCPUForServer.rejected, (state, { error }) => {
             state.singleServer = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(updatePowerConsumerForServer.fulfilled, (state, action) => {
+            state.singleServer = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(updatePowerConsumerForServer.pending, (state, _) => {
+            state.singleServer = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(updatePowerConsumerForServer.rejected, (state, { error }) => {
+            state.singleServer = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(ExportAllServers.fulfilled, (state, action) => {
+            state.exportList = {
+                status: 'completed',
+                data: action.payload,
+                error: {}
+            }
+        })
+        builder.addCase(ExportAllServers.pending, (state, _) => {
+            state.exportList = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(ExportAllServers.rejected, (state, { error }) => {
+            state.exportList = {
+                status: 'failed',
+                data: [],
+                error: error,
+            }
+        })
+        builder.addCase(fetchServerPorts.fulfilled, (state, action) => {
+            state.serverPorts = {
+                status: 'completed',
+                data: action.payload.devicePorts,
+                error: {}
+            }
+        })
+        builder.addCase(fetchServerPorts.pending, (state, _) => {
+            state.serverPorts = {
+                status: 'idle',
+                data: [],
+                error: {},
+            }
+        })
+        builder.addCase(fetchServerPorts.rejected, (state, { error }) => {
+            state.serverPorts = {
                 status: 'failed',
                 data: [],
                 error: error,

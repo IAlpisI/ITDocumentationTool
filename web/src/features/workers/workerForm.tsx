@@ -136,7 +136,11 @@ function WorkerForm() {
                                 type='submit'>
                                 Submit
                             </FormStyle.TableConfirmationButton>
-                            <FormStyle.TableConfirmationButton primary={''}>
+                            <FormStyle.TableConfirmationButton 
+                                onClick={() => {
+                                    history.push('/people')
+                                }}
+                            type={'button'} primary={''}>
                                 Cancel
                             </FormStyle.TableConfirmationButton>
                         </FormStyle.FormSpacingButtons>
