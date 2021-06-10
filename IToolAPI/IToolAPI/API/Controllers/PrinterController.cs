@@ -2,6 +2,7 @@
 using IToolAPI.DTOs.Exports;
 using IToolAPI.Helpers;
 using IToolAPI.Models;
+using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,118 +17,61 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class PrinterController : Controller
     {
-        private readonly ApplicationDbContext context;
-        public PrinterController(ApplicationDbContext context)
+        private readonly PrinterRepository printerRepository;
+        public PrinterController(PrinterRepository printerRepository)
         {
-            this.context = context;
+            this.printerRepository = printerRepository;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("export")]
         public async Task<ActionResult<List<PrinterExport>>> Export()
         {
-            var people = await context.Printers
-                .Select(p => new PrinterExport()
-                {
-                    Colored = p.Colored,
-                    Duplex = p.Duplex,
-                    Emulation = p.Emulation,
-                    PaperFormat = p.PaperFormat,
-                    Type = p.Type,
-                    Purpose = p.General.Purpose,
-                    Status = p.General.Status,
-                    Title = p.General.Title
-
-                })
-                .ToListAsync();
-
-            if (people == null)
-            {
-                return NotFound();
-            }
-
-            return people;
+            return Ok(await printerRepository.ExportPrinterData());
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<PrinterDTO>>> Get()
         {
-            var printer = await context.Printers
-                .Select(p => new PrinterDTO()
-                {
-                    Id = p.Id,
-                    Title = p.General.Title,
-                    Type = p.Type,
-                    PaperFormat = p.PaperFormat,
-                })
-                .ToListAsync();
-
-            if (printer == null)
-            {
-                return NotFound();
-            }
-
-            return printer;
+            return Ok(await printerRepository.GetAllPrinters());
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Printer>> Get(int id)
         {
-            var printer = await context.Printers.Where(x => x.Id == id)
-                .Include(x => x.General)
-                .Include(x => x.HostAddress).ThenInclude(x => x.Network)
-                .FirstOrDefaultAsync();
+            var response = await printerRepository.GetSinglePrinter(id);
 
-            if (printer == null)
+            if (!response.Success)
             {
-                return NotFound();
+                return NotFound(response);
             }
 
-            return printer;
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost]
         public async Task<ActionResult<int>> Post(Printer printer)
         {
-            context.Add(printer);
-            await context.SaveChangesAsync();
-            return printer.Id;
+            var response = await printerRepository.CreatePrinter(printer);
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var printer = await context.Printers.FirstOrDefaultAsync(x => x.Id == id);
-            if (printer == null)
-            {
-                return NotFound();
-            }
-            
-            var general = await context.Generals.FirstOrDefaultAsync(x => x.Id == printer.GeneralId);
-            context.Remove(printer);
-
-            if(general == null)
-            {
-                return NotFound();
-            }
-
-            context.Remove(general);
-            
-            await context.SaveChangesAsync();
-            return NoContent();
+            return Ok(await printerRepository.DeletePrinter(id));
         }
 
         [Authorize(Roles = "Admin, Manager=")]
         [HttpPut]
         public async Task<ActionResult<int>> Put(Printer printer)
         {
-            printer.General.ModifiedDate = DateTime.UtcNow;
-            context.Update(printer);
-            await context.SaveChangesAsync();
+            await printerRepository.UpdatePrinter(printer);
+
             return NoContent();
         }
     }

@@ -108,7 +108,7 @@ namespace IToolAPI.Repository
             RepositoryResponse<List<ApplicationDTO>> repositoryResponse = new RepositoryResponse<List<ApplicationDTO>>();
             try
             {
-                Application application = await _context.Applications
+                var application = await _context.Applications
                     .FirstOrDefaultAsync(x => x.Id == id);
 
                 if (application != null)
@@ -133,7 +133,7 @@ namespace IToolAPI.Repository
 
         public async Task<RepositoryResponse<List<ApplicationDTO>>> GetAllApplications()
         {
-            RepositoryResponse<List<ApplicationDTO>> repositoryResponse = new RepositoryResponse<List<ApplicationDTO>>();
+            var repositoryResponse = new RepositoryResponse<List<ApplicationDTO>>();
 
             List<Application> applications = await _context.Applications.ToListAsync();
             repositoryResponse.Data = applications.Select(c => _mapper.Map<ApplicationDTO>(c)).ToList();
@@ -143,7 +143,7 @@ namespace IToolAPI.Repository
 
         public async Task<RepositoryResponse<Application>> GetApplicationById(int id)
         {
-            RepositoryResponse<Application> repositoryResponse = new RepositoryResponse<Application>();
+            var repositoryResponse = new RepositoryResponse<Application>();
             var application = await _context.Applications
                 .Include(x => x.General)
                 .Include(x => x.LicenseKey)

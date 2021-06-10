@@ -6,7 +6,6 @@ import {fetchApplication} from './applicationSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import {useParams} from 'react-router-dom'
 import LicenseKeyIndex from './licenseKeyIndex'
-import ApplicationTab from '../../common/Tabs/applicationTab'
 
 const ApplicationDetails = () => {
 
@@ -24,9 +23,6 @@ const ApplicationDetails = () => {
           <TabPane name="General" key="1" id='general'>
           { application.status === 'completed' && <GeneralTab {...application.data.general} />}
           </TabPane>
-          {/* <TabPane name="Application" key="2">
-            { application.status === 'completed' &&<ApplicationTab  {...application.data} />}
-          </TabPane> */}
           <TabPane name="License Key" key="3" id='license'>
             { application.status === 'completed' &&<LicenseKeyIndex />}
           </TabPane>

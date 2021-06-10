@@ -1,6 +1,6 @@
 
 const TableImported = ( name: any, importedData: any) => {
-    let data1:any = []
+    let exportData:any = []
 
     switch (name) {
         case 'person':
@@ -17,10 +17,10 @@ const TableImported = ( name: any, importedData: any) => {
                         tag: element.tags
                     }
                 };
-                data1.push(person);
+                exportData.push(person);
             });
     
-        return data1;
+        return exportData;
         case 'switch':
             importedData.forEach(async (data: any) => {
                 let switchDevice = {
@@ -54,10 +54,10 @@ const TableImported = ( name: any, importedData: any) => {
                         description: data.powerConsumerDescription
                     },
                 };
-                data1.push(switchDevice);
+                exportData.push(switchDevice);
             });
     
-        return data1;
+        return exportData;
         case 'router':
             importedData.forEach(async (data: any) => {
                 let routerDevice = {
@@ -91,10 +91,10 @@ const TableImported = ( name: any, importedData: any) => {
                         description: data.powerConsumerDescription
                     },
                 };
-                data1.push(routerDevice);
+                exportData.push(routerDevice);
             });
     
-        return data1;
+        return exportData;
         case 'printer':
             importedData.forEach(async (data: any) => {
                 let printer = {
@@ -111,10 +111,10 @@ const TableImported = ( name: any, importedData: any) => {
                         description: data.generalDescription
                     },
                 };
-                data1.push(printer);
+                exportData.push(printer);
             });
     
-        return data1;
+        return exportData;
         case 'server':
             importedData.forEach(async (data: any) => {
                 let server = {
@@ -136,10 +136,10 @@ const TableImported = ( name: any, importedData: any) => {
                         description: data.fomrFactorDescription
                     },
                 };
-                data1.push(server);
+                exportData.push(server);
             });
     
-        return data1;
+        return exportData;
         case 'client':
             importedData.forEach(async (data: any) => {
                 let person = {
@@ -160,10 +160,10 @@ const TableImported = ( name: any, importedData: any) => {
                         description: data.powerConsumerDescription
                     },
                 };
-                data1.push(person);
+                exportData.push(person);
             });
     
-        return data1;
+        return exportData;
     }
 };
 

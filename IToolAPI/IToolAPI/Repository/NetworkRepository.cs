@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using IToolAPI.DTOs;
 using IToolAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,69 +11,84 @@ namespace IToolAPI.Repository
 {
     public class NetworkRepository : INetworkRepository
     {
+        private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         public NetworkRepository(ApplicationDbContext context)
         {
             _context = context;
         }
-        public LayerThreeNetwork Create(LayerThreeNetwork layerThreeNetwork)
+        public async Task<RepositoryResponse<int>> CreateNetwork(LayerThreeNetwork layerThreeNetwork)
         {
+            var repositoryResponse = new RepositoryResponse<int>();
+
             _context.Add(layerThreeNetwork);
-            layerThreeNetwork.Id =  _context.SaveChanges();
+            await _context.SaveChangesAsync();
+            repositoryResponse.Data = layerThreeNetwork.Id;
 
-            return layerThreeNetwork;
+            return repositoryResponse;
         }
 
-        public int Delete(int id)
+        public async Task<RepositoryResponse<List<LayerThreeNetwork>>> DeleteNetwork(int id)
         {
-            var network =  _context.LayerThreeNetwoks.FirstOrDefaultAsync(x => x.Id == id);
-            if (network == null)
+            var repositoryResponse = new RepositoryResponse<List<LayerThreeNetwork>>();
+
+            try
             {
-                return 0;
+                var network = _context.LayerThreeNetwoks
+                    .Include(x => x.General)
+                    .FirstOrDefault(x => x.Id == id);
+
+                if (network != null)
+                {
+                    if (network.General != null) { _context.Generals.Remove(network.General); }
+                    _context.LayerThreeNetwoks.Remove(network);
+                    await _context.SaveChangesAsync();
+                    repositoryResponse.Data = _context.LayerThreeNetwoks.ToList();
+                }
+                else
+                {
+                    repositoryResponse.Message = "Cable not found";
+                    repositoryResponse.Success = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                repositoryResponse.Message = ex.Message;
+                repositoryResponse.Success = false;
             }
 
-            _context.Remove(network);
-             _context.SaveChangesAsync();
-            return id;
+            return repositoryResponse;
         }
 
-        public LayerThreeNetwork Get(int id)
+        public async Task<RepositoryResponse<LayerThreeNetwork>> GetSingleNetwork(int id)
         {
-            var network = _context.LayerThreeNetwoks.Where(x => x.Id == id)
+            var repositoryResponse = new RepositoryResponse<LayerThreeNetwork>();
+
+            var network = await _context.LayerThreeNetwoks.Where(x => x.Id == id)
                 .Include(x => x.General)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+            repositoryResponse.Data = network;
 
-            if (network == null)
-            {
-                return null;
-            }
-
-            return network;
+            return repositoryResponse;
         }
 
-        public  Task<List<LayerThreeNetwork>> GetAllAsync()
+        public async Task<RepositoryResponse<List<LayerThreeNetworkDTO>>> GetAllNetworks()
         {
-            var application =  _context.LayerThreeNetwoks
-                    .ToListAsync();
+            var repositoryResponse = new RepositoryResponse<List<LayerThreeNetworkDTO>>();
 
-            if (application == null)
-            {
-                return null;
-            }
+            var networks = await _context.LayerThreeNetwoks
+                .Select(x => _mapper.Map<LayerThreeNetworkDTO>(x))
+                .ToListAsync();
+            repositoryResponse.Data = networks;
 
-            return application;
+
+            return repositoryResponse;
         }
 
-        public int Update(LayerThreeNetwork layerThreeNetwork)
+        public async Task UpdateNetwork(LayerThreeNetwork layerThreeNetwork)
         {
             _context.Update(layerThreeNetwork);
-            _context.SaveChangesAsync();
-            return 0;
-        }
-
-        List<LayerThreeNetwork> INetworkRepository.GetAllAsync()
-        {
-            throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
     }
 }

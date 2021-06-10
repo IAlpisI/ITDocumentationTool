@@ -3,6 +3,7 @@ using IToolAPI.DTOs;
 using IToolAPI.DTOs.Exports;
 using IToolAPI.Helpers;
 using IToolAPI.Models;
+using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,105 +18,60 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class SwitchDeviceController : Controller
     {
-        private readonly ApplicationDbContext context;
-        private readonly IMapper mapper;
-        public SwitchDeviceController(ApplicationDbContext context, IMapper mapper)
+        private readonly ISwitchRepository switchRepository;
+        public SwitchDeviceController(ISwitchRepository switchRepository)
         {
-            this.context = context;
-            this.mapper = mapper;
+            this.switchRepository = switchRepository;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("export")]
         public async Task<ActionResult<List<RouterExport>>> Export()
         {
-            var switchDevice = await context.RouterDevices
-                .Include(x => x.General)
-                .Include(x => x.PowerConsumer)
-                .Include(x => x.FormFactor)
-                .ToListAsync();
-
-            var switchExport = switchDevice.Select(x => mapper.Map<RouterExport>(x)).ToList();
-
-            if (switchExport == null)
-            {
-                return NotFound();
-            }
-
-            return switchExport;
+            return Ok(await switchRepository.ExportSwitchData());
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<SwitchDeviceDTO>>> Get()
         {
-            var switchDevice = await context.SwitchDevices
-                .Select(p => new SwitchDeviceDTO()
-                {
-                    Id = p.Id,
-                    Title = p.General.Title,
-                    Role = p.Role,
-                    SpanningTree = p.SpanningTree,
-                })
-                .ToListAsync();
-
-            if (switchDevice == null)
-            {
-                return NotFound();
-            }
-
-            return switchDevice;
+            return Ok(await switchRepository.GetAllSwitches());
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<SwitchDevice>> Get(int id)
         {
-            var switchDevice = await context.SwitchDevices.Where(x => x.Id == id)
-                .Include(x => x.General)
-                .Include(x => x.PowerConsumer)
-                .Include(x => x.FormFactor)
-                .Include(x => x.HostAddress).ThenInclude(x => x.Network)
-                .FirstOrDefaultAsync();
+            var response = await switchRepository.GetSingleSwitch(id);
 
-            if (switchDevice == null)
+            if (!response.Success)
             {
-                return NotFound();
+                return NotFound(response);
             }
 
-            return switchDevice;
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost]
         public async Task<ActionResult<int>> Post(SwitchDevice switchDevice)
         {
-            context.Add(switchDevice);
-            await context.SaveChangesAsync();
-            return switchDevice.Id;
+            var response = await switchRepository.CreateSwitch(switchDevice);
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var switchDevice = await context.SwitchDevices.FirstOrDefaultAsync(x => x.Id == id);
-            if (switchDevice == null)
-            {
-                return NotFound();
-            }
-
-            context.Remove(switchDevice);
-            await context.SaveChangesAsync();
-            return NoContent();
+            return Ok(await switchRepository.DeleteSwitch(id));
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut]
         public async Task<ActionResult<int>> Put(SwitchDevice switchDevice)
         {
-            context.Update(switchDevice);
-            await context.SaveChangesAsync();
+            await switchRepository.UpdateSwitch(switchDevice);
             return NoContent();
         }
     }

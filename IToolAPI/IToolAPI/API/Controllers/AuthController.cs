@@ -39,6 +39,7 @@ namespace IToolAPI.Controllers
             {
                 Name = dto.Name,
                 Username = dto.Username,
+                Role = dto.Role,
                 Password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
             };
 

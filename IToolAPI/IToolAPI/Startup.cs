@@ -1,15 +1,9 @@
-using IToolAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using IToolAPI.Data;
 using IToolAPI.Helpers;
@@ -73,6 +67,14 @@ namespace IToolAPI
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IApplicationRepository, ApplicationRespository>();
+            services.AddScoped<ICableRepository, CableRepository>();
+            services.AddScoped<INetworkRepository, NetworkRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IPrinterRepository, PrinterRepository>();
+            services.AddScoped<IRouterRepository, RouterRepository>();
+            services.AddScoped<ISwitchRepository, SwitchRepository>();
+            services.AddScoped<IServerRepository, ServerRepository>();
+            services.AddScoped<ISearchRepository, SearchRepository>();
             services.AddScoped<JwtService>();
 
             services.AddAuthorization(config =>

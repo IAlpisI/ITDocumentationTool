@@ -1,5 +1,6 @@
 ﻿using IToolAPI.DTOs;
 using IToolAPI.Models;
+using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,103 +15,69 @@ namespace IToolAPI.API.Controllers
     [Route("api/[controller]")]
     public class CableController : Controller
     {
-        private readonly ApplicationDbContext context;
-        public CableController(ApplicationDbContext context)
+        private readonly ICableRepository cableRepository;
+        public CableController(ICableRepository cableRepository)
         {
-            this.context = context;
+            this.cableRepository = cableRepository;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<CableDTO>>> Get()
         {
-            var cables = await context.Cables
-                .Select(p => new CableDTO()
-                {
-                    Id = p.Id,
-                    Title = p.General.Title,
-                    Status = p.General.Status,
-                    CableLength = p.CableLength,
-                    CableType = p.CableType
-                    
-                })
-                .ToListAsync();
+            var response = await cableRepository.GetAllCables();
 
-            if (cables == null)
-            {
-                return NotFound();
+            if(!response.Success) {
+                return NoContent();
             }
 
-            return cables;
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("getfull")]
         public async Task<ActionResult<List<Cable>>> GetFullInformtionAbuotCables()
         {
-            var cables = await context.Cables
-                .Include(x => x.General)
-                .ToListAsync();
+            var response = await cableRepository.GetCablesWithInformation();
 
-            if (cables == null)
+            if (!response.Success)
             {
-                return NotFound();
+                return NoContent();
             }
 
-            return cables;
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Cable>> Get(int id)
         {
-            var cables = await context.Cables.Where(x => x.Id == id)
-                .Include(x => x.General)
-                .FirstOrDefaultAsync();
+            var response = await cableRepository.GetCable(id);
 
-            if (cables == null)
-            {
-                return NotFound();
-            }
-
-            return cables;
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost]
         public async Task<ActionResult<int>> Post(Cable cable)
         {
-            context.Add(cable);
-            await context.SaveChangesAsync();
-            return cable.Id;
+            var response = await cableRepository.CreateCable(cable);
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var cable = await context.Cables.FirstOrDefaultAsync(x => x.Id == id);
-            if (cable == null)
-            {
-                return NotFound();
-            }
-
-            context.Remove(cable);
-            await context.SaveChangesAsync();
-            return NoContent();
+            return Ok(await cableRepository.DeleteCable(id));
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut]
         public async Task<ActionResult<int>> Put(Cable cable)
         {
-            if (cable.General != null)
-            {
-                cable.General.ModifiedDate = DateTime.UtcNow;
-            }
+            await cableRepository.UpdateCable(cable);
 
-            context.Update(cable);
-            await context.SaveChangesAsync();
             return NoContent();
         }
     }

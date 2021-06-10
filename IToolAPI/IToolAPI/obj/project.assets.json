@@ -7843,11 +7843,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "B:\\Documents\\Documentation tool\\IToolAPI\\IToolAPI\\IToolAPI.csproj",
+      "projectUniqueName": "D:\\Documents\\Github\\ITDocumentationTool\\IToolAPI\\IToolAPI\\IToolAPI.csproj",
       "projectName": "IToolAPI",
-      "projectPath": "B:\\Documents\\Documentation tool\\IToolAPI\\IToolAPI\\IToolAPI.csproj",
+      "projectPath": "D:\\Documents\\Github\\ITDocumentationTool\\IToolAPI\\IToolAPI\\IToolAPI.csproj",
       "packagesPath": "C:\\Users\\Alpis\\.nuget\\packages\\",
-      "outputPath": "B:\\Documents\\Documentation tool\\IToolAPI\\IToolAPI\\obj\\",
+      "outputPath": "D:\\Documents\\Github\\ITDocumentationTool\\IToolAPI\\IToolAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -7952,7 +7952,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.200-preview.21079.7\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.300\\RuntimeIdentifierGraph.json"
       }
     }
   }

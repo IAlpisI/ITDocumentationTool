@@ -36,7 +36,7 @@ namespace IToolAPI.Controllers
         {
             var response = await _applicationRepository.GetApplicationById(id);
 
-            if (response.Data == null) return NotFound(response);
+            if (response.Data == null) { return NotFound(response); }
 
             return Ok(response);
         }

@@ -2,6 +2,7 @@
 using IToolAPI.DTOs.Exports;
 using IToolAPI.Helpers;
 using IToolAPI.Models;
+using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,110 +18,61 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class PersonController : Controller
     {
-        private readonly ApplicationDbContext context;
-        public PersonController(ApplicationDbContext context)
+        private readonly IPersonRepository personRepository;
+        public PersonController(IPersonRepository personRepository)
         {
-            this.context = context;
+            this.personRepository = personRepository;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("export")]
         public async Task<ActionResult<List<PersonExport>>> Export()
         {
-            var people = await context.People
-                .Select(p => new PersonExport()
-                {
-                    FullName = p.FullName,
-                    Function = p.Function,
-                    EmailAddress = p.EmailAddress,
-                    CompanyNumber = p.CompanyNumber,
-                    PersonalNumber = p.PersonalNumber,
-                    Title = p.General.Title,
-                    Purpose = p.General.Purpose,
-                    Status = p.General.Status,
-
-                })
-                .ToListAsync();
-
-            if (people == null)
-            {
-                return NotFound();
-            }
-
-            return people;
+            return Ok(await personRepository.ExportPersonData());
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("GetAll")]
-        public async Task<ActionResult<List<PersonDTO>>> Get()
+        public async Task<ActionResult<List<PersonDTO>>> GetAll()
         {
-            var people = await context.People
-                .Select(p => new PersonDTO()
-                {
-                    Id = p.Id,
-                    FullName = p.FullName,
-                    Function = p.Function,
-                    EmailAddress = p.EmailAddress,
-                    CompanyNumber = p.CompanyNumber,
-                    PersonalNumber = p.PersonalNumber
-                })
-                .ToListAsync();
-
-            if (people == null)
-            {
-                return NotFound();
-            }
-
-            return people;
+            return Ok(await personRepository.GetAllPeople());
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Person>> Get(int id)
+        public async Task<ActionResult<Person>> GetPerson(int id)
         {
-            var person = await context.People.Where(x => x.Id == id)
-                .Include(x => x.General)
-                .FirstOrDefaultAsync();
+            var response = await personRepository.GetSinglePerson(id);
 
-            if (person == null)
+            if (!response.Success)
             {
-                return NotFound();
+                return NotFound(response);
             }
 
-            return person;
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost]
-        public async Task<ActionResult<int>> Post(Person person)
+        public async Task<ActionResult<int>> CreatePerson(Person person)
         {
-            context.Add(person);
-            await context.SaveChangesAsync();
-            return person.Id;
+            var response = await personRepository.CreatePerson(person);
+            return response.Data;
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
-            if (person == null)
-            {
-                return NotFound();
-            }
-
-            context.Remove(person);
-            await context.SaveChangesAsync();
-            return NoContent();
+            return Ok(await personRepository.DeletePerson(id));
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut]
         public async Task<ActionResult<int>> Put(Person person)
         {
-            person.General.ModifiedDate = DateTime.UtcNow;
-            context.Update(person);
-            await context.SaveChangesAsync();
+            await personRepository.UpdatePerson(person);
+
             return NoContent();
         }
     }

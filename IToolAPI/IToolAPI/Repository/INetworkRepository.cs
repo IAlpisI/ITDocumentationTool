@@ -1,4 +1,5 @@
-﻿using IToolAPI.Models;
+﻿using IToolAPI.DTOs;
+using IToolAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,10 @@ namespace IToolAPI.Repository
 {
     public interface INetworkRepository
     {
-        LayerThreeNetwork Create(LayerThreeNetwork layerThreeNetwork);
-        int Delete(int id);
-        List<LayerThreeNetwork> GetAllAsync();
-        LayerThreeNetwork Get(int id);
-        int Update(LayerThreeNetwork layerThreeNetwork);
+        Task<RepositoryResponse<int>> CreateNetwork(LayerThreeNetwork layerThreeNetwork);
+        Task<RepositoryResponse<List<LayerThreeNetwork>>> DeleteNetwork(int id);
+        Task<RepositoryResponse<List<LayerThreeNetworkDTO>>> GetAllNetworks();
+        Task<RepositoryResponse<LayerThreeNetwork>> GetSingleNetwork(int id);
+        Task UpdateNetwork(LayerThreeNetwork layerThreeNetwork);
     }
 }
