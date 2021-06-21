@@ -1,12 +1,9 @@
-import { Controller, useForm, useFormContext } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import * as Module from '../Styles/form.style';
-import ReactQuill from 'react-quill';
 import { useSelector, useDispatch } from 'react-redux';
 import 'react-quill/dist/quill.snow.css';
 import { useEffect, useRef, useState } from 'react';
 import { fetchLayerThreeNetworks } from '../../features/layerThreeNetwork/layerThreeNetworkSlice';
-import { Netmask } from 'netmask';
-import MaskedInput from 'react-text-mask';
 
 export const ConnectForm = ({ children }: any) => {
     const methods = useFormContext();
@@ -27,29 +24,6 @@ export const HostAddress = ({ props }: any) => {
     useEffect(() => {
         dispatch(fetchLayerThreeNetworks());
     }, [dispatch]);
-
-    // const ipControl = {
-    //     guide: false,
-    //     placeholderChar: '\u2000',
-    //     mask: (value: string | any[]) => Array(value.length).fill(/[\d.]/),
-    //     pipe: (value: string) => {
-    //         if (value === '.' || value.endsWith('..')) return false;
-
-    //         const parts = value.split('.');
-
-    //         if (
-    //             parts.length > 4 ||
-    //             parts.some(
-    //                 (part: string | number) =>
-    //                     part === '00' || part < 0 || part > 255
-    //             )
-    //         ) {
-    //             return false;
-    //         }
-
-    //         return value;
-    //     }
-    // };
 
     return (
         <ConnectForm>
@@ -130,22 +104,6 @@ export const HostAddress = ({ props }: any) => {
                                     )
                                 )}
                             </Module.Select>
-
-                            {/* <Module.Label>Description</Module.Label>
-                            <Controller
-                                name='hostAddressDescription'
-                                control={control}
-                                defaultValue={props?.description || '<p></p>'}
-                                render={({
-                                    field: { onChange, value }
-                                }: any) => (
-                                    <ReactQuill
-                                        theme='snow'
-                                        value={value || ''}
-                                        onChange={onChange}
-                                    />
-                                )}
-                            /> */}
                         </Module.Column>
                     </Module.Container>
                 );

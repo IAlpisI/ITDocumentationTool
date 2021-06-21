@@ -1,7 +1,6 @@
-import { RefObject, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
 export const useCenteredContainer = (): [
-    // RefObject<HTMLDivElement>,
     { x: number; y: number; },
     (node: HTMLDivElement) => void
   ] => {

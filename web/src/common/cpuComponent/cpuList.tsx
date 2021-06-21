@@ -67,8 +67,6 @@ const CPUList = (CPUlist: any) => {
             serverdeviceid: id
         };
 
-        console.log(CPU)
-
         if (editCPU.show) {
             CPU['id'] = editCPU.id;
             dispatch(updateCPUForServer(CPU));

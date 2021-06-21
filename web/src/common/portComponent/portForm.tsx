@@ -3,8 +3,6 @@ import 'react-quill/dist/quill.snow.css';
 import { useDispatch, useSelector } from 'react-redux';
 import * as FormStyle from '../Styles/form.style';
 import {
-    fetchCables,
-    fetchCable,
     fetchCablesWithFullInformation
 } from '../../features/cables/cablesSlice';
 import { useEffect, useState } from 'react';
@@ -27,35 +25,6 @@ export const PortForm = (props: any) => {
     useEffect(() => {
         dispatch(fetchCablesWithFullInformation());
     }, []);
-
-    // const getDefaultPort = () => {
-    //     let value: any = '';
-
-    //     switch (plugValue) {
-    //         case 'output':
-    //             console.log(
-    //                 cableList.data.forEach((x: any) => {
-    //                     if (x.endPortId === props?.props?.id) {
-    //                         console.log(x.general.title)
-    //                         value = x.general.title;
-    //                         return;
-    //                     }
-    //                 })
-    //             );
-    //             break;
-    //         case 'input':
-    //             value = cableList.data.forEach((x: any) => {
-    //                 if (x.startPortId === props?.props?.id) {
-    //                     value = x.general.title;
-    //                     return;
-    //                 }
-    //             });
-    //             break;
-    //     }
-    //     return value;
-    // };
-
-    // console.log(getDefaultPort());
 
     return (
         <ConnectForm>
@@ -108,7 +77,6 @@ export const PortForm = (props: any) => {
                             {cableList.data && (
                                 <FormStyle.Select
                                     {...register('cable')}
-                                    // defaultValue={getDefaultPort}
                                     >
                                     {cableList.data.map(
                                         (x: any, index: number) => {

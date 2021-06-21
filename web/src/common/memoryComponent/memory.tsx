@@ -19,8 +19,7 @@ export const Memory = (props: Props) => {
 
     return (
         <ConnectForm>
-            {({ register, control, reset }: any) => {
-                // reset(memory)
+            {({ register, control}: any) => {
 
                 return (
                     <Module.Container id={'Memory'}>

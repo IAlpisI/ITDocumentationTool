@@ -58,7 +58,7 @@ export default function ListOfItems<DataItem extends object | string>({
         <>
             {items !== null && notEmpty(items) && (
                 <Container>
-                    {headers.map((item: any, index: any) => {
+                    {headers.map((item: any, index: number) => {
                         return <ItemHeader key={index}>{item}</ItemHeader>;
                     })}
                     {items

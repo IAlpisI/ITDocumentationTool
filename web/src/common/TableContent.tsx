@@ -185,7 +185,7 @@ export default function TableContent<DataItem extends object | string>({
     const deleteSelected = async () => {
         selected.map(async (item) => {
             try {
-                await api.deleteData(item, tableLinks.deleteLink);
+                await api.deleteData(parseInt(item), tableLinks.deleteLink);
                 if (fetchData !== undefined) await dispatch(fetchData());
                 if (fetchOne !== undefined) await dispatch(fetchOne(id));
             } catch (err) {

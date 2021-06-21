@@ -1,6 +1,6 @@
 import Canvas from './canvas';
 import Palette from './palette';
-import PropertiesPanel from './propertiesPanel';
+import PropertiesPanel from './PropertiesPanel';
 import styled from 'styled-components';
 import MapGallery from './mapGallery';
 import { useRef, useState } from 'react';

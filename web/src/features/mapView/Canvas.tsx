@@ -2,20 +2,17 @@ import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { Layer, Stage, Line } from 'react-konva';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { DRAG_DATA_KEY, SHAPE_TYPES, DEFAULTS, TOTAL_TYPES } from './constants';
+import { DRAG_DATA_KEY, SHAPE_TYPES, TOTAL_TYPES } from './constants';
 import { Shape } from './shape';
 
 import {
     createShape,
-    selectShape,
     clearSelection,
-    moveShape,
     removeShape
 } from './stateSlice';
 
 const Canvas = (props: any) => {
     const {
-        title,
         sizeX,
         sizeY,
         stageRef,
@@ -54,15 +51,11 @@ const Canvas = (props: any) => {
         const draggedData =
             event.nativeEvent.dataTransfer.getData(DRAG_DATA_KEY);
 
-        // console.log(draggedData);
-
         if (draggedData && stageRef.current) {
             const {
                 offsetX,
                 offsetY,
                 type,
-                clientHeight,
-                clientWidth,
                 deviceId
             } = JSON.parse(draggedData);
 

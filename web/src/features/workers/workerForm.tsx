@@ -14,7 +14,7 @@ import { useHistory, useParams } from 'react-router-dom';
 function WorkerForm() {
     const methods = useForm();
     const dispatch = useDispatch();
-    const worker: any = useSelector((state: any) => state.worker.singleWorker);
+    const worker = useSelector((state: any) => state.worker.singleWorker);
     let { id } = useParams<{ id: string }>();
     let person: any = { general: {} };
     let history = useHistory();

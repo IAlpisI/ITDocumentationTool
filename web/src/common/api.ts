@@ -27,7 +27,6 @@ export const deleteData = async (id: number, address: string) => {
 
 export const createData = async (sendData: number, address: string) => {
   const { data } = await instance.post(`${address}`, sendData, {withCredentials: true});
-  console.log(data)
   return data;
 };
 

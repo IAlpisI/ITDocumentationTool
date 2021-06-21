@@ -1,14 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import * as api from "./workerApi"
-import * as apiextended from '../../common/api'
-import {exportWorker} from "../../common/constants"
+import * as api from "../../common/api"
+import {exportWorker, workerGetAll, worker} from "../../common/constants"
 
 
 export const ExportWorkers = createAsyncThunk(
     'worker/exportall',
     async (_, { rejectWithValue }) => {
         try {
-            return await apiextended.getAll(exportWorker)
+            return await api.getAll(exportWorker)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -19,7 +18,7 @@ export const fetchWorkers = createAsyncThunk(
     'worker/fetchall',
     async (_, { rejectWithValue }) => {
         try {
-            return await api.getAllWorkers()
+            return await api.getAll(workerGetAll)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -30,7 +29,7 @@ export const fetchWorker = createAsyncThunk(
     'worker/getone',
     async (id: any, { rejectWithValue }) => {
         try {
-            return await api.getWorker(id);
+            return await api.getData(id, worker);
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -41,7 +40,7 @@ export const deleteWorker = createAsyncThunk(
     'worker/delete',
     async (id: any, { rejectWithValue }) => {
         try {
-            return await api.deleteWorker(id)
+            return await api.deleteData(id, worker)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -52,7 +51,7 @@ export const createWorker = createAsyncThunk(
     'worker/create',
     async (data: any, { rejectWithValue }) => {
         try {
-            return await api.createWorker(data)
+            return await api.createData(data, worker)
         } catch (err) {
             return rejectWithValue(err)
         }
@@ -63,7 +62,7 @@ export const updateWorker = createAsyncThunk(
     'worker/update',
     async (data: any, { rejectWithValue }) => {
         try {
-            return await api.updateWorker(data)
+            return await api.updateData(data, worker)
         } catch (err) {
             return rejectWithValue(err)
         }

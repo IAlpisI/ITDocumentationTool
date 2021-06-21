@@ -197,7 +197,7 @@ const MapGallery = (props: MapProps) => {
 
     const getMaps = () => {
         const maps: any = localStorage.getItem(FLOORPLANS);
-        return JSON.parse(maps);
+        return JSON.parse(maps) || [];
     };
 
     const removeMap = (title: string) => {

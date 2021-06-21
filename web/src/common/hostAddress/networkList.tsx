@@ -1,17 +1,14 @@
 import * as Module from '../Styles/tabList.style';
 import { Button } from '../Styles/common.style';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import {
-    createNetwork,
     updateNetwork,
     fetchRouter,
-    fetchRouters
 } from '../../features/routerDevice/routerSlice';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DataAcceptWindow } from '../popWindows';
-import * as FormStyle from '../Styles/form.style';
 import TableContainer from '../TableContainer';
 import { Header, RouterNetworkLinks, RouterHeader } from './networkData';
 import { Convert } from '../helpers/filterKeys';

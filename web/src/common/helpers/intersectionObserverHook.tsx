@@ -22,7 +22,7 @@ function useIntersectionObserver(
   }
 
   useEffect(() => {
-    const node = elementRef?.current // DOM Ref
+    const node = elementRef?.current 
     const hasIOSupport = !!window.IntersectionObserver
 
     if (!hasIOSupport || frozen || !node) return
@@ -34,7 +34,6 @@ function useIntersectionObserver(
 
     return () => observer.disconnect()
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elementRef, threshold, root, rootMargin, frozen])
 
   return entry

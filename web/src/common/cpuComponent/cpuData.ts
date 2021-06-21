@@ -11,11 +11,6 @@ export const Header = [
         entityColumn: 'manufacturer',
         headerName: 'Manufacturer'
     },
-
-    // {
-    //     entityColumn: 'cpuFrequency',
-    //     headerName: 'Cpu frequency'
-    // },
     {
         entityColumn: 'action',
         headerName: 'Action'

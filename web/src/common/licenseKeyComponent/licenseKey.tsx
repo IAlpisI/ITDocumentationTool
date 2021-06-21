@@ -14,8 +14,6 @@ export const ConnectForm = ({ children }: any) => {
 
 export const LicenseKey = (props: LicenseKeyProps) => {
 
-    console.log(props);
-
     return (
         <ConnectForm>
             {({ register, control }: any) => {
