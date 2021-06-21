@@ -6,16 +6,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace IToolAPI
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
-            /*,IOptions<OperationalStoreOptions> operationalStorage*/)
-            : base(options/*, operationalStorage*/)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
         {
 
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            OnBeforeSaving();
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void OnBeforeSaving()
+        {
+            var entries = ChangeTracker.Entries();
+            var utcNow = DateTime.UtcNow;
+
+            foreach(var entry in entries)
+            {
+                if(entry.Entity is General trackable)
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Modified:
+                            trackable.ModifiedDate = utcNow;
+                            entry.Property(nameof(trackable.CreationDate)).IsModified = false;
+                            break;
+                        case EntityState.Added:
+                            trackable.CreationDate = utcNow;
+                            trackable.ModifiedDate = utcNow;
+                            break;
+                    }
+                }
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -65,27 +97,6 @@ namespace IToolAPI
                 .WithOne(x => x.Application)
                 .HasForeignKey(s => s.ApplicationId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //builder.Entity<LayerThreeNetwork>()
-            //    .HasOne(b => b.)
-            //    .WithOne(i => i.General)
-            //    .HasForeignKey<Printer>(b => b.Generald)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //builder.Entity<ClientPc>()
-            //    .HasOne(x => x.General)
-            //    .WithMany()
-            //    .OnDelete(DeleteBehavior.Restrict);
-
-            //builder.Entity<General>()
-            //    .HasOne(b => b.Printer)
-            //    .WithOne(i => i.General)
-            //    .HasForeignKey<Printer>(b => b.Generald)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //builder.Entity<ClientPcApplication>()
-            //    .HasOne<ClientPc>(x => x.ClientPc)
-            //    .WithMany(c => c.)
 
             builder.Entity<ClientPcApplication>().HasKey(ca => new
             {

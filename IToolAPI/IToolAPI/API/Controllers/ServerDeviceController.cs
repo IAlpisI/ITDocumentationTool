@@ -1,11 +1,14 @@
-﻿using IToolAPI.DTOs;
+﻿using AutoMapper;
+using IToolAPI.DTOs;
 using IToolAPI.DTOs.Exports;
 using IToolAPI.Models;
 using IToolAPI.Models.Shared;
+using IToolAPI.Repositories.Generic;
 using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IToolAPI.Controllers
@@ -14,24 +17,34 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class ServerDeviceController : Controller
     {
+        private readonly IGenericRepository<ServerDevice> genericRepository;
         private readonly IServerRepository serverRepository;
-        public ServerDeviceController(IServerRepository serverRepository)
+        private readonly IMapper mapper;
+        public ServerDeviceController(IServerRepository serverRepository, IGenericRepository<ServerDevice> genericRepository, IMapper mapper)
         {
             this.serverRepository = serverRepository;
+            this.genericRepository = genericRepository;
+            this.mapper = mapper;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("export")]
         public async Task<ActionResult<List<ServerExport>>> Export()
         {
-            return Ok(await serverRepository.ExportServerData());
+            var response = await genericRepository.GetAllAsync("General");
+            var serverDevices = response.Select(x => mapper.Map<ServerExport>(x)).ToList();
+
+            return Ok(serverDevices);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
-        [HttpGet("GetAll")]
+        [HttpGet("getall")]
         public async Task<ActionResult<List<ServerDeviceDTO>>> Get()
         {
-            return Ok(await serverRepository.GetAllServers());
+            var response = await genericRepository.GetAllAsync("General");
+            var serverDevices = response.Select(x => mapper.Map<ServerDeviceDTO>(x)).ToList();
+
+            return Ok(serverDevices);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
@@ -40,12 +53,7 @@ namespace IToolAPI.Controllers
         {
             var response = await serverRepository.GetSingleServer(id);
 
-            if (!response.Success)
-            {
-                return NotFound(response);
-            }
-
-            return response.Data;
+            return Ok(response);
         }
 
 
@@ -53,8 +61,9 @@ namespace IToolAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<int>> Post(ServerDevice serverDevice)
         {
-            var response = await serverRepository.CreateSerer(serverDevice);
-            return response.Data;
+            var response = await genericRepository.CreateAsync(serverDevice);
+
+            return Ok(response.Id);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
@@ -130,14 +139,16 @@ namespace IToolAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            return Ok(await serverRepository.DeleteServer(id));
+            await genericRepository.DeleteAsync(id);
+
+            return NoContent();
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut]
         public async Task<ActionResult<int>> Put(ServerDevice serverDevice)
         {
-            await serverRepository.UpdateServer(serverDevice);
+            await genericRepository.UpdateAsync(serverDevice);
 
             return NoContent();
         }

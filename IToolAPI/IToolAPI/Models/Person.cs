@@ -1,14 +1,10 @@
-﻿using IToolAPI.Models.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using IToolAPI.Models.Base;
+using IToolAPI.Models.Shared;
 
 namespace IToolAPI.Models
 {
-    public class Person
+    public class Person : BaseEntity<int>
     {
-        public int Id { get; set; }
         public string FullName { get; set; }
         public string Function { get; set; }
         public string EmailAddress { get; set; }

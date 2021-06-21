@@ -38,7 +38,7 @@ namespace IToolAPI.Test.Controllers
                 Status = "",
                 Tag = new List<string> { "contact", "operational" },
                 Title = "Contact",
-                CreatioDate = DateTime.Today,
+                CreationDate = DateTime.Today,
                 ModifiedDate = DateTime.Today
             };
 

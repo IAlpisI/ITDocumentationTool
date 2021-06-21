@@ -314,3 +314,5 @@ D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI\obj\Debug\net5.0\scope
 D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI\obj\Debug\net5.0\IToolAPI.RazorTargetAssemblyInfo.cache
 D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI\obj\Debug\net5.0\IToolAPI.csproj.CopyComplete
 D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI\obj\Debug\net5.0\IToolAPI.genruntimeconfig.cache
+D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI\bin\Debug\net5.0\System.Net.Http.Formatting.dll
+D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI\bin\Debug\net5.0\System.Web.Http.dll

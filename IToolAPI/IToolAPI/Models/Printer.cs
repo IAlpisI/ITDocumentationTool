@@ -1,14 +1,10 @@
-﻿using IToolAPI.Models.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using IToolAPI.Models.Base;
+using IToolAPI.Models.Shared;
 
 namespace IToolAPI.Models
 {
-    public class Printer
+    public class Printer : BaseEntity<int>
     {
-        public int Id { get; set; }
         public int? GeneralId { get; set; }
         public General General { get; set; }    
         public string Type { get; set; }

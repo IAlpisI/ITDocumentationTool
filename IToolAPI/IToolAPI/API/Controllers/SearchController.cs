@@ -2,6 +2,7 @@
 using IToolAPI.Helpers;
 using IToolAPI.Models;
 using IToolAPI.Models.Shared;
+using IToolAPI.Repositories.Generic;
 using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,10 +19,14 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class SearchController : Controller
     {
+        private readonly IGenericRepository<DevicePort> deviceRepository;
+        private readonly IGenericRepository<HostAddress> hostRepository;
         private readonly ISearchRepository searchRepository;
-        public SearchController(ISearchRepository searchRepository)
+        public SearchController(ISearchRepository searchRepository, IGenericRepository<HostAddress> hostRepository, IGenericRepository<DevicePort> deviceRepository)
         {
             this.searchRepository = searchRepository;
+            this.deviceRepository = deviceRepository;
+            this.hostRepository = hostRepository;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
@@ -36,23 +41,26 @@ namespace IToolAPI.Controllers
         [HttpPost("addport")]
         public async Task<ActionResult<int>> Post(DevicePort devicePort)
         {
-            await searchRepository.CreateDevicePort(devicePort);
+            var response = await deviceRepository.CreateAsync(devicePort);
 
-            return NoContent();
+            return Ok(response.Id);
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("removeport/{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            return Ok(await searchRepository.DeleteDevicePort(id));
+            await deviceRepository.DeleteAsync(id);
+
+            return NoContent();
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut("updateport")]
         public async Task<ActionResult> Put(DevicePort port)
         {
-            await searchRepository.UpdateDevicePort(port);
+            await deviceRepository.UpdateAsync(port);
+
             return NoContent();
         }
 
@@ -60,43 +68,43 @@ namespace IToolAPI.Controllers
         [HttpGet("getport/{id}")]
         public async Task<ActionResult<DevicePort>> Get(int id)
         {
-            var response = await searchRepository.GetDevicePort(id);
-            if (!response.Success)
-            {
-                return NoContent();
-            }
+            var response = await deviceRepository.GetByIdAsync(x => x.Id == id);
 
-            return response.Data;
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("getall")]
         public async Task<ActionResult<List<HostAddress>>> Get()
         {
-            var response = await searchRepository.GetHostAddress();
-            return response.Data;
+            var response = await hostRepository.GetAllAsync();
+
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("gethostaddress/{id}")]
         public async Task<ActionResult<List<HostAddressDTO>>> GetHostAddresses(int id)
         {
-            return Ok(await searchRepository.GetHostAddresses(id));
+            var response = await searchRepository.GetHostAddresses(id);
+
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost("createhost")]
-        public async Task<ActionResult> PostHost(HostAddress hostAddress)
+        public async Task<ActionResult<int>> PostHost(HostAddress hostAddress)
         {
-            await searchRepository.CreateHost(hostAddress);
-            return NoContent();
+            var response = await hostRepository.CreateAsync(hostAddress);
+
+            return Ok(response.Id);
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut("updatehost")]
         public async Task<ActionResult> Put(HostAddress hostAddress)
         {
-            await searchRepository.UpdateHost(hostAddress);
+            await hostRepository.UpdateAsync(hostAddress);
 
             return NoContent();
         }

@@ -1,14 +1,11 @@
-﻿using IToolAPI.Models.Shared;
-using System;
+﻿using IToolAPI.Models.Base;
+using IToolAPI.Models.Shared;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace IToolAPI.Models
 {
-    public class ServerDevice
+    public class ServerDevice : BaseEntity<int>
     {
-        public int Id { get; set; }
         public int GeneralId { get; set; }
         public General General { get; set; }
         public int FormFactorId { get; set; }

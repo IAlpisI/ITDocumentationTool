@@ -1,7 +1,9 @@
-﻿using IToolAPI.DTOs;
+﻿using AutoMapper;
+using IToolAPI.DTOs;
 using IToolAPI.DTOs.Application;
 using IToolAPI.Helpers;
 using IToolAPI.Models;
+using IToolAPI.Repositories.Generic;
 using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,26 +19,31 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class ApplicationController : Controller
     {
-        private readonly IApplicationRepository _applicationRepository;
-        public ApplicationController(IApplicationRepository applicationRepository)
+        private readonly IMapper mapper;
+        private readonly IApplicationRepository applicationRepository;
+        private readonly IGenericRepository<Application> genericRepository;
+        public ApplicationController(IMapper mapper, IApplicationRepository applicationRepository, IGenericRepository<Application> genericRepository)
         {
-            _applicationRepository = applicationRepository;
+            this.mapper = mapper;
+            this.applicationRepository = applicationRepository;
+            this.genericRepository = genericRepository;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
-        [HttpGet("GetAll")]
-        public async Task<ActionResult> GetAll()
+        [HttpGet("getall")]
+        public async Task<ActionResult<List<ApplicationDTO>>> GetAll()
         {
-            return Ok(await _applicationRepository.GetAllApplications());
+            var response = await genericRepository.GetAllAsync();
+            var applications = response.Select(x => mapper.Map<ApplicationDTO>(x)).ToList();
+
+            return Ok(applications);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetSingle(int id)
+        public async Task<ActionResult<Application>> GetSingle(int id)
         {
-            var response = await _applicationRepository.GetApplicationById(id);
-
-            if (response.Data == null) { return NotFound(response); }
+            var response = await genericRepository.GetByIdAsync(x => x.Id == id, "General,LicenseKey");
 
             return Ok(response);
         }
@@ -45,27 +52,25 @@ namespace IToolAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var response = await _applicationRepository.DelteApplication(id);
-            if (response == null)
-            {
-                return NotFound(response);
-            }
-            return Ok(response);
+            await genericRepository.DeleteAsync(id);
+
+            return NoContent();
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost]
-        public async Task<ActionResult> Post(Application application)
+        public async Task<ActionResult<int>> Post(Application application)
         {
-            var response = await _applicationRepository.CreteApplication(application);
-            return Ok(response);
+            var response = await genericRepository.CreateAsync(application);
+
+            return Ok(response.Id);
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut]
         public async Task<ActionResult> Put(Application application)
         {
-            await _applicationRepository.UpdateApplication(application);
+            await genericRepository.UpdateAsync(application);
 
             return NoContent();
         }
@@ -76,7 +81,7 @@ namespace IToolAPI.Controllers
         [HttpPost("getapp")]
         public async Task<ActionResult> GetAppsForDevices(DeviceAppLicenseDTO data)
         {
-            var response = await _applicationRepository.GetAllApplicationsForDevice(data);
+            var response = await applicationRepository.GetAllApplicationsForDevice(data);
             if(response != null)
             {
                 return Ok(response);
@@ -91,7 +96,7 @@ namespace IToolAPI.Controllers
         [HttpPost("getlicense")]
         public async Task<ActionResult> GetLicensesForDevices(DeviceAppLicenseDTO data)
         {
-            var response = await _applicationRepository.GetAllLicensesForDevice(data);
+            var response = await applicationRepository.GetAllLicensesForDevice(data);
             if (response != null)
             {
                 return Ok(response);
@@ -104,7 +109,7 @@ namespace IToolAPI.Controllers
         [HttpPost("getapplicense")]
         public async Task<ActionResult> GetLicensesForApplciation(LicensesForApplicationDTO data)
         {
-            var response = await _applicationRepository.GetLicensesForApplication(data);
+            var response = await applicationRepository.GetLicensesForApplication(data);
             if (response != null)
             {
                 return Ok(response);
@@ -119,28 +124,28 @@ namespace IToolAPI.Controllers
         [HttpGet("licenses/{id}")]
         public async Task<ActionResult> GetAllLicenses(int id)
         {
-            return Ok(await _applicationRepository.GetLicensesForApplication(id));
+            return Ok(await applicationRepository.GetLicensesForApplication(id));
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("license/{id}")]
         public async Task<ActionResult> GetSingleLicenses(int id)
         {
-            return Ok(await _applicationRepository.GetSingleLicense(id));
+            return Ok(await applicationRepository.GetSingleLicense(id));
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpPost("license")]
         public async Task<ActionResult> LicensePost(LicenseKey licenseKey)
         {
-            return Ok(await _applicationRepository.CreateLicensesForApplication(licenseKey));
+            return Ok(await applicationRepository.CreateLicensesForApplication(licenseKey));
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpPut("license")]
         public async Task<ActionResult<int>> Put(LicenseKey license)
         {
-            await _applicationRepository.UpdateLicense(license);
+            await applicationRepository.UpdateLicense(license);
             return NoContent();
         }
 
@@ -148,140 +153,60 @@ namespace IToolAPI.Controllers
         [HttpDelete("license/{id}")]
         public async Task<ActionResult<LicenseKey>> GetLicense(int id)
         {
-            var response = await _applicationRepository.RemoveLicenseFromApplication(id);
+            var response = await applicationRepository.RemoveLicenseFromApplication(id);
             if (response == null)
             {
                 return NotFound(response);
             }
-            return Ok(response);
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpPost("serverapp")]
         public async Task<ActionResult<LicenseKey>> ChangeServerDeviceApp(SoftwareDeviceDTO softwareDeviceDTO)
         {
-            var response = await _applicationRepository.ModifyServerDeviceApplication(softwareDeviceDTO);
+            var response = await applicationRepository.ModifyServerDeviceApplication(softwareDeviceDTO);
             if (response.Data == null)
             {
                 return NotFound(response);
             }
-            return Ok(response);
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpPost("serverlicense")]
         public async Task<ActionResult<LicenseKey>> ChangeServerDeviceLicense(SoftwareDeviceDTO softwareDeviceDTO)
         {
-            var response = await _applicationRepository.ModifyServerDeviceLicense(softwareDeviceDTO);
+            var response = await applicationRepository.ModifyServerDeviceLicense(softwareDeviceDTO);
             if (response.Data == null)
             {
                 return NotFound(response);
             }
-            return Ok(response);
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpPost("clientapp")]
         public async Task<ActionResult<LicenseKey>> ChangeClientApplication(SoftwareDeviceDTO softwareDeviceDTO)
         {
-            var response = await _applicationRepository.ModifyClientDeviceApplication(softwareDeviceDTO);
+            var response = await applicationRepository.ModifyClientDeviceApplication(softwareDeviceDTO);
             if (response.Data == null)
             {
                 return NotFound(response);
             }
-            return Ok(response);
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpPost("clientlicense")]
         public async Task<ActionResult<LicenseKey>> ChangeClientLicense(SoftwareDeviceDTO softwareDeviceDTO)
         {
-            var response = await _applicationRepository.ModifyClientDeviceDeviceLicense(softwareDeviceDTO);
+            var response = await applicationRepository.ModifyClientDeviceDeviceLicense(softwareDeviceDTO);
             if (response.Data == null)
             {
                 return NotFound(response);
             }
-            return Ok(response);
+            return Ok(response.Data);
         }
-
-
-        //[Authorize(Roles = "Admin, Manager, Editor, User")]
-        //[HttpPost("detachapp")]
-        //public async Task<ActionResult<int>> DetachFromServer(ApplicationDetachReceiver data)
-        //{
-        //    var application = await context.Applications.FirstOrDefaultAsync(x => x.Id == data.ApplicationId);
-        //    if (application == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    switch(data.DeviceName)
-        //    {
-        //        case "server":
-        //            application.ServerDeviceId = null;
-        //            break;
-        //        case "client":
-        //            //application.
-        //            break;
-        //        default: break;
-        //    }
-
-        //    return NoContent();
-        //}
-
-        //[Authorize(Roles = "Admin, Manager, Editor, User")]
-        //[HttpPost("getlicense")]
-        //public async Task<ActionResult<List<LicenseKey>>> GetLicenseForDevice(LicenseForDevice data)
-        //{
-
-        //    var license = await context.LicenseKeys.ToListAsync();
-        //    if (license == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    switch (data.DeviceName)
-        //    {
-        //        case "server":
-        //            var values = license.Where(x => x.ApplicationId == data.ApplicationId && x.ServerDeviceId == data.DeviceId).ToList();
-        //            if (values != null)
-        //            {
-        //                return values;
-        //            }
-        //            break;
-        //        case "client":
-        //            //application.
-        //            break;
-        //        default: break;
-        //    }
-
-        //    return NoContent();
-        //}
-
-        //[Authorize(Roles = "Admin, Manager, Editor, User")]
-        //[HttpPost("detachlicense")]
-        //public async Task<ActionResult<int>> DetachLicense(LicenseDetachReceive data)
-        //{
-        //    var license = await context.LicenseKeys.FirstOrDefaultAsync(x => x.Id == data.LicenseId);
-        //    if (license == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    switch (data.DeviceName)
-        //    {
-        //        case "server":
-        //            license.ServerDeviceId = null;
-        //            break;
-        //        case "client":
-        //            //application.
-        //            break;
-        //        default: break;
-        //    }
-
-        //    return NoContent();
-        //}
-
-
     }
 }

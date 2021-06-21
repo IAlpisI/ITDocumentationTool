@@ -19,39 +19,6 @@ namespace IToolAPI.Repository
             this.context = context;
             this.mapper = mapper;
         }
-        public async Task CreateDevicePort(DevicePort devicePort)
-        {
-            context.Add(devicePort);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task CreateHost(HostAddress hostAddress)
-        {
-            context.Add(hostAddress);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task<RepositoryResponse<int>> DeleteDevicePort(int id)
-        {
-            var repositoryResponse = new RepositoryResponse<int>();
-
-            var port = await context.DevicePorts
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (port == null)
-            {
-                repositoryResponse.Success = false;
-                repositoryResponse.Message = "Port not found";
-
-                return repositoryResponse;
-            }
-
-            context.Remove(port);
-            await context.SaveChangesAsync();
-
-            return repositoryResponse;
-        }
-
         public async Task<RepositoryResponse<DefectedDTO>> GetDefectedItems()
         {
             var repositoryResponse = new RepositoryResponse<DefectedDTO>();
@@ -136,24 +103,6 @@ namespace IToolAPI.Repository
             return repositoryResponse;
         }
 
-        public async Task<RepositoryResponse<DevicePort>> GetDevicePort(int id)
-        {
-            var repositoryResponse = new RepositoryResponse<DevicePort>();
-            var port = await context.DevicePorts
-                                    .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (port == null)
-            {
-                repositoryResponse.Success = false;
-                repositoryResponse.Message = "Port not found";
-
-                return repositoryResponse;
-            }
-            repositoryResponse.Data = port;
-
-            return repositoryResponse;
-        }
-
         public async Task<RepositoryResponse<List<LicenseKeyResponse>>> GetExpiredLicenses()
         {
             var repositoryResponse = new RepositoryResponse<List<LicenseKeyResponse>>();
@@ -166,26 +115,14 @@ namespace IToolAPI.Repository
             return repositoryResponse;
         }
 
-        public async Task<RepositoryResponse<List<HostAddress>>> GetHostAddress()
+        public async Task<List<HostAddressDTO>> GetHostAddresses(int id)
         {
-            var repositoryResponse = new RepositoryResponse<List<HostAddress>>();
-            var hostAddresses = await context.HostAddresses
-                                    .ToListAsync();
-            repositoryResponse.Data = hostAddresses;
-            return repositoryResponse;
-        }
-
-        public async Task<RepositoryResponse<List<HostAddressDTO>>> GetHostAddresses(int id)
-        {
-            var repositoryResponse = new RepositoryResponse<List<HostAddressDTO>>();
             var hostAddress = await context.HostAddresses
                 .Where(x => x.NetworkId == id)
                 .Select(x => mapper.Map<HostAddressDTO>(x))
                 .ToListAsync();
 
-            repositoryResponse.Data = hostAddress;
-
-            return repositoryResponse;
+            return hostAddress;
         }
 
         public async Task<RepositoryResponse<List<SearchRecentResponse>>> GetResultsByCriteria(SearchRecentReceive criteria)
@@ -202,7 +139,7 @@ namespace IToolAPI.Repository
                         Title = p.Title,
                         Status = p.Status,
                         Purpose = p.Purpose,
-                        CreationDate = p.CreatioDate.Date.ToString(),
+                        CreationDate = p.CreationDate.Date.ToString(),
                         ModifiedDate = p.ModifiedDate.Date.ToString()
                     })
                     .OrderByDescending(x => x.CreationDate)
@@ -218,7 +155,7 @@ namespace IToolAPI.Repository
                         Title = p.Title,
                         Status = p.Status,
                         Purpose = p.Purpose,
-                        CreationDate = p.CreatioDate.Date.ToString(),
+                        CreationDate = p.CreationDate.Date.ToString(),
                         ModifiedDate = p.ModifiedDate.Date.ToString()
                     })
                     .OrderByDescending(x => x.ModifiedDate)
@@ -228,7 +165,6 @@ namespace IToolAPI.Repository
             else
             {
                 repositoryResponse.Success = false;
-                repositoryResponse.Message = "Criteria is incorrect";
 
                 return repositoryResponse;
             }
@@ -237,7 +173,6 @@ namespace IToolAPI.Repository
             if (searchResult == null)
             {
                 repositoryResponse.Success = false;
-                repositoryResponse.Message = "results not found";
 
                 return repositoryResponse;
             }
@@ -363,18 +298,6 @@ namespace IToolAPI.Repository
             repositoryResponse.Data = foundItems;
 
             return repositoryResponse;
-        }
-
-        public async Task UpdateDevicePort(DevicePort port)
-        {
-            context.Update(port);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task UpdateHost(HostAddress hostAddress)
-        {
-            context.Update(hostAddress);
-            await context.SaveChangesAsync();
         }
     }
 }

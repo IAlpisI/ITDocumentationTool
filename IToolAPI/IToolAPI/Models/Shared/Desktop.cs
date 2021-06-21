@@ -1,13 +1,13 @@
-﻿using System;
+﻿using IToolAPI.Models.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IToolAPI.Models.Shared
 {
-    public class Desktop
+    public class Desktop : BaseEntity<int>
     {
-        public int Id { get; set; }
         public string Type { get; set; }
         public string KeyboardLayout { get; set; }
         public string MouseModel { get; set; }

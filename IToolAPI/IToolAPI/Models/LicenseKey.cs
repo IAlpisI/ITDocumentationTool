@@ -1,13 +1,13 @@
-﻿using System;
+﻿using IToolAPI.Models.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IToolAPI.Models
 {
-    public class LicenseKey
+    public class LicenseKey : BaseEntity<int>
     {
-        public int Id { get; set; }
         public int Amount { get; set; }
         public string KeyInformation { get; set; }
         public string Serial { get; set; }

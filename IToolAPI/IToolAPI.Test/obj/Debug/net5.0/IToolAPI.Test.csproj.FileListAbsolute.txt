@@ -240,3 +240,5 @@ D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI.Test\obj\Debug\net5.0\
 D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI.Test\obj\Debug\net5.0\ref\IToolAPI.Test.dll
 D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI.Test\obj\Debug\net5.0\IToolAPI.Test.pdb
 D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI.Test\obj\Debug\net5.0\IToolAPI.Test.genruntimeconfig.cache
+D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI.Test\bin\Debug\net5.0\System.Net.Http.Formatting.dll
+D:\Documents\Github\ITDocumentationTool\IToolAPI\IToolAPI.Test\bin\Debug\net5.0\System.Web.Http.dll

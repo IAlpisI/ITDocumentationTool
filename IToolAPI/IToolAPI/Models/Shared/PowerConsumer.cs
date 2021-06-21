@@ -1,13 +1,13 @@
-﻿using System;
+﻿using IToolAPI.Models.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IToolAPI.Models.Shared
 {
-    public class PowerConsumer
+    public class PowerConsumer : BaseEntity<int>
     {
-        public int Id { get; set; }
         public string Title { get; set; }
         public string Manufacturer { get; set; }
         public string PowerModel { get; set; }

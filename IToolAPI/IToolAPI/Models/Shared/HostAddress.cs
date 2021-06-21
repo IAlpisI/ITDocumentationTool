@@ -1,13 +1,13 @@
-﻿using System;
+﻿using IToolAPI.Models.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IToolAPI.Models.Shared
 {
-    public class HostAddress
+    public class HostAddress : BaseEntity<int>
     {
-        public int Id { get; set; }
         public int? NetworkId { get; set; }
         public LayerThreeNetwork Network { get; set; }
         public string Address { get; set; }

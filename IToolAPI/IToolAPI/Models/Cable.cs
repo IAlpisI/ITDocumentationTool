@@ -1,14 +1,10 @@
-﻿using IToolAPI.Models.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using IToolAPI.Models.Base;
+using IToolAPI.Models.Shared;
 
 namespace IToolAPI.Models
 {
-    public class Cable
+    public class Cable: BaseEntity<int>
     {
-        public int Id { get; set; }
         public int? GeneralId { get; set; }
         public General General { get; set; }
         public string CableType { get; set; }

@@ -3,6 +3,7 @@ using IToolAPI.DTOs;
 using IToolAPI.DTOs.Exports;
 using IToolAPI.Helpers;
 using IToolAPI.Models;
+using IToolAPI.Repositories.Generic;
 using IToolAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,60 +19,67 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class SwitchDeviceController : Controller
     {
-        private readonly ISwitchRepository switchRepository;
-        public SwitchDeviceController(ISwitchRepository switchRepository)
+        private readonly IGenericRepository<SwitchDevice> genericRepository;
+        private readonly IMapper mapper;
+        public SwitchDeviceController(IGenericRepository<SwitchDevice> genericRepository, IMapper mapper)
         {
-            this.switchRepository = switchRepository;
+            this.genericRepository = genericRepository;
+            this.mapper = mapper;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("export")]
-        public async Task<ActionResult<List<RouterExport>>> Export()
+        public async Task<ActionResult<List<SwitchExport>>> Export()
         {
-            return Ok(await switchRepository.ExportSwitchData());
+            var response = await genericRepository.GetAllAsync("General");
+            var swtichDevices = response.Select(x => mapper.Map<SwitchExport>(x)).ToList();
+
+            return Ok(swtichDevices);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
-        [HttpGet("GetAll")]
+        [HttpGet("getall")]
         public async Task<ActionResult<List<SwitchDeviceDTO>>> Get()
         {
-            return Ok(await switchRepository.GetAllSwitches());
+            var response = await genericRepository.GetAllAsync("General");
+            var swtichDevices = response.Select(x => mapper.Map<SwitchDeviceDTO>(x)).ToList();
+
+            return Ok(swtichDevices);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<SwitchDevice>> Get(int id)
         {
-            var response = await switchRepository.GetSingleSwitch(id);
+            var response = await genericRepository.GetByIdAsync(x => x.Id == id, "General,PowerConsumer,FormFactor");
 
-            if (!response.Success)
-            {
-                return NotFound(response);
-            }
-
-            return response.Data;
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost]
         public async Task<ActionResult<int>> Post(SwitchDevice switchDevice)
         {
-            var response = await switchRepository.CreateSwitch(switchDevice);
-            return response.Data;
+            var response = await genericRepository.CreateAsync(switchDevice);
+
+            return Ok(response.Id);
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            return Ok(await switchRepository.DeleteSwitch(id));
+            await genericRepository.DeleteAsync(id);
+
+            return NoContent();
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPut]
         public async Task<ActionResult<int>> Put(SwitchDevice switchDevice)
         {
-            await switchRepository.UpdateSwitch(switchDevice);
+            await genericRepository.UpdateAsync(switchDevice);
+
             return NoContent();
         }
     }

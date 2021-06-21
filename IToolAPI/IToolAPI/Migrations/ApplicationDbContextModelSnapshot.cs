@@ -16,7 +16,7 @@ namespace IToolAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("IToolAPI.Models.Application", b =>
@@ -119,9 +119,7 @@ namespace IToolAPI.Migrations
 
                     b.HasIndex("CpuId");
 
-                    b.HasIndex("GeneralId")
-                        .IsUnique()
-                        .HasFilter("[GeneralId] IS NOT NULL");
+                    b.HasIndex("GeneralId");
 
                     b.HasIndex("MemoryId");
 
@@ -531,10 +529,7 @@ namespace IToolAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ClinetPcId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatioDate")
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Creator")
@@ -794,8 +789,8 @@ namespace IToolAPI.Migrations
                         .HasForeignKey("CpuId");
 
                     b.HasOne("IToolAPI.Models.Shared.General", "General")
-                        .WithOne("ClientPc")
-                        .HasForeignKey("IToolAPI.Models.ClientPc", "GeneralId");
+                        .WithMany()
+                        .HasForeignKey("GeneralId");
 
                     b.HasOne("IToolAPI.Models.Shared.Memory", "Memory")
                         .WithMany()
@@ -1129,11 +1124,6 @@ namespace IToolAPI.Migrations
                     b.Navigation("ServerDeviceApplications");
 
                     b.Navigation("ServerDeviceLicenseKeys");
-                });
-
-            modelBuilder.Entity("IToolAPI.Models.Shared.General", b =>
-                {
-                    b.Navigation("ClientPc");
                 });
 
             modelBuilder.Entity("IToolAPI.Models.SwitchDevice", b =>

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using IToolAPI.Repository;
+using IToolAPI.Repositories.Generic;
 
 namespace IToolAPI
 {
@@ -65,14 +66,10 @@ namespace IToolAPI
                 };
             });
 
+            services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IApplicationRepository, ApplicationRespository>();
-            services.AddScoped<ICableRepository, CableRepository>();
-            services.AddScoped<INetworkRepository, NetworkRepository>();
-            services.AddScoped<IPersonRepository, PersonRepository>();
-            services.AddScoped<IPrinterRepository, PrinterRepository>();
             services.AddScoped<IRouterRepository, RouterRepository>();
-            services.AddScoped<ISwitchRepository, SwitchRepository>();
             services.AddScoped<IServerRepository, ServerRepository>();
             services.AddScoped<ISearchRepository, SearchRepository>();
             services.AddScoped<JwtService>();

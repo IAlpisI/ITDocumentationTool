@@ -10,13 +10,6 @@ namespace IToolAPI.Repository
 {
     public interface IApplicationRepository
     {
-        //Application
-        Task<RepositoryResponse<List<ApplicationDTO>>> GetAllApplications();
-        Task<RepositoryResponse<Application>> GetApplicationById(int id);
-        Task<RepositoryResponse<List<ApplicationDTO>>> DelteApplication(int id);
-        Task UpdateApplication(Application application);
-        Task<RepositoryResponse<int>> CreteApplication(Application application);
-
         //Get applications for all device
         Task<RepositoryResponse<List<ApplicationDTO>>> GetAllApplicationsForDevice(DeviceAppLicenseDTO deviceAppLicenseDTO);
 

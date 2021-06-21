@@ -32,7 +32,6 @@ namespace IToolAPI.Repository
                 if (serverDevice == null)
                 {
                     response.Success = false;
-                    response.Message = "Server device not found";
                     return response;
                 }
 
@@ -42,7 +41,6 @@ namespace IToolAPI.Repository
                 if (application == null)
                 {
                     response.Success = true;
-                    response.Message = "Application not found";
                     return response;
                 }
 
@@ -75,7 +73,6 @@ namespace IToolAPI.Repository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
             }
 
             return response;
@@ -90,66 +87,6 @@ namespace IToolAPI.Repository
             repositoryResponse.Data = _context.LicenseKeys
                 .Where(a => a.ApplicationId == licenseKey.ApplicationId)
                 .Select(x => _mapper.Map<LicenseKeyResponse>(x)).ToList();
-            return repositoryResponse;
-        }
-
-        public async Task<RepositoryResponse<int>> CreteApplication(Application application)
-        {
-            var repositoryResponse = new RepositoryResponse<int>();
-
-            _context.Add(application);
-            await _context.SaveChangesAsync();
-            repositoryResponse.Data = application.Id;
-            return repositoryResponse;
-        }
-
-        public async Task<RepositoryResponse<List<ApplicationDTO>>> DelteApplication(int id)
-        {
-            RepositoryResponse<List<ApplicationDTO>> repositoryResponse = new RepositoryResponse<List<ApplicationDTO>>();
-            try
-            {
-                var application = await _context.Applications
-                    .FirstOrDefaultAsync(x => x.Id == id);
-
-                if (application != null)
-                {
-                    _context.Applications.Remove(application);
-                    await _context.SaveChangesAsync();
-                    repositoryResponse.Data = _context.Applications.Select(x => _mapper.Map<ApplicationDTO>(x)).ToList();
-                }
-                else
-                {
-                    repositoryResponse.Success = false;
-                    repositoryResponse.Message = "Application not found";
-                }
-            }
-            catch (Exception ex)
-            {
-                repositoryResponse.Success = false;
-                repositoryResponse.Message = ex.Message;
-            }
-            return repositoryResponse;
-        }
-
-        public async Task<RepositoryResponse<List<ApplicationDTO>>> GetAllApplications()
-        {
-            var repositoryResponse = new RepositoryResponse<List<ApplicationDTO>>();
-
-            List<Application> applications = await _context.Applications.ToListAsync();
-            repositoryResponse.Data = applications.Select(c => _mapper.Map<ApplicationDTO>(c)).ToList();
-
-            return repositoryResponse;
-        }
-
-        public async Task<RepositoryResponse<Application>> GetApplicationById(int id)
-        {
-            var repositoryResponse = new RepositoryResponse<Application>();
-            var application = await _context.Applications
-                .Include(x => x.General)
-                .Include(x => x.LicenseKey)
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            repositoryResponse.Data = application;
             return repositoryResponse;
         }
 
@@ -190,13 +127,11 @@ namespace IToolAPI.Repository
                 else
                 {
                     repositoryResponse.Success = false;
-                    repositoryResponse.Message = "License not found";
                 }
             }
             catch (Exception ex)
             {
                 repositoryResponse.Success = false;
-                repositoryResponse.Message = ex.Message;
             }
             return repositoryResponse;
         }
@@ -224,7 +159,6 @@ namespace IToolAPI.Repository
                 if (serverDevice == null)
                 {
                     response.Success = false;
-                    response.Message = "Server device not found";
                     return response;
                 }
 
@@ -234,7 +168,6 @@ namespace IToolAPI.Repository
                 if (license == null)
                 {
                     response.Success = true;
-                    response.Message = "License not found";
                     return response;
                 }
 
@@ -267,7 +200,6 @@ namespace IToolAPI.Repository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
             }
 
             return response;
@@ -284,7 +216,6 @@ namespace IToolAPI.Repository
                 if (clientDevice == null)
                 {
                     response.Success = false;
-                    response.Message = "Client device not found";
                     return response;
                 }
 
@@ -294,7 +225,6 @@ namespace IToolAPI.Repository
                 if (application == null)
                 {
                     response.Success = true;
-                    response.Message = "Application not found";
                     return response;
                 }
 
@@ -327,7 +257,6 @@ namespace IToolAPI.Repository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
             }
 
             return response;
@@ -344,7 +273,6 @@ namespace IToolAPI.Repository
                 if (clientDevice == null)
                 {
                     response.Success = false;
-                    response.Message = "Client device not found";
                     return response;
                 }
 
@@ -354,7 +282,6 @@ namespace IToolAPI.Repository
                 if (license == null)
                 {
                     response.Success = true;
-                    response.Message = "License not found";
                     return response;
                 }
 
@@ -387,7 +314,6 @@ namespace IToolAPI.Repository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
             }
 
             return response;

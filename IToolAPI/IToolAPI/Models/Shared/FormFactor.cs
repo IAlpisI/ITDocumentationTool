@@ -1,13 +1,13 @@
-﻿using System;
+﻿using IToolAPI.Models.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IToolAPI.Models.Shared
 {
-    public class FormFactor
+    public class FormFactor : BaseEntity<int>
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public int RackUnit { get; set; }
         public string DimesnsionUnit { get; set; }

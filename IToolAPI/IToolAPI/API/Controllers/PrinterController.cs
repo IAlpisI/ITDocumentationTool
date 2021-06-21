@@ -1,12 +1,10 @@
-﻿using IToolAPI.DTOs;
+﻿using AutoMapper;
+using IToolAPI.DTOs;
 using IToolAPI.DTOs.Exports;
-using IToolAPI.Helpers;
 using IToolAPI.Models;
-using IToolAPI.Repository;
+using IToolAPI.Repositories.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,61 +15,64 @@ namespace IToolAPI.Controllers
     [Route("api/[controller]")]
     public class PrinterController : Controller
     {
-        private readonly PrinterRepository printerRepository;
-        public PrinterController(PrinterRepository printerRepository)
+        private readonly IMapper mapper;
+        private readonly IGenericRepository<Printer> genericRepository;
+        public PrinterController(IGenericRepository<Printer> genericRepository, IMapper mapper)
         {
-            this.printerRepository = printerRepository;
+            this.genericRepository = genericRepository;
+            this.mapper = mapper;
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("export")]
         public async Task<ActionResult<List<PrinterExport>>> Export()
         {
-            return Ok(await printerRepository.ExportPrinterData());
+            var response = await genericRepository.GetAllAsync("General");
+            var clients = response.Select(x => mapper.Map<ClientExport>(x)).ToList();
+
+            return Ok(clients);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
-        [HttpGet("GetAll")]
+        [HttpGet("getall")]
         public async Task<ActionResult<List<PrinterDTO>>> Get()
         {
-            return Ok(await printerRepository.GetAllPrinters());
+            var response = await genericRepository.GetAllAsync("General");
+            var printers = response.Select(x => mapper.Map<PrinterDTO>(x)).ToList();
+
+            return Ok(printers);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor, User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Printer>> Get(int id)
         {
-            var response = await printerRepository.GetSinglePrinter(id);
+            var response = await genericRepository.GetByIdAsync(x => x.Id == id, "General");
 
-            if (!response.Success)
-            {
-                return NotFound(response);
-            }
-
-            return response.Data;
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin, Manager, Editor")]
         [HttpPost]
         public async Task<ActionResult<int>> Post(Printer printer)
         {
-            var response = await printerRepository.CreatePrinter(printer);
-            return response.Data;
+            var response = await genericRepository.CreateAsync(printer);
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            return Ok(await printerRepository.DeletePrinter(id));
+            await genericRepository.DeleteAsync(id);
+            return NoContent();
         }
 
         [Authorize(Roles = "Admin, Manager=")]
         [HttpPut]
         public async Task<ActionResult<int>> Put(Printer printer)
         {
-            await printerRepository.UpdatePrinter(printer);
-
+            await genericRepository.UpdateAsync(printer);
             return NoContent();
         }
     }
